@@ -21,18 +21,21 @@ public class lifterDefaultCommand extends CommandBase {
         this.input2 = input2;
         this.input3 = input3;
         this.input4 = input4;
+        addRequirements(lifter);
     }
     @Override
     public void execute(){
         if (input1.getAsBoolean()){
-            lifter.MoveArm(10);
+            //lifter.MoveArm(10);
+            lifter.setPower(0.5);
         } else if (input2.getAsBoolean()){
-            lifter.MoveArm(50);
+            lifter.moveArm(1000);
         } else if (input3.getAsBoolean()){
-            lifter.MoveArm(100);
+            //lifter.MoveArm(100);
+            lifter.setPower(-0.5);
         } else if (input4.getAsBoolean()){
-            lifter.MoveArm(1000);
+            lifter.moveArm(-1000);
         }
-        else lifter.MoveArm(0);
+        else lifter.moveArm(0);
     }
 }
