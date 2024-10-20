@@ -12,4 +12,5 @@ public class FlipperSubsystem extends SubsystemBase {
     public void goToPos(double pos){
         flipperServo.setPosition(pos);
     }
+    public double getPos() { return flipperServo.getPosition();}
 }

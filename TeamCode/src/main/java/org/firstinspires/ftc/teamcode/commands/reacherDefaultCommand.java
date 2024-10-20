@@ -20,7 +20,7 @@ public class reacherDefaultCommand extends CommandBase {
     @Override
     public void execute(){
         if (input.getAsBoolean()){
-            reacher.setPower(1);
+            reacher.setPower(0.2);
         } else {
             reacher.setPower(0);
         }

@@ -7,12 +7,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class IntakeSubsystem extends SubsystemBase {
     public Servo intakeServo;
+    public int intakeDirection = 1;
 
     public IntakeSubsystem(HardwareMap hardwareMap){
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
     }
 
     public void setPower(double power){
-        intakeServo.setPosition(power);
+        intakeServo.setPosition((power+1)/2);
     }
 }

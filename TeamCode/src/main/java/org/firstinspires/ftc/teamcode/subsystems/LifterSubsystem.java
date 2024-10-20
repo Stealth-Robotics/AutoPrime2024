@@ -22,7 +22,7 @@ public class LifterSubsystem extends SubsystemBase {
     private MotorEx armL;
     private MotorEx armR;
     private final PIDFController armPID;
-    public static double kP = 0.001;
+    public static double kP = 0.006;
     public static double kI = 0.0;
     public static double kD = 0.0;
     public static double kF = 0.0;
@@ -35,10 +35,10 @@ public class LifterSubsystem extends SubsystemBase {
     public LifterSubsystem(HardwareMap hardwareMap, Telemetry telemetry){
         armL = new MotorEx(hardwareMap, "lifterMotorL");
         armR = new MotorEx(hardwareMap, "lifterMotorR");
-        armL.setInverted(false);
+        armR.setInverted(true);
         lifterMotors = new MotorGroup(armL,armR);
         lifterMotors.setRunMode(Motor.RunMode.RawPower);
-        //lifterMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        lifterMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
         armPID = new PIDFController(kP, kI, kD, kF);
         armPID.setTolerance(tolerance);
         this.telemetry = telemetry;
@@ -49,9 +49,9 @@ public class LifterSubsystem extends SubsystemBase {
         armPID.setSetPoint(position * maxHeight);
     }
 
-    public void setPower(double power) { armL.set(power); }
+    public void setPower(double power) { lifterMotors.set(power); }
 
-    public int getPosition() { return (armL.getCurrentPosition()); }
+    public int getPosition() { return -(armL.getCurrentPosition()); }
 
     public void resetEncoder(){
         armL.resetEncoder();
@@ -60,12 +60,14 @@ public class LifterSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         double calc = armPID.calculate(getPosition());
-        armL.set(-calc);
+        setPower(-calc);
 
         FtcDashboard.getInstance().getTelemetry().addData("arm position:", getPosition());
         FtcDashboard.getInstance().getTelemetry().addData("sp:", armPID.getSetPoint());
+        FtcDashboard.getInstance().getTelemetry().addData("calc:", calc);
 
         FtcDashboard.getInstance().getTelemetry().update();
         telemetry.addData("sp: ", armPID.getSetPoint());
+        telemetry.addData("calc: ", calc);
     }
 }
