@@ -14,4 +14,5 @@ public class toggleClawCommand extends CommandBase {
     public void execute(){
         claw.setPos(1-claw.getPos());
     }
+    public boolean isFinished() {return true;}
 }

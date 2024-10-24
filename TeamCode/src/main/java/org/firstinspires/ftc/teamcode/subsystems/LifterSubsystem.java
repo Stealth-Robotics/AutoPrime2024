@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import androidx.core.math.MathUtils;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -27,7 +26,7 @@ public class LifterSubsystem extends SubsystemBase {
     public static double kD = 0.0;
     public static double kF = 0.0;
     public static double tolerance = 10.0;
-    private final double maxSpeed = 0.5;
+    private final double maxSpeed = 1;
     private final double maxHeight = 2900;
     private final MotorGroup lifterMotors;
     private Telemetry telemetry;
@@ -51,7 +50,7 @@ public class LifterSubsystem extends SubsystemBase {
 
     public void setPower(double power) { lifterMotors.set(power); }
 
-    public int getPosition() { return -(armL.getCurrentPosition()); }
+    public int getPosition() { return -armR.getCurrentPosition(); }
 
     public void resetEncoder(){
         armL.resetEncoder();
@@ -60,7 +59,7 @@ public class LifterSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         double calc = armPID.calculate(getPosition());
-        setPower(-calc);
+        setPower(-calc*maxSpeed);
 
         FtcDashboard.getInstance().getTelemetry().addData("arm position:", getPosition());
         FtcDashboard.getInstance().getTelemetry().addData("sp:", armPID.getSetPoint());
