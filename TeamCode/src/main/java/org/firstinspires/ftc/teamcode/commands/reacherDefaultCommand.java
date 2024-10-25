@@ -22,11 +22,9 @@ public class reacherDefaultCommand extends CommandBase {
     @Override
     public void execute(){
         if (input.getAsBoolean()){
-            reacher.setPower(1);
-        } else if (input2.getAsBoolean()){
-            reacher.setPower(-1);
-        } else {
-            reacher.setPower(0);
+            reacher.setPower(0.5);
+        } else if (input2.getAsBoolean()) {
+            reacher.setSetPoint(0);
         }
     }
 }

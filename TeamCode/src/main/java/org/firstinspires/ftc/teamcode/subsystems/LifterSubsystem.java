@@ -38,6 +38,7 @@ public class LifterSubsystem extends SubsystemBase {
         lifterMotors = new MotorGroup(armL,armR);
         lifterMotors.setRunMode(Motor.RunMode.RawPower);
         lifterMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        armR.stopAndResetEncoder();
         armPID = new PIDFController(kP, kI, kD, kF);
         armPID.setTolerance(tolerance);
         this.telemetry = telemetry;
@@ -53,7 +54,7 @@ public class LifterSubsystem extends SubsystemBase {
     public int getPosition() { return -armR.getCurrentPosition(); }
 
     public void resetEncoder(){
-        armL.resetEncoder();
+        armR.resetEncoder();
     }
 
     @Override

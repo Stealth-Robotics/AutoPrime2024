@@ -13,16 +13,14 @@ public class lifterDefaultCommand extends CommandBase {
     private final BooleanSupplier input2;
     private final BooleanSupplier input3;
     private final BooleanSupplier input4;
-    private final BooleanSupplier input5;
     private final LifterSubsystem lifter;
 
-    public lifterDefaultCommand (LifterSubsystem lifter, BooleanSupplier input1, BooleanSupplier input2, BooleanSupplier input3, BooleanSupplier input4, BooleanSupplier input5){
+    public lifterDefaultCommand (LifterSubsystem lifter, BooleanSupplier input1, BooleanSupplier input2, BooleanSupplier input3, BooleanSupplier input4){
         this.lifter = lifter;
         this.input1 = input1;
         this.input2 = input2;
         this.input3 = input3;
         this.input4 = input4;
-        this.input5 = input5;
         addRequirements(lifter);
         lifter.resetEncoder();
     }
@@ -36,8 +34,6 @@ public class lifterDefaultCommand extends CommandBase {
             lifter.moveArm(0.95);
         } else if (input4.getAsBoolean()){
             lifter.moveArm(0.5);
-        } else if (input5.getAsBoolean()){
-            lifter.moveArm(0);
         }
     }
 }

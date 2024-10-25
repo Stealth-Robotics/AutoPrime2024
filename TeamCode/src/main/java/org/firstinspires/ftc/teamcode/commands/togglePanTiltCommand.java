@@ -11,7 +11,9 @@ public class togglePanTiltCommand extends CommandBase {
     }
     @Override
     public void execute(){
-        pan.setPos(1- pan.getPos());
+        if(pan.getPos() == 0){
+            pan.setPos(0.2);
+        } else pan.setPos(0);
     }
 
     public boolean isFinished() {return  true;}
