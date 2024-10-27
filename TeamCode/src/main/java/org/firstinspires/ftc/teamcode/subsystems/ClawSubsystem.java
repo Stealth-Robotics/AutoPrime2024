@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ClawSubsystem extends SubsystemBase {
     private Servo clawServo;
     private double pos;
+    public final double clawClosed = 0;
+    public final double clawOpen = 0.5;
     public ClawSubsystem (HardwareMap hardwareMap){
         clawServo = hardwareMap.get(Servo.class, "clawServo");
     }
