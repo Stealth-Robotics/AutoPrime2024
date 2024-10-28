@@ -17,9 +17,9 @@ public class ReacherSubsystem extends SubsystemBase {
     private PIDController reacherPID;
     private Telemetry telemetry;
 
-    public static double kP = 0;
-    public static double kI = 0;
-    public static double kD = 0;
+    public static double kP = 0.002;
+    public static double kI = 0.00000001;
+    public static double kD = 0.00000001;
     public static double tolerance = 0;
     public static double maxReach = 1300;
 
@@ -34,6 +34,7 @@ public class ReacherSubsystem extends SubsystemBase {
         this.telemetry = telemetry;
     }
     public void setSetPoint (double setPoint){reacherPID.setSetPoint(setPoint*maxReach);}
+    public void resetEncoder(){reachMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);}
     public double getSetPoint() {
         return reacherPID.getSetPoint();
     }

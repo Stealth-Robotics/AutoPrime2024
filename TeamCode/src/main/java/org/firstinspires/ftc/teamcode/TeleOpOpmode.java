@@ -75,14 +75,14 @@ public class TeleOpOpmode extends StealthOpMode {
 
         //lifterSubsystem.setDefaultCommand(new lifterDefaultCommand(lifterSubsystem,() -> driverGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),() -> driverGamepad.getButton(GamepadKeys.Button.DPAD_LEFT),() -> driverGamepad.getButton(GamepadKeys.Button.DPAD_UP),()->driverGamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)));
         driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(()-> lifterSubsystem.moveArm(-0.5))).whenReleased(new zeroLifterCommand(lifterSubsystem));
-        //reacherSubsystem.setDefaultCommand(new reacherDefaultCommand(reacherSubsystem, ()->driverGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),()->driverGamepad.getButton(GamepadKeys.Button.DPAD_UP)));
+        reacherSubsystem.setDefaultCommand(new reacherDefaultCommand(reacherSubsystem, ()->driverGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),()->driverGamepad.getButton(GamepadKeys.Button.DPAD_UP)));
 
         driveSubsystem.startTeleopDrive();
         driveSubsystem.setDefaultCommand(new driveDefaultCommand(driveSubsystem, ()->driverGamepad.getLeftX(),()->driverGamepad.getLeftY(),()->driverGamepad.getRightX()));
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1)
                 .whenActive(new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem));
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)
-                .whenActive(new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem));
+                .whenActive(new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem));
         //driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem));
         driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new reverseIntakeCommand(intakeSubsystem));
         driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(new togglePanTiltCommand(panSubsystem));

@@ -15,14 +15,15 @@ public class reacherDefaultCommand extends CommandBase {
     public reacherDefaultCommand(ReacherSubsystem reacher, BooleanSupplier input, BooleanSupplier input2){
         this.reacher = reacher;
         this.input = input;
-        this.input2=input2;
+        this.input2 = input2;
         addRequirements(reacher);
+        //reacher.resetEncoder();
     }
 
     @Override
     public void execute(){
         if (input.getAsBoolean()){
-            reacher.setPower(0.5);
+            reacher.setSetPoint(0.5);
         } else if (input2.getAsBoolean()) {
             reacher.setSetPoint(0);
         }
