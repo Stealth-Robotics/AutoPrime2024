@@ -12,7 +12,10 @@ import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
 public class deployIntakeCommand extends SequentialCommandGroup {
 
     public deployIntakeCommand(ReacherSubsystem reacher, FlipperSubsystem flipper, IntakeSubsystem intake) {
-        addCommands(new InstantCommand(() -> flipper.goToPos(0.85)),
+        addCommands(
+                new InstantCommand(() -> reacher.setSetPoint(0.5)),
+                new WaitCommand(500),
+                new InstantCommand(() -> flipper.goToPos(0.85)),
                 new InstantCommand(() -> intake.setPower(-1)),
                 new WaitCommand(0)
         );

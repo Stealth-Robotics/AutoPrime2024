@@ -30,6 +30,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSensorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
 import org.stealthrobotics.library.Commands;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
@@ -43,6 +44,7 @@ public class TeleOpOpmode extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     LifterPanSubsystem panSubsystem;
     ClawSubsystem clawSubsystem;
+    Mecanum mecanum;
 
     GamepadEx driverGamepad;
     GamepadEx operatorGamepad;
@@ -64,11 +66,9 @@ public class TeleOpOpmode extends StealthOpMode {
         clawSubsystem = new ClawSubsystem(hardwareMap);
         driveSubsystem = new DriveSubsystem(hardwareMap);
         panSubsystem = new LifterPanSubsystem(hardwareMap);
+        mecanum = new Mecanum(hardwareMap);
 
-        register(driveSubsystem);
-        //register(lifterSubsystem);
-        //register(reacherSubsystem);
-
+        register(mecanum, reacherSubsystem);
 
         driverGamepad = new GamepadEx(gamepad1);
         operatorGamepad = new GamepadEx(gamepad2);
@@ -77,12 +77,13 @@ public class TeleOpOpmode extends StealthOpMode {
         driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(()-> lifterSubsystem.moveArm(-0.5))).whenReleased(new zeroLifterCommand(lifterSubsystem));
         reacherSubsystem.setDefaultCommand(new reacherDefaultCommand(reacherSubsystem, ()->driverGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),()->driverGamepad.getButton(GamepadKeys.Button.DPAD_UP)));
 
-        driveSubsystem.startTeleopDrive();
-        driveSubsystem.setDefaultCommand(new driveDefaultCommand(driveSubsystem, ()->driverGamepad.getLeftX(),()->driverGamepad.getLeftY(),()->driverGamepad.getRightX()));
+        //driveSubsystem.startTeleopDrive();
+        //driveSubsystem.setDefaultCommand(new driveDefaultCommand(driveSubsystem, ()->driverGamepad.getLeftX(),()->driverGamepad.getLeftY(),()->driverGamepad.getRightX()));
+        mecanum.setDefaultCommand(mecanum.driveTeleop(()->driverGamepad.getLeftX(),()-> driverGamepad.getLeftY(),()-> driverGamepad.getRightX()));
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1)
                 .whenActive(new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem));
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)
-                .whenActive(new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem));
+                .whenActive(new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, panSubsystem));
         //driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem));
         driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new reverseIntakeCommand(intakeSubsystem));
         driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(new togglePanTiltCommand(panSubsystem));
