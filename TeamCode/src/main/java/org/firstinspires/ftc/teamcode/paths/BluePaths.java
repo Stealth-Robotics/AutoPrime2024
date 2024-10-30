@@ -3,11 +3,10 @@ package org.firstinspires.ftc.teamcode.paths;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 
-public class bluePaths {
+public class BluePaths {
     public static PathChain shuttleFromStartPath;
     public static PathChain parkFromHumanPlayerSpot;
     private final Pose shuttleStartingPose = new Pose(12.48,59.61, 0);
@@ -15,7 +14,7 @@ public class bluePaths {
     private final Pose shuttleParkPose = new Pose(58.74,100.50,0);
     Follower follower;
 
-    public bluePaths(Follower follower){
+    public BluePaths(Follower follower){
         this.follower = follower;
     }
 

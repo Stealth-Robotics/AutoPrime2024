@@ -60,7 +60,7 @@ public class TeleOpOpmode extends StealthOpMode {
     public void initialize(){
         //lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
         reacherSubsystem = new ReacherSubsystem(hardwareMap, telemetry);
-        intakeSubsystem = new IntakeSubsystem(hardwareMap, telemetry);
+        intakeSubsystem = new IntakeSubsystem(hardwareMap);
         flipperSubsystem = new FlipperSubsystem(hardwareMap);
         intakeSensorSubsystem = new IntakeSensorSubsystem(hardwareMap,telemetry);
         clawSubsystem = new ClawSubsystem(hardwareMap);

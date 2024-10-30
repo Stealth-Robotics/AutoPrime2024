@@ -12,13 +12,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class IntakeSubsystem extends SubsystemBase {
     private Servo intakeServo;
     //private RevColorSensorV3 intakeSensor;
-    private Telemetry telemetry;
     public enum ColorList {RED,BLUE,BLACK}
     public int intakeDirection = 1;
 
-    public IntakeSubsystem(HardwareMap hardwareMap, Telemetry telemetry){
+    public IntakeSubsystem(HardwareMap hardwareMap){
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
-        this.telemetry = telemetry;
     }
 
     public void setPower(double power){
