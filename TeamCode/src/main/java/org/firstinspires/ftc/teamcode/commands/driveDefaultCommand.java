@@ -3,26 +3,33 @@ package org.firstinspires.ftc.teamcode.commands;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class driveDefaultCommand extends CommandBase {
-    private final DriveSubsystem drive;
+    private final Mecanum mecanum;
+    private final BooleanSupplier y;
     private final DoubleSupplier leftStickX;
     private final DoubleSupplier leftStickY;
     private final DoubleSupplier rightStickX;
 
-    public driveDefaultCommand(DriveSubsystem drive, DoubleSupplier leftStickX, DoubleSupplier leftStickY, DoubleSupplier rightStickX){
-        this.drive = drive;
+    public driveDefaultCommand(Mecanum mecanum, DoubleSupplier leftStickX, DoubleSupplier leftStickY, DoubleSupplier rightStickX, BooleanSupplier y){
+        this.mecanum = mecanum;
         this.leftStickX = leftStickX;
         this.leftStickY = leftStickY;
         this.rightStickX = rightStickX;
-        addRequirements(drive);
+        this.y = y;
+        addRequirements(mecanum);
     }
 
     @Override
     public void execute()
     {
-        drive.drive(leftStickX.getAsDouble(), leftStickY.getAsDouble(), rightStickX.getAsDouble());
+        mecanum.drive(leftStickX.getAsDouble(), leftStickY.getAsDouble(), rightStickX.getAsDouble());
+        if (y.getAsBoolean()) {
+            mecanum.resetHeading();
+        }
     }
 }

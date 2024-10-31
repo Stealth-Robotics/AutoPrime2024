@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.opModes;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.commands.deployIntakeCommand;
@@ -15,6 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.FlipperSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
@@ -24,6 +27,9 @@ public class shuttleAuto extends StealthOpMode {
     IntakeSubsystem intakeSubsystem;
     ReacherSubsystem reacherSubsystem;
     FlipperSubsystem flipperSubsystem;
+    LifterSubsystem lifterSubsystem;
+    LifterPanSubsystem panSubsystem;
+    BluePaths bluePaths;
     Follower follower;
     @Override
     public void initialize(){
@@ -31,6 +37,10 @@ public class shuttleAuto extends StealthOpMode {
     intakeSubsystem = new IntakeSubsystem(hardwareMap);
     reacherSubsystem = new ReacherSubsystem(hardwareMap, telemetry);
     flipperSubsystem = new FlipperSubsystem(hardwareMap);
+    lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
+    panSubsystem = new LifterPanSubsystem(hardwareMap);
+    bluePaths = new BluePaths(follower);
+    //bluePaths.buildPaths();
     register(driveSubsystem, reacherSubsystem);
     }
     @Override
@@ -40,9 +50,12 @@ public class shuttleAuto extends StealthOpMode {
     @Override
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
-                new InstantCommand(()->follower.followPath(BluePaths.shuttleFromStartPath)),
-                new deployIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem),
-                new reverseIntakeCommand(intakeSubsystem)
+                //driveSubsystem.FollowPath(BluePaths.shuttleFromStartPath, true),
+                new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem),
+                new reverseIntakeCommand(intakeSubsystem),
+                new WaitCommand(3000),
+                new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem)
+                //driveSubsystem.FollowPath(BluePaths.parkFromHumanPlayerSpot, true)
         );
     }
 }

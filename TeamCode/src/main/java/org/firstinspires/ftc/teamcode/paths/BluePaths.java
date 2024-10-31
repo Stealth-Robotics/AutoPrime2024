@@ -12,6 +12,7 @@ public class BluePaths {
     private final Pose shuttleStartingPose = new Pose(12.48,59.61, 0);
     private final Pose shuttleEndingPose = new Pose(19.93,18.54,Math.toRadians(225));
     private final Pose shuttleParkPose = new Pose(58.74,100.50,0);
+    private final Pose bucketStartingPose = new Pose (9.787, 84.983, Math.toRadians(0));
     Follower follower;
 
     public BluePaths(Follower follower){

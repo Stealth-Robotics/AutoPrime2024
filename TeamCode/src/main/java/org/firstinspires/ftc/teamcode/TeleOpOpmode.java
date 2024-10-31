@@ -58,7 +58,7 @@ public class TeleOpOpmode extends StealthOpMode {
 
     @Override
     public void initialize(){
-        //lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
+        lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
         reacherSubsystem = new ReacherSubsystem(hardwareMap, telemetry);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         flipperSubsystem = new FlipperSubsystem(hardwareMap);
@@ -66,16 +66,17 @@ public class TeleOpOpmode extends StealthOpMode {
         clawSubsystem = new ClawSubsystem(hardwareMap);
         driveSubsystem = new DriveSubsystem(hardwareMap);
         panSubsystem = new LifterPanSubsystem(hardwareMap);
-        mecanum = new Mecanum(hardwareMap);
+        mecanum = new Mecanum(hardwareMap, telemetry);
 
         register(mecanum, reacherSubsystem);
 
         driverGamepad = new GamepadEx(gamepad1);
         operatorGamepad = new GamepadEx(gamepad2);
 
-        //lifterSubsystem.setDefaultCommand(new lifterDefaultCommand(lifterSubsystem,() -> driverGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),() -> driverGamepad.getButton(GamepadKeys.Button.DPAD_LEFT),() -> driverGamepad.getButton(GamepadKeys.Button.DPAD_UP),()->driverGamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)));
-        driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(()-> lifterSubsystem.moveArm(-0.5))).whenReleased(new zeroLifterCommand(lifterSubsystem));
-        reacherSubsystem.setDefaultCommand(new reacherDefaultCommand(reacherSubsystem, ()->driverGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),()->driverGamepad.getButton(GamepadKeys.Button.DPAD_UP)));
+        lifterSubsystem.setDefaultCommand(new lifterDefaultCommand(lifterSubsystem, clawSubsystem, () -> driverGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),() -> driverGamepad.getButton(GamepadKeys.Button.DPAD_LEFT),() -> driverGamepad.getButton(GamepadKeys.Button.DPAD_UP), () -> driverGamepad.getButton(GamepadKeys.Button.LEFT_BUMPER), () -> driverGamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)));
+        //driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(()-> lifterSubsystem.moveArm(-0.5))).whenReleased(new zeroLifterCommand(lifterSubsystem));
+        //driverGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(()->lifterSubsystem.moveArm(.8))).whenReleased(new InstantCommand(()-> lifterSubsystem.moveArm((lifterSubsystem.getPosition())/ lifterSubsystem.maxHeight)));
+        //reacherSubsystem.setDefaultCommand(new reacherDefaultCommand(reacherSubsystem, ()->driverGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),()->driverGamepad.getButton(GamepadKeys.Button.DPAD_UP)));
 
         //driveSubsystem.startTeleopDrive();
         //driveSubsystem.setDefaultCommand(new driveDefaultCommand(driveSubsystem, ()->driverGamepad.getLeftX(),()->driverGamepad.getLeftY(),()->driverGamepad.getRightX()));
@@ -83,7 +84,7 @@ public class TeleOpOpmode extends StealthOpMode {
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1)
                 .whenActive(new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem));
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)
-                .whenActive(new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, panSubsystem));
+                .whenActive(new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem));
         //driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem));
         driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new reverseIntakeCommand(intakeSubsystem));
         driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(new togglePanTiltCommand(panSubsystem));

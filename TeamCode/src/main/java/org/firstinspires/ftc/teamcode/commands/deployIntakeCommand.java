@@ -13,8 +13,8 @@ public class deployIntakeCommand extends SequentialCommandGroup {
 
     public deployIntakeCommand(ReacherSubsystem reacher, FlipperSubsystem flipper, IntakeSubsystem intake) {
         addCommands(
-                new InstantCommand(() -> reacher.setSetPoint(0.5)),
-                new WaitCommand(500),
+                new InstantCommand(() -> reacher.setSetPoint(0.9)),
+                new WaitCommand(1000),
                 new InstantCommand(() -> flipper.goToPos(0.85)),
                 new InstantCommand(() -> intake.setPower(-1)),
                 new WaitCommand(0)

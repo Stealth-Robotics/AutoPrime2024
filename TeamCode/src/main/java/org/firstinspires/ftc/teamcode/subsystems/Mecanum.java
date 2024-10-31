@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.stealthrobotics.library.Commands;
 import org.stealthrobotics.library.StealthSubsystem;
@@ -18,16 +19,18 @@ public class Mecanum extends StealthSubsystem {
     private final DcMotorEx frontRight;
     private final DcMotorEx backLeft;
     private final DcMotorEx backRight;
+    private Telemetry telemetry;
 
     IMU imu;
 
     double headingOffset = 0;
 
-    public Mecanum(HardwareMap hardwareMap) {
+    public Mecanum(HardwareMap hardwareMap, Telemetry telemetry) {
         frontLeft = hardwareMap.get(DcMotorEx.class, "leftFront");
         frontRight = hardwareMap.get(DcMotorEx.class, "rightFront");
         backLeft = hardwareMap.get(DcMotorEx.class, "leftRear");
         backRight = hardwareMap.get(DcMotorEx.class, "rightRear");
+        this.telemetry = telemetry;
 
         //TODO: Check
         frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
@@ -51,14 +54,15 @@ public class Mecanum extends StealthSubsystem {
     }
 
     public double getHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset;
+        //return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset;
+        return 0;
     }
 
     public void resetHeading() {
         headingOffset = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
     }
 
-    private void drive(double x, double y, double rot) {
+    public void drive(double x, double y, double rot) {
         y = -y;
 
         double rotX = x * Math.cos(-getHeading()) - y * Math.sin(-getHeading());
@@ -81,5 +85,8 @@ public class Mecanum extends StealthSubsystem {
     public Command driveTeleop(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
         return this.run(() -> drive(x.getAsDouble(), -y.getAsDouble(), rot.getAsDouble()));
     }
-
+    @Override
+    public void periodic(){
+        telemetry.addData("heading", getHeading());
+    }
 }

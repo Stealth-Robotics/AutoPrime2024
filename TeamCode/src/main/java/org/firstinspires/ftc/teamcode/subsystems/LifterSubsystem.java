@@ -27,7 +27,7 @@ public class LifterSubsystem extends SubsystemBase {
     public static double kF = 0.0;
     public static double tolerance = 10.0;
     private final double maxSpeed = 1;
-    private final double maxHeight = 2900;
+    public final double maxHeight = 3300;
     private final MotorGroup lifterMotors;
     private Telemetry telemetry;
 
