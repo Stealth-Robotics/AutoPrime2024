@@ -18,30 +18,25 @@ import org.firstinspires.ftc.teamcode.subsystems.FlipperSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
-@Autonomous(name = "shuttleAuto")
-public class shuttleAuto extends StealthOpMode {
+@Autonomous (name = "bucketAuto")
+public class bucketAuto extends StealthOpMode{
     DriveSubsystem driveSubsystem;
     IntakeSubsystem intakeSubsystem;
-    ReacherSubsystem reacherSubsystem;
     FlipperSubsystem flipperSubsystem;
     LifterSubsystem lifterSubsystem;
     LifterPanSubsystem panSubsystem;
-    BluePaths bluePaths;
-    Follower follower;
+
     @Override
     public void initialize(){
-    driveSubsystem = new DriveSubsystem(hardwareMap);
-    intakeSubsystem = new IntakeSubsystem(hardwareMap);
-    reacherSubsystem = new ReacherSubsystem(hardwareMap, telemetry);
-    flipperSubsystem = new FlipperSubsystem(hardwareMap);
-    lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
-    panSubsystem = new LifterPanSubsystem(hardwareMap);
-    bluePaths = new BluePaths(follower);
-    //bluePaths.buildPaths();
-    register(driveSubsystem, reacherSubsystem);
+        driveSubsystem = new DriveSubsystem(hardwareMap);
+        intakeSubsystem = new IntakeSubsystem(hardwareMap);
+        flipperSubsystem = new FlipperSubsystem(hardwareMap);
+        lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
+        panSubsystem = new LifterPanSubsystem(hardwareMap);
+        bluePaths = new BluePaths(follower);
+        register(driveSubsystem, lifterSubsystem);
     }
     @Override
     public void whileWaitingToStart() {
@@ -50,13 +45,21 @@ public class shuttleAuto extends StealthOpMode {
     @Override
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
-                //driveSubsystem.FollowPath(BluePaths.shuttleFromStartPath, true),
-                follower.followPath(bluePaths.shuttleFromStartPath)
-                new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem),
-                new reverseIntakeCommand(intakeSubsystem),
-                new WaitCommand(3000),
-                new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem)
-                //driveSubsystem.FollowPath(BluePaths.parkFromHumanPlayerSpot, true)
+                driveSubsystem.FollowPath(BluePaths.driveToBucket, true),
+                new InstantCommand(()-> flipperSubsystem.goToPos(0.35)),
+                new InstantCommand(()-> panSubsystem.setPos(pan.in)),
+                new InstantCommand(()-> flipperSubsystem.goToPos(0.25)),
+                new InstantCommand(()-> intakeSubsystem.setPower(1)),
+                new WaitCommand(1000),
+                new InstantCommand(()-> flipperSubsystem.goToPos(0.35)),
+                new InstantCommand(()-> lifter.moveArm(1)),
+                new WaitCommand(2000),
+                new InstantCommand(()-> panSubsystem.setPos(pan.out)),
+                new WaitCommand(1000),
+                new InstantCommand(()-> panSubsystem.setPos(pan.in)),
+                new InstantCommand(()-> lifterSubsystem.moveArm(0)),
+                driveSubsystem.FollowPath(bluePaths.parkLeftFromBucket, true)
         );
     }
+
 }
