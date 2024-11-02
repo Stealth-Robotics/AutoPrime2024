@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class IntakeSensorSubsystem extends SubsystemBase {
     private ColorSensor intakeSensor;
     public enum ColorList {RED,BLUE,YELLOW,BLACK}
+    public enum Alliance {RED, BLUE}
     private Telemetry telemetry;
 
     public IntakeSensorSubsystem(HardwareMap hardwareMap, Telemetry telemetry){

@@ -13,8 +13,10 @@ import org.firstinspires.ftc.teamcode.commands.retractIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.reverseIntakeCommand;
 import org.firstinspires.ftc.teamcode.paths.BluePaths;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.FlipperSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeSensorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
@@ -40,7 +42,7 @@ public class shuttleAuto extends StealthOpMode {
     lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
     panSubsystem = new LifterPanSubsystem(hardwareMap);
     bluePaths = new BluePaths(follower);
-    //bluePaths.buildPaths();
+    bluePaths.buildPaths();
     register(driveSubsystem, reacherSubsystem);
     }
     @Override
@@ -50,13 +52,26 @@ public class shuttleAuto extends StealthOpMode {
     @Override
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
-                //driveSubsystem.FollowPath(BluePaths.shuttleFromStartPath, true),
-                follower.followPath(bluePaths.shuttleFromStartPath)
-                new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem),
-                new reverseIntakeCommand(intakeSubsystem),
-                new WaitCommand(3000),
-                new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem)
-                //driveSubsystem.FollowPath(BluePaths.parkFromHumanPlayerSpot, true)
+                new InstantCommand(()-> driveSubsystem.setPose(bluePaths.shuttleStartingPose)),
+                driveSubsystem.FollowPath(bluePaths.startToShuttle, true),
+                new InstantCommand(()-> flipperSubsystem.goToPos(0.35)),
+                new InstantCommand(()-> panSubsystem.setPos(panSubsystem.in)),
+                new InstantCommand(()-> flipperSubsystem.goToPos(0.25)),
+                new InstantCommand(()-> intakeSubsystem.setPower(1)),
+                new WaitCommand(1000),
+                new InstantCommand(()-> panSubsystem.setPos(panSubsystem.out)),
+                new WaitCommand(1000),
+                new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, true, IntakeSensorSubsystem.Alliance.BLUE),
+                new WaitCommand(1000),
+                new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem),
+                new WaitCommand(1000),
+                new InstantCommand(()-> panSubsystem.setPos(panSubsystem.out)),
+                driveSubsystem.FollowPath(bluePaths.shuttleFromStartPath, true),
+                new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, true, IntakeSensorSubsystem.Alliance.BLUE),
+                new WaitCommand(1000),
+                new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem),
+                new WaitCommand(1000),
+                new InstantCommand(()-> panSubsystem.setPos(panSubsystem.out))
         );
     }
 }

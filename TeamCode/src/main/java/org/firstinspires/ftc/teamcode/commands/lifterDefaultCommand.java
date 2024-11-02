@@ -18,6 +18,7 @@ public class lifterDefaultCommand extends CommandBase {
     private final LifterSubsystem lifter;
     private final ClawSubsystem claw;
     private final double manualControlIncrement = 300;
+    private final double zeroThreshold = 50;
 
     public lifterDefaultCommand (LifterSubsystem lifter, ClawSubsystem claw, BooleanSupplier input1, BooleanSupplier input2, BooleanSupplier input3, BooleanSupplier input4, BooleanSupplier input5){
         this.lifter = lifter;
@@ -58,6 +59,13 @@ public class lifterDefaultCommand extends CommandBase {
         }
         if (input5.getAsBoolean()){
             lifter.moveArm((lifter.getPosition() - manualControlIncrement) / lifter.maxHeight);
+        }
+        if ((!input5.getAsBoolean() && !input4.getAsBoolean() && !input3.getAsBoolean() && !input2.getAsBoolean() && !input1.getAsBoolean())){
+            if(lifter.getPosition() < zeroThreshold){
+                new zeroLifterCommand(lifter);
+            } else {
+                lifter.setPower(0);
+            }
         }
         /*if (input1.getAsBoolean()){
             lifter.moveArm(0.15);

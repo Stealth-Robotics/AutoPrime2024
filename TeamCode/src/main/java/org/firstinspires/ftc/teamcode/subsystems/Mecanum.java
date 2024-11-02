@@ -55,7 +55,7 @@ public class Mecanum extends StealthSubsystem {
 
     public double getHeading() {
         //return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset;
-        return 0;
+        return Math.PI;
     }
 
     public void resetHeading() {

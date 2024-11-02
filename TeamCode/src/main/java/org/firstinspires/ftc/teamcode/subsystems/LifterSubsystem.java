@@ -60,6 +60,7 @@ public class LifterSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         double calc = armPID.calculate(getPosition());
+        //if (getPosition() > -5 || calc > 0)
         setPower(-calc*maxSpeed);
 
         FtcDashboard.getInstance().getTelemetry().addData("arm position:", getPosition());

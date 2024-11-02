@@ -34,7 +34,10 @@ public class ReacherSubsystem extends SubsystemBase {
         this.telemetry = telemetry;
     }
     public void setSetPoint (double setPoint){reacherPID.setSetPoint(setPoint*maxReach);}
-    public void resetEncoder(){reachMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);}
+    public void resetEncoder(){
+        reachMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        reachMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
     public double getSetPoint() {
         return reacherPID.getSetPoint();
     }

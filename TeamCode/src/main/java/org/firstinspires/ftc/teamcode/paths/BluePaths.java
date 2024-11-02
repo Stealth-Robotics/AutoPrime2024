@@ -7,11 +7,13 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 
 public class BluePaths {
+    public static PathChain startToShuttle;
     public static PathChain shuttleFromStartPath;
     public static PathChain parkFromHumanPlayerSpot;
-    public static Path driveToBucket, parkLeftFromBucket, parkRightFromBucket;
-    private final Pose shuttleStartingPose = new Pose(12.48,59.61, 0);
-    private final Pose shuttleEndingPose = new Pose(19.93,18.54,Math.toRadians(225));
+    public static PathChain driveToBucket, parkLeftFromBucket, parkRightFromBucket;
+    public static Pose shuttleStartingPose = new Pose(10.57, 61.34, Math.toRadians(180));
+    private final Pose shuttleFirstScorePose = new Pose(23.2,13.51, Math.toRadians(180));
+    private final Pose shuttleEndingPose = new Pose(23.2,22.52,Math.toRadians(180));
     private final Pose shuttleParkPose = new Pose(58.74,100.50,0);
     private final Pose bucketStartingPose = new Pose(9.787, 84.983, 0);
     private final Pose bucketScoringPose = new Pose(14.74, 128.4, Math.toRadians(315));
@@ -24,9 +26,13 @@ public class BluePaths {
     }
 
     public void buildPaths(){
+        startToShuttle = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(shuttleStartingPose), new Point(shuttleFirstScorePose)))
+                .setConstantHeadingInterpolation(shuttleStartingPose.getHeading())
+                .build();
         shuttleFromStartPath = follower.pathBuilder()
-            .addPath(new BezierCurve(new Point(shuttleStartingPose), new Point(51.84,47.83,Point.CARTESIAN), new Point(shuttleEndingPose)))
-            .setLinearHeadingInterpolation(shuttleStartingPose.getHeading(), shuttleEndingPose.getHeading())
+            .addPath(new BezierCurve(new Point(shuttleFirstScorePose), new Point(shuttleEndingPose)))
+            .setConstantHeadingInterpolation(shuttleFirstScorePose.getHeading())
             .build();
         parkFromHumanPlayerSpot = follower.pathBuilder()
             .addPath(new BezierCurve(new Point(shuttleEndingPose), new Point(13.34,103.62,Point.CARTESIAN), new Point(shuttleParkPose)))
@@ -37,12 +43,12 @@ public class BluePaths {
             .setLinearHeadingInterpolation(bucketStartingPose.getHeading(), bucketScoringPose.getHeading())
             .build();
         parkLeftFromBucket = follower.pathBuilder()
-            .addPath(new BezierCurve(new Point(bucketScoringPose), new Pose(20.41,98.08,Point.CARTESIAN), new Pose(65.2,12.29,Point.CARTESIAN), new Pose(parkLeft)))
-            .setLinearHeadingInterpolation(bucketScoringPose.getHeading(), parkLeft.getHeading)
+            .addPath(new BezierCurve(new Point(bucketScoringPose), new Point(20.41,98.08,Point.CARTESIAN), new Point(65.2,12.29,Point.CARTESIAN), new Point(parkLeft)))
+            .setLinearHeadingInterpolation(bucketScoringPose.getHeading(), parkLeft.getHeading())
             .build();
         parkRightFromBucket = follower.pathBuilder()
-            .addPath(new BezierCurve(new Point(bucketScoringPose), new Pose(86.61,129.54,Point.CARTESIAN), new Pose(parkRight)))
-            .setLinearHeadingInterpolation(bucketScoringPose.getHeading(), parkRight.getHeading)
+            .addPath(new BezierCurve(new Point(bucketScoringPose), new Point(86.61,129.54,Point.CARTESIAN), new Point(parkRight)))
+            .setLinearHeadingInterpolation(bucketScoringPose.getHeading(), parkRight.getHeading())
             .build();
     }
 }
