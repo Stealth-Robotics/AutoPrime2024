@@ -5,6 +5,7 @@ import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 //import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Path;
@@ -14,9 +15,11 @@ import org.stealthrobotics.library.StealthSubsystem;
 public class DriveSubsystem extends StealthSubsystem {
 
     public Follower follower;
+    Telemetry telemetry;
 
-    public DriveSubsystem(HardwareMap hardwareMap){
+    public DriveSubsystem(HardwareMap hardwareMap, Telemetry telemetry){
         follower = new Follower(hardwareMap);
+        this.telemetry = telemetry;
     }
 
     public void startTeleopDrive(){
@@ -43,5 +46,6 @@ public class DriveSubsystem extends StealthSubsystem {
     @Override
     public void periodic() {
         follower.update();
+        telemetry.addData("isbusy", follower.isBusy());
     }
 }

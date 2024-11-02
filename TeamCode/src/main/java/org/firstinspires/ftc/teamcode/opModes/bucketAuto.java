@@ -3,14 +3,10 @@ package org.firstinspires.ftc.teamcode.opModes;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.commands.deployIntakeCommand;
-import org.firstinspires.ftc.teamcode.commands.retractIntakeCommand;
-import org.firstinspires.ftc.teamcode.commands.reverseIntakeCommand;
 import org.firstinspires.ftc.teamcode.paths.BluePaths;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
@@ -34,16 +30,17 @@ public class bucketAuto extends StealthOpMode{
     Follower follower;
     BluePaths bluePaths;
 
-    final Pose bucketStartingPose = new Pose(9.787, 84.983, 0);
-    final Pose bucketScoringPose = new Pose(24.43, 125.93, Math.toRadians(135));
-    final Pose parkLeft = new Pose(61.8,99.78,Math.toRadians(270));
-    final Pose parkRight = new Pose(83.06,98.65, Math.toRadians(270));
+    static Pose bucketStartingPose = new Pose(9.787, 84.983, 0);
+    static Pose bucketLiftPose = new Pose(24.43, 125.93, Math.toRadians(135));
+    static Pose bucketScorePose = new Pose(22.5,128, Math.toRadians(135));
+    static Pose parkLeft = new Pose(61.8,99.78,Math.toRadians(270));
+    static Pose parkRight = new Pose(83.06,98.65, Math.toRadians(270));
 
-    PathChain driveToBucket, parkLeftFromBucket, parkRightFromBucket;
+    static PathChain driveToBucket, parkLeftFromBucket, parkRightFromBucket, inchToBucket, inchFromBucket;
 
     @Override
     public void initialize(){
-        driveSubsystem = new DriveSubsystem(hardwareMap);
+        driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         flipperSubsystem = new FlipperSubsystem(hardwareMap);
         lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
@@ -54,16 +51,24 @@ public class bucketAuto extends StealthOpMode{
 
 
         driveToBucket = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(bucketStartingPose), new Point(44.36, 95.48, Point.CARTESIAN), new Point(bucketScoringPose)))
-                .setLinearHeadingInterpolation(bucketStartingPose.getHeading(), bucketScoringPose.getHeading())
+                .addPath(new BezierCurve(new Point(bucketStartingPose), new Point(44.36, 95.48, Point.CARTESIAN), new Point(bucketLiftPose)))
+                .setLinearHeadingInterpolation(bucketStartingPose.getHeading(), bucketLiftPose.getHeading())
                 .build();
         parkLeftFromBucket = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(bucketScoringPose), new Point(20.41,98.08,Point.CARTESIAN), new Point(65.2,12.29,Point.CARTESIAN), new Point(parkLeft)))
-                .setLinearHeadingInterpolation(bucketScoringPose.getHeading(), parkLeft.getHeading())
+                .addPath(new BezierCurve(new Point(bucketLiftPose), new Point(20.41,98.08,Point.CARTESIAN), new Point(65.2,12.29,Point.CARTESIAN), new Point(parkLeft)))
+                .setLinearHeadingInterpolation(bucketLiftPose.getHeading(), parkLeft.getHeading())
                 .build();
         parkRightFromBucket = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(bucketScoringPose), new Point(86.61,129.54,Point.CARTESIAN), new Point(parkRight)))
-                .setLinearHeadingInterpolation(bucketScoringPose.getHeading(), parkRight.getHeading())
+                .addPath(new BezierCurve(new Point(bucketLiftPose), new Point(86.61,129.54,Point.CARTESIAN), new Point(parkRight)))
+                .setLinearHeadingInterpolation(bucketLiftPose.getHeading(), parkRight.getHeading())
+                .build();
+        inchToBucket = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(bucketLiftPose), new Point(bucketScorePose)))
+                .setConstantHeadingInterpolation(bucketScorePose.getHeading())
+                .build();
+        inchFromBucket = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(bucketScorePose), new Point(bucketLiftPose)))
+                .setConstantHeadingInterpolation(bucketLiftPose.getHeading())
                 .build();
         register(driveSubsystem, lifterSubsystem);
     }
@@ -80,15 +85,20 @@ public class bucketAuto extends StealthOpMode{
                 new InstantCommand(()-> panSubsystem.setPos(panSubsystem.in)),
                 new InstantCommand(()-> flipperSubsystem.goToPos(0.25)),
                 new InstantCommand(()-> intakeSubsystem.setPower(1)),
-                new WaitCommand(1000),
-                new InstantCommand(()-> flipperSubsystem.goToPos(0.35)),
+                new WaitCommand(3000),
+                new InstantCommand(()-> flipperSubsystem.goToPos(0.55)),
                 new InstantCommand(()-> intakeSubsystem.setPower(0)),
                 new InstantCommand(()-> lifterSubsystem.moveArm(1)),
                 new WaitCommand(2000),
+                driveSubsystem.FollowPath(inchToBucket, true),
+                new WaitCommand(1000),
                 new InstantCommand(()-> panSubsystem.setPos(panSubsystem.out)),
                 new WaitCommand(3000),
-                new InstantCommand(()-> panSubsystem.setPos(panSubsystem.in)),
-                new InstantCommand(()-> lifterSubsystem.moveArm(0))
+                new InstantCommand(()-> panSubsystem.setPos(panSubsystem.out)),
+                driveSubsystem.FollowPath(inchFromBucket, true)
+                //new WaitCommand(3000),
+                //new InstantCommand(()-> panSubsystem.setPos(panSubsystem.in)),
+                //new InstantCommand(()-> lifterSubsystem.moveArm(0))
                 //driveSubsystem.FollowPath(parkLeftFromBucket, true)
         );
     }

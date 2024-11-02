@@ -40,18 +40,19 @@ public class shuttleAuto extends StealthOpMode {
     static PathChain startToShuttle;
     static PathChain shuttleFromStartPath;
     static Pose shuttleStartingPose = new Pose(10.57, 61.34, Math.toRadians(180));
-    final Pose shuttleFirstScorePose = new Pose(23.2,13.51, Math.toRadians(180));
-    final Pose shuttleEndingPose = new Pose(23.2,22.52,Math.toRadians(180));
+    final Pose shuttleFirstScorePose = new Pose(19,13.51, Math.toRadians(180));
+    final Pose shuttleEndingPose = new Pose(19,22.52,Math.toRadians(180));
     @Override
     public void initialize(){
-        driveSubsystem = new DriveSubsystem(hardwareMap);
+        driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         reacherSubsystem = new ReacherSubsystem(hardwareMap, telemetry);
         flipperSubsystem = new FlipperSubsystem(hardwareMap);
         lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
         panSubsystem = new LifterPanSubsystem(hardwareMap);
-        bluePaths = new BluePaths(follower);
-        bluePaths.buildPaths();
+        follower = new Follower(hardwareMap);
+        //bluePaths = new BluePaths(follower);
+        //bluePaths.buildPaths();
         startToShuttle = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(shuttleStartingPose), new Point(shuttleFirstScorePose)))
                 .setConstantHeadingInterpolation(shuttleStartingPose.getHeading())
@@ -69,8 +70,8 @@ public class shuttleAuto extends StealthOpMode {
     @Override
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
-                new InstantCommand(()-> driveSubsystem.setPose(BluePaths.shuttleStartingPose)),
-                driveSubsystem.FollowPath(BluePaths.startToShuttle, true),
+                new InstantCommand(()-> driveSubsystem.setPose(shuttleStartingPose)),
+                driveSubsystem.FollowPath(startToShuttle, false),
                 new InstantCommand(()-> flipperSubsystem.goToPos(0.35)),
                 new InstantCommand(()-> panSubsystem.setPos(panSubsystem.in)),
                 new InstantCommand(()-> flipperSubsystem.goToPos(0.25)),
@@ -83,7 +84,7 @@ public class shuttleAuto extends StealthOpMode {
                 new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem),
                 new WaitCommand(1000),
                 new InstantCommand(()-> panSubsystem.setPos(panSubsystem.out)),
-                driveSubsystem.FollowPath(BluePaths.shuttleFromStartPath, true),
+                driveSubsystem.FollowPath(shuttleFromStartPath, true),
                 new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, true, IntakeSensorSubsystem.Alliance.BLUE),
                 new WaitCommand(1000),
                 new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem),

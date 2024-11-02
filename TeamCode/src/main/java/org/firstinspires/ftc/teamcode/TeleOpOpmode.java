@@ -65,7 +65,7 @@ public class TeleOpOpmode extends StealthOpMode {
         flipperSubsystem = new FlipperSubsystem(hardwareMap);
         intakeSensorSubsystem = new IntakeSensorSubsystem(hardwareMap,telemetry);
         clawSubsystem = new ClawSubsystem(hardwareMap);
-        driveSubsystem = new DriveSubsystem(hardwareMap);
+        driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
         panSubsystem = new LifterPanSubsystem(hardwareMap);
         mecanum = new Mecanum(hardwareMap, telemetry);
 
