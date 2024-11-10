@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSensorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
 import org.stealthrobotics.library.Commands;
@@ -45,6 +46,7 @@ public class TeleOpOpmode extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     LifterPanSubsystem panSubsystem;
     ClawSubsystem clawSubsystem;
+    LimelightSubsystem limelightSubsystem;
     Mecanum mecanum;
 
     GamepadEx driverGamepad;
@@ -68,6 +70,7 @@ public class TeleOpOpmode extends StealthOpMode {
         driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
         panSubsystem = new LifterPanSubsystem(hardwareMap);
         mecanum = new Mecanum(hardwareMap, telemetry);
+        limelightSubsystem = new LimelightSubsystem(hardwareMap, telemetry);
 
         register(mecanum, reacherSubsystem);
 
@@ -84,7 +87,7 @@ public class TeleOpOpmode extends StealthOpMode {
         //driveSubsystem.setDefaultCommand(new driveDefaultCommand(driveSubsystem, ()->driverGamepad.getLeftX(),()->driverGamepad.getLeftY(),()->driverGamepad.getRightX()));
         mecanum.setDefaultCommand(mecanum.driveTeleop(()->driverGamepad.getLeftX(),()-> driverGamepad.getLeftY(),()-> driverGamepad.getRightX()));
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1)
-                .whenActive(new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, true, IntakeSensorSubsystem.Alliance.RED));
+                .whenActive(new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, true));
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)
                 .whenActive(new retractIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, lifterSubsystem, panSubsystem));
         operatorGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenReleased(new SequentialCommandGroup(new zeroLifterCommand(lifterSubsystem), new InstantCommand(()->lifterSubsystem.moveArm(0))));
@@ -92,6 +95,7 @@ public class TeleOpOpmode extends StealthOpMode {
         driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new reverseIntakeCommand(intakeSubsystem));
         operatorGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(new togglePanTiltCommand(panSubsystem));
         operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new toggleClawCommand(clawSubsystem));
+        driverGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(()-> mecanum.resetHeading()));
 
 
     }
