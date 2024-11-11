@@ -78,14 +78,14 @@ public class TeleOpOpmode extends StealthOpMode {
         operatorGamepad = new GamepadEx(gamepad2);
         //operatorGamepad = driverGamepad;
 
-        lifterSubsystem.setDefaultCommand(new lifterDefaultCommand(lifterSubsystem, clawSubsystem, () -> operatorGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),() -> operatorGamepad.getButton(GamepadKeys.Button.DPAD_LEFT),() -> operatorGamepad.getButton(GamepadKeys.Button.DPAD_UP), () -> operatorGamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER), () -> operatorGamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)));
+        lifterSubsystem.setDefaultCommand(new lifterDefaultCommand(lifterSubsystem, clawSubsystem, () -> operatorGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),() -> operatorGamepad.getButton(GamepadKeys.Button.DPAD_LEFT),() -> operatorGamepad.getButton(GamepadKeys.Button.DPAD_UP), () -> operatorGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER), () -> operatorGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)));
         //driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new InstantCommand(()-> lifterSubsystem.moveArm(-0.5))).whenReleased(new zeroLifterCommand(lifterSubsystem));
         //driverGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(new InstantCommand(()->lifterSubsystem.moveArm(.8))).whenReleased(new InstantCommand(()-> lifterSubsystem.moveArm((lifterSubsystem.getPosition())/ lifterSubsystem.maxHeight)));
         //reacherSubsystem.setDefaultCommand(new reacherDefaultCommand(reacherSubsystem, ()->driverGamepad.getButton(GamepadKeys.Button.DPAD_DOWN),()->driverGamepad.getButton(GamepadKeys.Button.DPAD_UP)));
 
         //driveSubsystem.startTeleopDrive();
         //driveSubsystem.setDefaultCommand(new driveDefaultCommand(driveSubsystem, ()->driverGamepad.getLeftX(),()->driverGamepad.getLeftY(),()->driverGamepad.getRightX()));
-        mecanum.setDefaultCommand(mecanum.driveTeleop(()->driverGamepad.getLeftX(),()-> driverGamepad.getLeftY(),()-> driverGamepad.getRightX()));
+        mecanum.setDefaultCommand(mecanum.driveTeleop(()->driverGamepad.getLeftX(),()-> driverGamepad.getLeftY(),()-> driverGamepad.getRightX(), ()-> driverGamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)));
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1)
                 .whenActive(new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, true));
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)

@@ -13,14 +13,14 @@ public class lifterDefaultCommand extends CommandBase {
     private final BooleanSupplier input1;
     private final BooleanSupplier input2;
     private final BooleanSupplier input3;
-    private final BooleanSupplier input4;
-    private final BooleanSupplier input5;
+    private final DoubleSupplier input4;
+    private final DoubleSupplier input5;
     private final LifterSubsystem lifter;
     private final ClawSubsystem claw;
     private final double manualControlIncrement = 300;
     private final double zeroThreshold = 50;
 
-    public lifterDefaultCommand (LifterSubsystem lifter, ClawSubsystem claw, BooleanSupplier input1, BooleanSupplier input2, BooleanSupplier input3, BooleanSupplier input4, BooleanSupplier input5){
+    public lifterDefaultCommand (LifterSubsystem lifter, ClawSubsystem claw, BooleanSupplier input1, BooleanSupplier input2, BooleanSupplier input3, DoubleSupplier input4, DoubleSupplier input5){
         this.lifter = lifter;
         this.claw = claw;
         this.input1 = input1;
@@ -35,36 +35,49 @@ public class lifterDefaultCommand extends CommandBase {
     public void execute(){
         if(claw.getPos() == claw.clawClosed){ // Changes functionality based on claw state
             if (input3.getAsBoolean()){
+                lifter.setUsePID(true);
                 lifter.moveArm(0.65); // High rung
             } else if (input2.getAsBoolean()){
+                lifter.setUsePID(true);
                 lifter.moveArm(0.35); // Low rung
             } else if (input1.getAsBoolean()){
                 if(lifter.getPosition() > 0.6){ // Above high rung
+                    lifter.setUsePID(true);
                     new placeSpecimenCommand(lifter, claw, 0.6); // High rung specimen position
                 } else if (lifter.getPosition() > 0.3) { // Above low rung
+                    lifter.setUsePID(true);
                     new placeSpecimenCommand(lifter, claw, 0.3); // Low rung specimen position
                 }
             }
         } else {
             if (input3.getAsBoolean()){
+                lifter.setUsePID(true);
                 lifter.moveArm(1); // High bucket
             } else if (input2.getAsBoolean()){
+                lifter.setUsePID(true);
                 lifter.moveArm(0.4); // Low bucket
             } else if (input1.getAsBoolean()){
+                lifter.setUsePID(true);
                 lifter.moveArm(0); // Claw intake height
             }
         }
-        if (input4.getAsBoolean()){
-            lifter.moveArm((lifter.getPosition() + manualControlIncrement) / lifter.maxHeight);
+        /*if (input4.getAsBoolean()){
+            //lifter.moveArm((lifter.getPosition() + manualControlIncrement) / lifter.maxHeight);
+        }*/
+        if(input4.getAsDouble()>0.05 || input5.getAsDouble() > 0.05) {
+            lifter.setUsePID(false);
+            lifter.setPower(input4.getAsDouble());
+            lifter.setPower(-input5.getAsDouble());
         }
+        /*lifter.moveArm((lifter.getPosition()+manualControlIncrement*input4.getAsDouble()) / lifter.maxHeight);
         if (input5.getAsBoolean()){
             lifter.moveArm((lifter.getPosition() - manualControlIncrement) / lifter.maxHeight);
-        }
-        if ((!input5.getAsBoolean() && !input4.getAsBoolean() && !input3.getAsBoolean() && !input2.getAsBoolean() && !input1.getAsBoolean())){
+        }*/
+        if ((input5.getAsDouble()<0.05) && (input4.getAsDouble()<0.05)){
             if(lifter.getPosition() < zeroThreshold){
-                new zeroLifterCommand(lifter);
+                //new zeroLifterCommand(lifter);
             } else {
-                lifter.setPower(0);
+                //lifter.setPower(0);
             }
         }
         /*if (input1.getAsBoolean()){

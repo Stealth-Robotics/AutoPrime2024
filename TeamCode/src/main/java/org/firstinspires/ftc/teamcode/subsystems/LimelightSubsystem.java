@@ -30,5 +30,6 @@ public class LimelightSubsystem extends SubsystemBase {
                 telemetry.addData("Botpose", botPose.toString());
             }
         }
+        //telemetry.addData("isvalid", image);
     }
 }

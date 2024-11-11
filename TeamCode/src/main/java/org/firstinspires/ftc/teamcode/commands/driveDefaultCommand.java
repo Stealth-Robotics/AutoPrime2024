@@ -14,12 +14,14 @@ public class driveDefaultCommand extends CommandBase {
     private final DoubleSupplier leftStickX;
     private final DoubleSupplier leftStickY;
     private final DoubleSupplier rightStickX;
+    private final BooleanSupplier leftBumper;
 
-    public driveDefaultCommand(Mecanum mecanum, DoubleSupplier leftStickX, DoubleSupplier leftStickY, DoubleSupplier rightStickX, BooleanSupplier y){
+    public driveDefaultCommand(Mecanum mecanum, DoubleSupplier leftStickX, DoubleSupplier leftStickY, DoubleSupplier rightStickX, BooleanSupplier y, BooleanSupplier leftBumper){
         this.mecanum = mecanum;
         this.leftStickX = leftStickX;
         this.leftStickY = leftStickY;
         this.rightStickX = rightStickX;
+        this.leftBumper = leftBumper;
         this.y = y;
         addRequirements(mecanum);
     }
@@ -27,7 +29,7 @@ public class driveDefaultCommand extends CommandBase {
     @Override
     public void execute()
     {
-        mecanum.drive(leftStickX.getAsDouble(), leftStickY.getAsDouble(), rightStickX.getAsDouble());
+        mecanum.drive(leftStickX.getAsDouble(), leftStickY.getAsDouble(), rightStickX.getAsDouble(), leftBumper.getAsBoolean());
         if (y.getAsBoolean()) {
             mecanum.resetHeading();
         }

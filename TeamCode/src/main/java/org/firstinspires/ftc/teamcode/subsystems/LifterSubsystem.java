@@ -21,6 +21,7 @@ public class LifterSubsystem extends SubsystemBase {
     private MotorEx armL;
     private MotorEx armR;
     private final PIDFController armPID;
+    private boolean usePID;
     public static double kP = 0.006;
     public static double kI = 0.0;
     public static double kD = 0.0;
@@ -52,6 +53,9 @@ public class LifterSubsystem extends SubsystemBase {
     public void setPower(double power) { lifterMotors.set(power); }
 
     public int getPosition() { return -armR.getCurrentPosition(); }
+    public void setUsePID(boolean state){
+        usePID = state;
+    }
 
     public void resetEncoder(){
         armR.resetEncoder();
@@ -59,16 +63,19 @@ public class LifterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-        double calc = armPID.calculate(getPosition());
-        //if (getPosition() > -5 || calc > 0)
-        setPower(-calc*maxSpeed);
+        if(usePID){
+            double calc = armPID.calculate(getPosition());
+            //if (getPosition() > -5 || calc > 0)
+            setPower(-calc*maxSpeed);
+        }
 
-        FtcDashboard.getInstance().getTelemetry().addData("arm position:", getPosition());
+
+        /*FtcDashboard.getInstance().getTelemetry().addData("arm position:", getPosition());
         FtcDashboard.getInstance().getTelemetry().addData("sp:", armPID.getSetPoint());
         FtcDashboard.getInstance().getTelemetry().addData("calc:", calc);
 
         FtcDashboard.getInstance().getTelemetry().update();
         telemetry.addData("sp: ", armPID.getSetPoint());
-        telemetry.addData("calc: ", calc);
+        telemetry.addData("calc: ", calc);*/
     }
 }

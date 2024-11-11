@@ -14,15 +14,26 @@ public class deployIntakeCommand extends SequentialCommandGroup {
 
     public deployIntakeCommand(ReacherSubsystem reacher, FlipperSubsystem flipper, IntakeSubsystem intake, boolean in) {
         double intakePower;
-        if(in){intakePower = 1;}
+        if(in){intakePower=1;}
         else {intakePower = -1;}
-            addCommands(
-                    new InstantCommand(() -> flipper.goToPos(0.55)),
-                    new InstantCommand(() -> reacher.setSetPoint(0.9)),
-                    new WaitCommand(1000),
-                    new InstantCommand(() -> flipper.goToPos(0.85)),
-                    new InstantCommand(() -> intake.setPower(intakePower)),
-                    new WaitCommand(0)
-            );
+        addCommands(
+                new InstantCommand(() -> flipper.goToPos(0.55)),
+                new InstantCommand(() -> reacher.setSetPoint(0.9)),
+                new WaitCommand(1000),
+                new InstantCommand(() -> flipper.goToPos(0.85)),
+                new InstantCommand(() -> intake.setPower(intakePower))
+        );
+    }
+    public deployIntakeCommand(ReacherSubsystem reacher, FlipperSubsystem flipper, IntakeSubsystem intake, boolean in, double setPoint){
+        double intakePower;
+        if(in){intakePower=1;}
+        else {intakePower = -1;}
+        addCommands(
+                new InstantCommand(() -> flipper.goToPos(0.55)),
+                new InstantCommand(() -> reacher.setSetPoint(setPoint)),
+                new WaitCommand(1000),
+                new InstantCommand(() -> flipper.goToPos(0.85)),
+                new InstantCommand(() -> intake.setPower(intakePower))
+        );
     }
 }
