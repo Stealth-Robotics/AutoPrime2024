@@ -14,26 +14,27 @@ public class deployIntakeCommand extends SequentialCommandGroup {
 
     public deployIntakeCommand(ReacherSubsystem reacher, FlipperSubsystem flipper, IntakeSubsystem intake, boolean in) {
         double intakePower;
-        if(in){intakePower=1;}
-        else {intakePower = -1;}
+        if(in){intakePower= -1;}
+        else {intakePower = 1;}
         addCommands(
                 new InstantCommand(() -> flipper.goToPos(0.55)),
-                new InstantCommand(() -> reacher.setSetPoint(0.9)),
+                new InstantCommand(() -> reacher.setSetPoint(1)),
                 new WaitCommand(1000),
                 new InstantCommand(() -> flipper.goToPos(0.85)),
                 new InstantCommand(() -> intake.setPower(intakePower))
         );
     }
-    public deployIntakeCommand(ReacherSubsystem reacher, FlipperSubsystem flipper, IntakeSubsystem intake, boolean in, double setPoint){
+    public deployIntakeCommand(ReacherSubsystem reacher, FlipperSubsystem flipper, IntakeSubsystem intake, boolean in, double setPoint1, double setpoint2){
         double intakePower;
-        if(in){intakePower=1;}
-        else {intakePower = -1;}
+        if(in){intakePower=-1;}
+        else {intakePower = 1;}
         addCommands(
                 new InstantCommand(() -> flipper.goToPos(0.55)),
-                new InstantCommand(() -> reacher.setSetPoint(setPoint)),
+                new InstantCommand(() -> reacher.setSetPoint(setPoint1)),
                 new WaitCommand(1000),
                 new InstantCommand(() -> flipper.goToPos(0.85)),
-                new InstantCommand(() -> intake.setPower(intakePower))
+                new InstantCommand(() -> intake.setPower(intakePower)),
+                new InstantCommand(() -> reacher.setSetPoint(setpoint2))
         );
     }
 }

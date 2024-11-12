@@ -10,9 +10,9 @@ import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 public class placeSpecimenCommand extends SequentialCommandGroup {
     public placeSpecimenCommand(LifterSubsystem lifter, ClawSubsystem claw, double lifterPosition){
         addCommands(
-                new InstantCommand(()->lifter.moveArm(lifterPosition)),
-                new WaitCommand(0),
-                new InstantCommand(()->claw.setPos(claw.clawOpen))
+                new InstantCommand(()->lifter.moveArm((lifter.getPosition()-100)/lifterPosition)),
+                new WaitCommand(1000),
+                new InstantCommand(()->claw.setPos(claw.clawClosed))
         );
     }
 }

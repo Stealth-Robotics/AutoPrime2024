@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.commands.deployIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.retractIntakeCommand;
+import org.firstinspires.ftc.teamcode.commands.zeroLifterCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
@@ -31,14 +32,16 @@ public class bucketCycleAuto extends StealthOpMode {
     IntakeSubsystem intakeSubsystem;
     LifterPanSubsystem panSubsystem;
     //static Pose startPose = new Pose(9.757,84.983,0);
-    static Pose startPose = new Pose(9.18,107.78,Math.toRadians(90));
-    static Pose scorePose = new Pose(15.6,128.57, Math.toRadians(135));/*
+    static Pose startPose = new Pose(1.18,107.78,Math.toRadians(90));
+    static Pose scorePose = new Pose(13,130, Math.toRadians(135));/*
     static Pose grabBlock1Pose = new Pose(45.28,105.25, Math.toRadians(270));
     static Pose grabBlock2Pose = new Pose(45.28,113.61,Math.toRadians(270));*/
-    static Pose grabBlock3Pose = new Pose(45.28,123.2, Math.toRadians(270));
-    static Pose grabBlock1Pose = new Pose(27.9,121.13,Math.toRadians(180));
-    static Pose grabBlock2Pose = new Pose(27.9,130.83,Math.toRadians(180));
-    static PathChain startToBucket, bucketToBlock1, block1ToBucket, bucketToBlock2, block2ToBucket, bucketToBlock3, block3ToBucket;
+    static Pose grabBlock3Pose = new Pose(50,123.2, Math.toRadians(270));
+
+    static Pose grabBlock1Pose = new Pose(27.9,124.13,Math.toRadians(180));
+    static Pose grabBlock2Pose = new Pose(27.9,132.0,Math.toRadians(180));
+    static Pose climbPose = new Pose(62.73,100,0);
+    static PathChain startToBucket, bucketToBlock1, block1ToBucket, bucketToBlock2, block2ToBucket, bucketToBlock3, block3ToBucket, bucketToClimb;
 
     @Override
     public void initialize(){
@@ -78,27 +81,35 @@ public class bucketCycleAuto extends StealthOpMode {
                 .addPath(new BezierCurve(new Point(grabBlock3Pose), new Point(scorePose)))
                 .setLinearHeadingInterpolation(grabBlock3Pose.getHeading(),scorePose.getHeading())
                 .build();
+        bucketToClimb = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(scorePose), new Point(climbPose)))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), climbPose.getHeading())
+                .build();
     }
     private Command scorePiece(){
         return new SequentialCommandGroup(
-                new InstantCommand(()->lifterSubsystem.moveArm(1)),
-                new WaitCommand(1500),
                 new InstantCommand(()-> panSubsystem.setPos(panSubsystem.out)),
-                new WaitCommand(1000),
-                new InstantCommand(()->lifterSubsystem.moveArm(0))
+                new WaitCommand(1000)
         );
     }
     private Command grabPiece(){
         return new SequentialCommandGroup(
-                new deployIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,true, 0.9),
-                new WaitCommand(1000),
-                new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,lifterSubsystem,panSubsystem)
+                new InstantCommand(()->lifterSubsystem.moveArm(0)),
+                new deployIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,true, 0.4,1),
+                new WaitCommand(1500),
+                new zeroLifterCommand(lifterSubsystem),
+                new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,lifterSubsystem,panSubsystem),
+                new InstantCommand(()->lifterSubsystem.moveArm(1)),
+                new WaitCommand(1500)
         );
     }
     @Override
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
                 new InstantCommand(()->driveSubsystem.setPose(startPose)),
+                new InstantCommand(()->lifterSubsystem.setUsePID(true)),
+                new InstantCommand(()->lifterSubsystem.moveArm(1.05)),
+                new WaitCommand(500),
                 driveSubsystem.FollowPath(startToBucket,true),
                 scorePiece(),
                 driveSubsystem.FollowPath(bucketToBlock1,true),
@@ -109,10 +120,13 @@ public class bucketCycleAuto extends StealthOpMode {
                 grabPiece(),
                 driveSubsystem.FollowPath(block2ToBucket,true),
                 scorePiece(),
-                driveSubsystem.FollowPath(bucketToBlock3,true),
+                /*driveSubsystem.FollowPath(bucketToBlock3,true),
                 grabPiece(),
                 driveSubsystem.FollowPath(block3ToBucket,true),
-                scorePiece()
+                scorePiece()*/
+                new InstantCommand(()-> flipperSubsystem.goToPos(0.55)),
+                driveSubsystem.FollowPath(bucketToClimb,true),
+                new InstantCommand(()->lifterSubsystem.moveArm(0.2))
         );
     }
 }

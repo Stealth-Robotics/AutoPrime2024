@@ -7,8 +7,10 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
+import com.qualcomm.robotcore.hardware.AnalogSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
@@ -20,8 +22,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class LifterSubsystem extends SubsystemBase {
     private MotorEx armL;
     private MotorEx armR;
+    //private DigitalChannel limitSwitch;
     private final PIDFController armPID;
-    private boolean usePID;
+    private boolean usePID = false;
     public static double kP = 0.006;
     public static double kI = 0.0;
     public static double kD = 0.0;
@@ -42,6 +45,7 @@ public class LifterSubsystem extends SubsystemBase {
         armR.stopAndResetEncoder();
         armPID = new PIDFController(kP, kI, kD, kF);
         armPID.setTolerance(tolerance);
+        //limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
         this.telemetry = telemetry;
 
     }
@@ -60,6 +64,9 @@ public class LifterSubsystem extends SubsystemBase {
     public void resetEncoder(){
         armR.resetEncoder();
     }
+    /*public boolean getLimitSwitch(){
+        return limitSwitch.getState();
+    }*/
 
     @Override
     public void periodic(){
@@ -70,12 +77,14 @@ public class LifterSubsystem extends SubsystemBase {
         }
 
 
-        /*FtcDashboard.getInstance().getTelemetry().addData("arm position:", getPosition());
+        FtcDashboard.getInstance().getTelemetry().addData("arm position:", getPosition());
         FtcDashboard.getInstance().getTelemetry().addData("sp:", armPID.getSetPoint());
-        FtcDashboard.getInstance().getTelemetry().addData("calc:", calc);
+
+        FtcDashboard.getInstance().getTelemetry().addData("usePid", usePID);
+        //FtcDashboard.getInstance().getTelemetry().addData("calc:", calc);
 
         FtcDashboard.getInstance().getTelemetry().update();
         telemetry.addData("sp: ", armPID.getSetPoint());
-        telemetry.addData("calc: ", calc);*/
+        //telemetry.addData("calc: ", calc);
     }
 }

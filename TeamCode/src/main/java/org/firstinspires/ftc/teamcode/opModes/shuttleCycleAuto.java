@@ -96,8 +96,8 @@ public class shuttleCycleAuto extends StealthOpMode {
     @Override
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
-            /*new InstantCommand(()->driveSubsystem.setPose(behindBlock1)),
-            //driveSubsystem.FollowPath(startToShuttleBlock1, true),
+            new InstantCommand(()->driveSubsystem.setPose(behindBlock1)),
+            driveSubsystem.FollowPath(startToShuttleBlock1, true),
             new WaitCommand(1000),
             driveSubsystem.FollowPath(shuttleBlock1, true),
             new WaitCommand(1000),
@@ -109,9 +109,9 @@ public class shuttleCycleAuto extends StealthOpMode {
             driveSubsystem.FollowPath(shuttleBlock3, true),
             driveSubsystem.FollowPath(hangBlock2, true),
             driveSubsystem.FollowPath(hangToBlock3, true),
-            driveSubsystem.FollowPath(hangBlock3, true)*/
-                new InstantCommand(()->driveSubsystem.setPose(new Pose(0,0,0))),
-                driveSubsystem.FollowPath(testPath, true)
+            driveSubsystem.FollowPath(hangBlock3, true)
+                /*new InstantCommand(()->driveSubsystem.setPose(new Pose(0,0,0))),
+                driveSubsystem.FollowPath(testPath, true)*/
         );
     }
 }

@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
-@Autonomous (name = "bucketAuto")
+//@Autonomous (name = "bucketAuto")
 public class bucketAuto extends StealthOpMode{
     DriveSubsystem driveSubsystem;
     IntakeSubsystem intakeSubsystem;
@@ -37,6 +37,7 @@ public class bucketAuto extends StealthOpMode{
     static Pose parkRight = new Pose(83.06,98.65, Math.toRadians(270));
 
     static PathChain driveToBucket, parkLeftFromBucket, parkRightFromBucket, inchToBucket, inchFromBucket;
+    static PathChain t1,t2,t3;
 
     @Override
     public void initialize(){
@@ -70,6 +71,18 @@ public class bucketAuto extends StealthOpMode{
                 .addPath(new BezierCurve(new Point(bucketScorePose), new Point(bucketLiftPose)))
                 .setConstantHeadingInterpolation(bucketLiftPose.getHeading())
                 .build();
+        t1 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(24,120,Point.CARTESIAN),new Point(24,24,Point.CARTESIAN)))
+                .setConstantHeadingInterpolation(0)
+                .build();
+        t2 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(24,24,Point.CARTESIAN),new Point(120,24,Point.CARTESIAN)))
+                .setConstantHeadingInterpolation(0)
+                .build();
+        t2 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(120,24,Point.CARTESIAN), new Point(144,144,Point.CARTESIAN), new Point(24,120,Point.CARTESIAN)))
+                .setConstantHeadingInterpolation(0)
+                .build();
         register(driveSubsystem, lifterSubsystem);
     }
     @Override
@@ -79,7 +92,13 @@ public class bucketAuto extends StealthOpMode{
     @Override
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
-                new InstantCommand(()->driveSubsystem.setPose(bucketStartingPose)),
+                new InstantCommand(()->driveSubsystem.setPose(new Pose(24,120,0))),
+                driveSubsystem.FollowPath(t1,true),
+                new WaitCommand(5000),
+                driveSubsystem.FollowPath(t2,true),
+                new WaitCommand(5000),
+                driveSubsystem.FollowPath(t3,true)
+                /*new InstantCommand(()->driveSubsystem.setPose(bucketStartingPose)),
                 driveSubsystem.FollowPath(driveToBucket, true),
                 new InstantCommand(()-> flipperSubsystem.goToPos(0.35)),
                 new InstantCommand(()-> panSubsystem.setPos(panSubsystem.in)),
@@ -99,7 +118,7 @@ public class bucketAuto extends StealthOpMode{
                 //new WaitCommand(3000),
                 //new InstantCommand(()-> panSubsystem.setPos(panSubsystem.in)),
                 //new InstantCommand(()-> lifterSubsystem.moveArm(0))
-                //driveSubsystem.FollowPath(parkLeftFromBucket, true)
+                //driveSubsystem.FollowPath(parkLeftFromBucket, true)*/
         );
     }
 }
