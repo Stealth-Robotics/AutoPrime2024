@@ -26,12 +26,12 @@ public class shuttleCycleAuto2 extends StealthOpMode {
     static Pose behindBlock1 = new Pose(52,27,Math.toRadians(180));
     static Pose depositBlock1 = new Pose(12,27,Math.toRadians(180));
     static Pose scorePreset = new Pose(23,72,0);
-    static Pose behindBlock2First = new Pose(20,37.53, Math.toRadians(180));
+    static Pose behindBlock2First = new Pose(20,37.53, Math.toRadians(90));
     static Pose behindBlock2Second = new Pose(47,20.805,Math.toRadians(180));
     static Pose behindBlock2 = new Pose(47,13.666,Math.toRadians(180));
     static Pose depositBlock2 = new Pose(8.16,13.666,Math.toRadians(180));
     static Pose scoreBlock1 = new Pose(20,70,0);
-    static Pose behindBlock3First = new Pose(20,28.555, Math.toRadians(180));
+    static Pose behindBlock3First = new Pose(20,28.555, Math.toRadians(90));
     static Pose behindBlock3 = new Pose(62,9.38,Math.toRadians(180));
     static Pose depositBlock3 = new Pose(8.16,9.38,Math.toRadians(180));
     static Pose scoreBlock2 = new Pose(36.31,68,0);
