@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
-@Autonomous(name = "shuttleCycle")
+//@Autonomous(name = "shuttleCycle")
 public class shuttleCycleAuto extends StealthOpMode {
     Follower follower;
     DriveSubsystem driveSubsystem;
