@@ -103,6 +103,7 @@ public class TeleOpOpmode extends StealthOpMode {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(new togglePanTiltCommand(panSubsystem));
         operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new toggleClawCommand(clawSubsystem));
         driverGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(()-> mecanum.resetHeading()));
+        //operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(()->eyesSubsystem.leftEyeToPos(0)));
 
 
     }

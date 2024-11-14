@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class LifterSubsystem extends SubsystemBase {
     private MotorEx armL;
     private MotorEx armR;
-    //private DigitalChannel limitSwitch;
+    private DigitalChannel limitSwitch;
     private final PIDFController armPID;
     private boolean usePID = false;
     public static double kP = 0.006;
@@ -45,7 +45,7 @@ public class LifterSubsystem extends SubsystemBase {
         armR.stopAndResetEncoder();
         armPID = new PIDFController(kP, kI, kD, kF);
         armPID.setTolerance(tolerance);
-        //limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
         this.telemetry = telemetry;
 
     }
@@ -64,9 +64,9 @@ public class LifterSubsystem extends SubsystemBase {
     public void resetEncoder(){
         armR.resetEncoder();
     }
-    /*public boolean getLimitSwitch(){
+    public boolean getLimitSwitch(){
         return limitSwitch.getState();
-    }*/
+    }
 
     @Override
     public void periodic(){
@@ -84,7 +84,7 @@ public class LifterSubsystem extends SubsystemBase {
         //FtcDashboard.getInstance().getTelemetry().addData("calc:", calc);
 
         FtcDashboard.getInstance().getTelemetry().update();
-        telemetry.addData("sp: ", armPID.getSetPoint());
+        //telemetry.addData("sp: ", armPID.getSetPoint());
         //telemetry.addData("calc: ", calc);
     }
 }

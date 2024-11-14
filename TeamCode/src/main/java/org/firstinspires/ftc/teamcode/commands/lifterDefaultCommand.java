@@ -79,6 +79,7 @@ public class lifterDefaultCommand extends CommandBase {
             //lifter.setUsePID(true);
             manualControl = false;
         }
+        if (lifter.getLimitSwitch()) {new zeroLifterCommand(lifter);}
 
         /*if (input4.getAsBoolean()){
             //lifter.moveArm((lifter.getPosition() + manualControlIncrement) / lifter.maxHeight);

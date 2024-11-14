@@ -22,15 +22,15 @@ public class shuttleCycleAuto2 extends StealthOpMode {
     LifterSubsystem lifterSubsystem;
     ClawSubsystem clawSubsystem;
     static Pose startPose = new Pose(8.16,44.465,Math.toRadians(180));
-    static Pose behindBlock1First = new Pose(52,32.635,Math.toRadians(180));
-    static Pose behindBlock1 = new Pose(52,27,Math.toRadians(180));
-    static Pose depositBlock1 = new Pose(12,27,Math.toRadians(180));
-    static Pose scorePreset = new Pose(23,72,0);
+    static Pose behindBlock1First = new Pose(62,32.635,Math.toRadians(180));
+    static Pose behindBlock1 = new Pose(62,27,Math.toRadians(180));
+    static Pose depositBlock1 = new Pose(11,27,Math.toRadians(180));
+    static Pose scorePreset = new Pose(25,72,0);
     static Pose behindBlock2First = new Pose(20,37.53, Math.toRadians(90));
-    static Pose behindBlock2Second = new Pose(47,20.805,Math.toRadians(180));
-    static Pose behindBlock2 = new Pose(47,13.666,Math.toRadians(180));
-    static Pose depositBlock2 = new Pose(8.16,13.666,Math.toRadians(180));
-    static Pose scoreBlock1 = new Pose(20,70,0);
+    static Pose behindBlock2Second = new Pose(57,20.805,Math.toRadians(180));
+    static Pose behindBlock2 = new Pose(57,13.666,Math.toRadians(180));
+    static Pose depositBlock2 = new Pose(10,13.666,Math.toRadians(170));
+    static Pose scoreBlock1 = new Pose(26,75,0);
     static Pose behindBlock3First = new Pose(20,28.555, Math.toRadians(90));
     static Pose behindBlock3 = new Pose(62,9.38,Math.toRadians(180));
     static Pose depositBlock3 = new Pose(8.16,9.38,Math.toRadians(180));
@@ -63,7 +63,7 @@ public class shuttleCycleAuto2 extends StealthOpMode {
                 .addPath(new BezierCurve(new Point(behindBlock2First), new Point(behindBlock2Second)))
                 .setLinearHeadingInterpolation(behindBlock2First.getHeading(), behindBlock2Second.getHeading())
                 .addPath(new BezierCurve(new Point(behindBlock2Second), new Point(behindBlock2)))
-                .setLinearHeadingInterpolation(scoreBlock1.getHeading(),behindBlock2.getHeading())
+                .setLinearHeadingInterpolation(behindBlock2Second.getHeading(),behindBlock2.getHeading())
                 .build();
         pushBlock2 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(behindBlock2), new Point(depositBlock2)))
@@ -97,14 +97,14 @@ public class shuttleCycleAuto2 extends StealthOpMode {
     private Command grabBlock(){
         return new SequentialCommandGroup(
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawClosed)),
-                new WaitCommand(200),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.45))
+                new WaitCommand(500),
+                new InstantCommand(()->lifterSubsystem.moveArm(0.42))
         );
     }
     private Command scoreBlock(){
         return new SequentialCommandGroup(
-                new InstantCommand(()-> lifterSubsystem.moveArm(0.4)),
-                new WaitCommand(100),
+                new InstantCommand(()-> lifterSubsystem.moveArm(0.3)),
+                new WaitCommand(300),
                 new InstantCommand(()-> clawSubsystem.setPos(clawSubsystem.clawOpen)),
                 new WaitCommand(200),
                 new InstantCommand(()->lifterSubsystem.moveArm(0))
@@ -128,7 +128,7 @@ public class shuttleCycleAuto2 extends StealthOpMode {
                 driveSubsystem.FollowPath(score2, true),
                 scoreBlock(),
                 /*driveSubsystem.FollowPath(alignBehindBlock3, true),
-                new WaitCommand(1000),
+                new WaitCommand(1000)/*,
                 driveSubsystem.FollowPath(pushblock3, true),
                 grabBlock(),
                 driveSubsystem.FollowPath(score3, true),
