@@ -37,6 +37,7 @@ public class shuttleCycleAutoIntake extends StealthOpMode {
     //If you want to alter the driving, change these
     //Increasing X moves you closer to the other alliance station
     //Increasing Y moves you closer to the left wall (bucket side)
+    //X and Y are measured in inches
     //Increasing angle rotates you counter-clockwise
     static Pose startPose = new Pose(8.16,44.465,Math.toRadians(180));
     static Pose grabBlock1 = new Pose(20,27,Math.toRadians(180));
