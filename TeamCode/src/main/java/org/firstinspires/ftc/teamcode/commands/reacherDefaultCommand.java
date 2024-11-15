@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
 
 import java.util.function.BooleanSupplier;
 
+//This command is not used. Reacher controlled by deploy and retract intake commands
 public class reacherDefaultCommand extends CommandBase {
     private final ReacherSubsystem reacher;
 

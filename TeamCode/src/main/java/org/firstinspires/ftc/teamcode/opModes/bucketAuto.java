@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
+//This code is not used
 //@Autonomous (name = "bucketAuto")
 public class bucketAuto extends StealthOpMode{
     DriveSubsystem driveSubsystem;

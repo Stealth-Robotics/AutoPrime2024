@@ -69,7 +69,7 @@ public class lifterDefaultCommand extends CommandBase {
         if(input4.getAsDouble()>0.05 || input5.getAsDouble() > 0.05) {
             manualControl = true;
             lifter.setUsePID(false);
-            lifter.setPower(input4.getAsDouble() - input5.getAsDouble());
+            lifter.setPower(input4.getAsDouble() - input5.getAsDouble()); //Manual control
             //lifter.setPower(input4.getAsDouble());
             //lifter.setPower(-input5.getAsDouble());
         } else if (manualControl) {

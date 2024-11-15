@@ -23,7 +23,9 @@ public class eyesDefaultCommand extends CommandBase {
         addRequirements(eyes);
     }
     @Override
-    public void execute(){
+    public void execute(){ //Enable the other code if you want eyes to run off A and B rather than stick position
         eyes.pointEyes((angle.getAsDouble()+1)/2);
+        //if (input1.getAsBoolean()) { eyes.pointEyes(0); }
+        //if (input2.getAsBoolean()) { eyes.pointEyes(1); }
     }
 }

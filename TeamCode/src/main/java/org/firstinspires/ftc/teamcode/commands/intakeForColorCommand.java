@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
 import java.util.function.BooleanSupplier;
 
+//This command is not functioning and is not used
 public class intakeForColorCommand extends CommandBase {
     IntakeSubsystem intake;
     IntakeSensorSubsystem intakeSensor;

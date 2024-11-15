@@ -18,8 +18,8 @@ public class deployIntakeCommand extends SequentialCommandGroup {
         else {intakePower = 1;}
         addCommands(
                 new InstantCommand(() -> flipper.goToPos(0.55)),
-                new InstantCommand(() -> reacher.setSetPoint(1)),
-                new WaitCommand(1000),
+                new InstantCommand(() -> reacher.setSetPoint(1)), //Reacher distance
+                new WaitCommand(1000), //Wait time before flipping
                 new InstantCommand(() -> flipper.goToPos(0.85)),
                 new InstantCommand(() -> intake.setPower(intakePower))
         );
@@ -31,7 +31,7 @@ public class deployIntakeCommand extends SequentialCommandGroup {
         addCommands(
                 new InstantCommand(() -> flipper.goToPos(0.55)),
                 new InstantCommand(() -> reacher.setSetPoint(setPoint1)),
-                new WaitCommand(1000),
+                new WaitCommand(1000), //Wait time before flipping
                 new InstantCommand(() -> flipper.goToPos(0.85)),
                 new InstantCommand(() -> intake.setPower(intakePower)),
                 new InstantCommand(() -> reacher.setSetPoint(setpoint2))

@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
+//This code is not used
 //@Autonomous(name = "shuttleAuto")
 public class shuttleAuto extends StealthOpMode {
     DriveSubsystem driveSubsystem;

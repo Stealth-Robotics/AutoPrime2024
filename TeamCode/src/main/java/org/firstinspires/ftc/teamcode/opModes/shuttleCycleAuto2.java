@@ -21,20 +21,24 @@ public class shuttleCycleAuto2 extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     LifterSubsystem lifterSubsystem;
     ClawSubsystem clawSubsystem;
+    //If you want to alter the driving, change these
+    //Increasing X moves you closer to the other alliance station
+    //Increasing Y moves you closer to the left wall (bucket side)
+    //Increasing angle rotates you counter-clockwise
     static Pose startPose = new Pose(8.16,44.465,Math.toRadians(180));
     static Pose behindBlock1First = new Pose(62,32.635,Math.toRadians(180));
     static Pose behindBlock1 = new Pose(62,27,Math.toRadians(180));
     static Pose depositBlock1 = new Pose(11,27,Math.toRadians(180));
-    static Pose scorePreset = new Pose(25,72,0);
+    static Pose scorePreset = new Pose(25,72,0); //X on this one might need to be altered (increasing moves closer to the bar)
     static Pose behindBlock2First = new Pose(20,37.53, Math.toRadians(90));
     static Pose behindBlock2Second = new Pose(57,20.805,Math.toRadians(180));
     static Pose behindBlock2 = new Pose(57,13.666,Math.toRadians(180));
     static Pose depositBlock2 = new Pose(10,13.666,Math.toRadians(170));
-    static Pose scoreBlock1 = new Pose(26,75,0);
-    static Pose behindBlock3First = new Pose(20,28.555, Math.toRadians(90));
-    static Pose behindBlock3 = new Pose(62,9.38,Math.toRadians(180));
-    static Pose depositBlock3 = new Pose(8.16,9.38,Math.toRadians(180));
-    static Pose scoreBlock2 = new Pose(36.31,68,0);
+    static Pose scoreBlock1 = new Pose(26,75,0); //X on this one might need to be altered (increasing moves closer to the bar)
+    static Pose behindBlock3First = new Pose(20,28.555, Math.toRadians(90)); //not used
+    static Pose behindBlock3 = new Pose(62,9.38,Math.toRadians(180)); //not used
+    static Pose depositBlock3 = new Pose(8.16,9.38,Math.toRadians(180)); //not used
+    static Pose scoreBlock2 = new Pose(36.31,68,0); //not used
     static Pose park = new Pose(5,22.43,0);
     static PathChain alignBehindBlock1, pushBlock1, score1, alignBehindBlock2, pushBlock2, score2, alignBehindBlock3, pushblock3, score3, driveToPark;
     @Override
@@ -97,16 +101,16 @@ public class shuttleCycleAuto2 extends StealthOpMode {
     private Command grabBlock(){
         return new SequentialCommandGroup(
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawClosed)),
-                new WaitCommand(500),
+                new WaitCommand(500), //Wait to grab block before raising arm
                 new InstantCommand(()->lifterSubsystem.moveArm(0.42))
         );
     }
     private Command scoreBlock(){
         return new SequentialCommandGroup(
                 new InstantCommand(()-> lifterSubsystem.moveArm(0.3)),
-                new WaitCommand(300),
+                new WaitCommand(300), //Wait to finish moving arm before opening claw
                 new InstantCommand(()-> clawSubsystem.setPos(clawSubsystem.clawOpen)),
-                new WaitCommand(200),
+                new WaitCommand(200), //Wait to open claw before lowering arm
                 new InstantCommand(()->lifterSubsystem.moveArm(0))
         );
     }
@@ -116,13 +120,13 @@ public class shuttleCycleAuto2 extends StealthOpMode {
                 new InstantCommand(()->driveSubsystem.setPose(startPose)),
                 new InstantCommand(()->lifterSubsystem.setUsePID(true)),
                 driveSubsystem.FollowPath(alignBehindBlock1, true),
-                new WaitCommand(1000),
+                new WaitCommand(1000), //Wait to make sure robot is done driving, and get human player ready
                 driveSubsystem.FollowPath(pushBlock1, true),
                 grabBlock(),
                 driveSubsystem.FollowPath(score1, true),
                 scoreBlock(),
                 driveSubsystem.FollowPath(alignBehindBlock2, true),
-                new WaitCommand(1000),
+                new WaitCommand(1000), //Wait to make sure robot is done driving, and get human player ready
                 driveSubsystem.FollowPath(pushBlock2, true),
                 grabBlock(),
                 driveSubsystem.FollowPath(score2, true),

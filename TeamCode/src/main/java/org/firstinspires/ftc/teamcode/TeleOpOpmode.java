@@ -54,6 +54,7 @@ public class TeleOpOpmode extends StealthOpMode {
 
     GamepadEx driverGamepad;
     GamepadEx operatorGamepad;
+    GamepadEx eyesGamepad;
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -78,8 +79,10 @@ public class TeleOpOpmode extends StealthOpMode {
 
         register(mecanum, reacherSubsystem);
 
-        //HERE
         driverGamepad = new GamepadEx(gamepad1);
+        eyesGamepad = new GamepadEx(gamepad2);
+
+        //HERE
         operatorGamepad = new GamepadEx(gamepad2);
         //operatorGamepad = driverGamepad;
 
@@ -91,7 +94,7 @@ public class TeleOpOpmode extends StealthOpMode {
         //driveSubsystem.startTeleopDrive();
         //driveSubsystem.setDefaultCommand(new driveDefaultCommand(driveSubsystem, ()->driverGamepad.getLeftX(),()->driverGamepad.getLeftY(),()->driverGamepad.getRightX()));
         mecanum.setDefaultCommand(mecanum.driveTeleop(()->driverGamepad.getLeftX(),()-> driverGamepad.getLeftY(),()-> driverGamepad.getRightX(), ()-> driverGamepad.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)));
-        eyesSubsystem.setDefaultCommand(new eyesDefaultCommand(mecanum, eyesSubsystem, ()->operatorGamepad.getButton(GamepadKeys.Button.A), ()->operatorGamepad.getButton(GamepadKeys.Button.B), ()->operatorGamepad.getLeftX()));
+        eyesSubsystem.setDefaultCommand(new eyesDefaultCommand(mecanum, eyesSubsystem, ()->eyesGamepad.getButton(GamepadKeys.Button.A), ()->operatorGamepad.getButton(GamepadKeys.Button.B), ()->operatorGamepad.getLeftX()));
         /*new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.1)
                 .whenActive(new deployIntakeCommand(reacherSubsystem, flipperSubsystem, intakeSubsystem, true));
         new Trigger(() -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.1)

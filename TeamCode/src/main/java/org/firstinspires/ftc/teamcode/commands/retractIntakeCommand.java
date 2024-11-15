@@ -17,19 +17,19 @@ public class retractIntakeCommand extends SequentialCommandGroup {
         if (lifter.getPosition() < 10) {
             addCommands(
                 new InstantCommand(()-> reacher.setSetPoint(-0.5)),
-                new InstantCommand(() -> flipper.goToPos(0.15)),
+                new InstantCommand(()-> flipper.goToPos(0.15)),
                 new InstantCommand(()-> intake.setPower(0)),
                 new InstantCommand(()-> pan.setPos(pan.in)),
-                new WaitCommand(1000),
+                new WaitCommand(1000),//Wait time before handoff is attempted
                 new InstantCommand(()-> reacher.resetEncoder()),
                 new InstantCommand(()-> reacher.setSetPoint(0)),
                 new InstantCommand(()-> flipper.goToPos(0.25)),
                 new InstantCommand(()-> intake.setPower(1)),
-                new WaitCommand(1000),
+                new WaitCommand(1000),//Wait time before handoff stops and intake moves out of the way
                 new InstantCommand(()-> intake.setPower(0)),
                 new InstantCommand(()-> flipper.goToPos(0.35))
             );
-        } else {
+        } else { //Doesn't attempt to handoff if the lifter is not all the way down
             addCommands(
                 new InstantCommand(()-> reacher.setSetPoint(0)),
                 new InstantCommand(()-> flipper.goToPos(0.2)),
