@@ -6,6 +6,8 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.commands.deployIntakeCommand;
+import org.firstinspires.ftc.teamcode.commands.retractIntakeCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
 import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierCurve;
@@ -15,28 +17,32 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.FlipperSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
-@Autonomous(name = "shuttleCycleAuto")
-public class shuttleCycleAuto2 extends StealthOpMode {
+
+@Autonomous(name = "shuttleCycleIntakeAuto")
+public class shuttleCycleAutoIntake extends StealthOpMode {
     Follower follower;
     DriveSubsystem driveSubsystem;
     LifterSubsystem lifterSubsystem;
     ClawSubsystem clawSubsystem;
+    IntakeSubsystem intakeSubsystem;
+    FlipperSubsystem flipperSubsystem;
+    ReacherSubsystem reacherSubsystem;
+    LifterPanSubsystem panSubsystem;
+
 
     //If you want to alter the driving, change these
     //Increasing X moves you closer to the other alliance station
     //Increasing Y moves you closer to the left wall (bucket side)
     //Increasing angle rotates you counter-clockwise
     static Pose startPose = new Pose(8.16,44.465,Math.toRadians(180));
-    static Pose behindBlock1First = new Pose(62,32.635,Math.toRadians(180));
-    static Pose behindBlock1 = new Pose(62,27,Math.toRadians(180));
+    static Pose grabBlock1 = new Pose(20,27,Math.toRadians(180));
     static Pose depositBlock1 = new Pose(11,27,Math.toRadians(180));
     static Pose scorePreset = new Pose(25,72,0); //X on this one might need to be altered (increasing moves closer to the bar)
-    static Pose behindBlock2First = new Pose(20,37.53, Math.toRadians(90));
-    static Pose behindBlock2Second = new Pose(57,20.805,Math.toRadians(180));
-    static Pose behindBlock2 = new Pose(57,13.666,Math.toRadians(180));
+    static Pose grabBlock2 = new Pose(20,13.666,Math.toRadians(180));
     static Pose depositBlock2 = new Pose(10,13.666,Math.toRadians(170));
     static Pose scoreBlock1 = new Pose(26,75,0); //X on this one might need to be altered (increasing moves closer to the bar)
     static Pose behindBlock3First = new Pose(20,28.555, Math.toRadians(90)); //not used
@@ -51,31 +57,29 @@ public class shuttleCycleAuto2 extends StealthOpMode {
         driveSubsystem = new DriveSubsystem(hardwareMap,telemetry);
         lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
         clawSubsystem = new ClawSubsystem(hardwareMap);
+        intakeSubsystem = new IntakeSubsystem(hardwareMap);
+        reacherSubsystem = new ReacherSubsystem(hardwareMap,telemetry);
+        panSubsystem = new LifterPanSubsystem(hardwareMap);
+        flipperSubsystem = new FlipperSubsystem(hardwareMap);
         alignBehindBlock1 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(startPose), new Point(behindBlock1First)))
-                .setLinearHeadingInterpolation(startPose.getHeading(), behindBlock1First.getHeading())
-                .addPath(new BezierCurve(new Point(behindBlock1First), new Point(behindBlock1)))
-                .setLinearHeadingInterpolation(behindBlock1First.getHeading(),behindBlock1.getHeading())
+                .addPath(new BezierCurve(new Point(startPose), new Point(grabBlock1)))
+                .setLinearHeadingInterpolation(startPose.getHeading(), grabBlock1.getHeading())
                 .build();
         pushBlock1 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(behindBlock1), new Point(depositBlock1)))
-                .setConstantHeadingInterpolation(behindBlock1.getHeading())
+                .addPath(new BezierCurve(new Point(grabBlock1), new Point(depositBlock1)))
+                .setConstantHeadingInterpolation(grabBlock1.getHeading())
                 .build();
         score1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(depositBlock1), new Point(scorePreset)))
                 .setLinearHeadingInterpolation(depositBlock1.getHeading(), scorePreset.getHeading())
                 .build();
         alignBehindBlock2 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scoreBlock1), new Point(behindBlock2First)))
-                .setLinearHeadingInterpolation(scoreBlock1.getHeading(), behindBlock2First.getHeading())
-                .addPath(new BezierCurve(new Point(behindBlock2First), new Point(behindBlock2Second)))
-                .setLinearHeadingInterpolation(behindBlock2First.getHeading(), behindBlock2Second.getHeading())
-                .addPath(new BezierCurve(new Point(behindBlock2Second), new Point(behindBlock2)))
-                .setLinearHeadingInterpolation(behindBlock2Second.getHeading(),behindBlock2.getHeading())
+                .addPath(new BezierCurve(new Point(scoreBlock1), new Point(grabBlock2)))
+                .setLinearHeadingInterpolation(scoreBlock1.getHeading(), grabBlock2.getHeading())
                 .build();
         pushBlock2 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(behindBlock2), new Point(depositBlock2)))
-                .setConstantHeadingInterpolation(behindBlock2.getHeading())
+                .addPath(new BezierCurve(new Point(grabBlock2), new Point(depositBlock2)))
+                .setConstantHeadingInterpolation(grabBlock2.getHeading())
                 .build();
         score2 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(depositBlock2), new Point(scoreBlock1)))
@@ -102,8 +106,17 @@ public class shuttleCycleAuto2 extends StealthOpMode {
                 .setLinearHeadingInterpolation(scoreBlock1.getHeading(), park.getHeading())
                 .build();
     }
+    private Command intakeBlock(){
+        return new SequentialCommandGroup(
+                new deployIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,true,0.4,1),
+                new WaitCommand(1000),
+                new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,lifterSubsystem,panSubsystem)
+        );
+    }
     private Command grabBlock(){
         return new SequentialCommandGroup(
+                new InstantCommand(()->panSubsystem.setPos(panSubsystem.out)),
+                new WaitCommand(500), //Wait to drop block so we don't get a penalty
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawClosed)),
                 new WaitCommand(500), //Wait to grab block before raising arm
                 new InstantCommand(()->lifterSubsystem.moveArm(0.42))
@@ -124,13 +137,13 @@ public class shuttleCycleAuto2 extends StealthOpMode {
                 new InstantCommand(()->driveSubsystem.setPose(startPose)),
                 new InstantCommand(()->lifterSubsystem.setUsePID(true)),
                 driveSubsystem.FollowPath(alignBehindBlock1, true),
-                new WaitCommand(1000), //Wait to make sure robot is done driving, and get human player ready
+                intakeBlock(),
                 driveSubsystem.FollowPath(pushBlock1, true),
                 grabBlock(),
                 driveSubsystem.FollowPath(score1, true),
                 scoreBlock(),
                 driveSubsystem.FollowPath(alignBehindBlock2, true),
-                new WaitCommand(1000), //Wait to make sure robot is done driving, and get human player ready
+                intakeBlock(),
                 driveSubsystem.FollowPath(pushBlock2, true),
                 grabBlock(),
                 driveSubsystem.FollowPath(score2, true),
