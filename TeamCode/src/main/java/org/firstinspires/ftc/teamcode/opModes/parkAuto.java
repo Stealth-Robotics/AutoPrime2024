@@ -18,7 +18,7 @@ public class parkAuto extends StealthOpMode {
     Follower follower;
     DriveSubsystem driveSubsystem;
     static Pose startPose = new Pose(10,60);
-    static Pose endPose = new Pose(10,20);
+    static Pose endPose = new Pose(10,20); //If its not driving far enough decrease Y
     static PathChain park;
     @Override
     public void initialize(){
