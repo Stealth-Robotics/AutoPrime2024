@@ -27,7 +27,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
 //This code is not used
-//@Autonomous(name = "shuttleAuto")
+@Autonomous(name = "shuttleAuto")
 public class shuttleAuto extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     IntakeSubsystem intakeSubsystem;
@@ -40,8 +40,8 @@ public class shuttleAuto extends StealthOpMode {
 
     static PathChain startToShuttle;
     static PathChain shuttleFromStartPath;
-    static Pose shuttleStartingPose = new Pose(10.57, 61.34, Math.toRadians(180));
-    final Pose shuttleFirstScorePose = new Pose(19,13.51, Math.toRadians(180));
+    static Pose shuttleStartingPose = new Pose(36.74, 65.84, 0);
+    final Pose shuttleFirstScorePose = new Pose(59.44,20.45, 0);
     final Pose shuttleEndingPose = new Pose(19,22.52,Math.toRadians(180));
     @Override
     public void initialize(){
@@ -55,7 +55,7 @@ public class shuttleAuto extends StealthOpMode {
         //bluePaths = new BluePaths(follower);
         //bluePaths.buildPaths();
         startToShuttle = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(shuttleStartingPose), new Point(shuttleFirstScorePose)))
+                .addPath(new BezierCurve(new Point(shuttleStartingPose), new Point(28.49,23.74,Point.CARTESIAN), new Point(69.49,44.53,Point.CARTESIAN), new Point(shuttleFirstScorePose)))
                 .setConstantHeadingInterpolation(shuttleStartingPose.getHeading())
                 .build();
         shuttleFromStartPath = follower.pathBuilder()

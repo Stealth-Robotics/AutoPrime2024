@@ -25,7 +25,8 @@ public class eyesDefaultCommand extends CommandBase {
     @Override
     public void execute(){ //Enable the other code if you want eyes to run off A and B rather than stick position
         eyes.pointEyes((angle.getAsDouble()+1)/2);
-        //if (input1.getAsBoolean()) { eyes.pointEyes(0); }
-        //if (input2.getAsBoolean()) { eyes.pointEyes(1); }
+        if (input1.getAsBoolean()) { eyes.rightEyeToPos(0.2); eyes.leftEyeToPos(1); }
+         if (input2.getAsBoolean()) { eyes.rightEyeToPos(1); eyes.leftEyeToPos(0.2);}
+         if (!(input1.getAsBoolean() || input2.getAsBoolean() || angle.getAsDouble() != 0) ) {eyes.rightEyeToPos(0.4); eyes.leftEyeToPos(0.8);}
     }
 }

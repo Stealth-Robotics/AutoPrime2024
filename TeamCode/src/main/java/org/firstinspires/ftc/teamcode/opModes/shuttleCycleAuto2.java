@@ -31,15 +31,15 @@ public class shuttleCycleAuto2 extends StealthOpMode {
     //X and Y are measured in inches
     //Increasing angle rotates you counter-clockwise
     static Pose startPose = new Pose(8.16,44.465,Math.toRadians(180));
-    static Pose behindBlock1First = new Pose(62,32.635,Math.toRadians(180));
-    static Pose behindBlock1 = new Pose(62,27,Math.toRadians(180));
-    static Pose depositBlock1 = new Pose(11,27,Math.toRadians(180));
-    static Pose scorePreset = new Pose(25,72,0); //X on this one might need to be altered (increasing moves closer to the bar)
+    static Pose behindBlock1First = new Pose(62,30,Math.toRadians(180));
+    static Pose behindBlock1 = new Pose(62,21,Math.toRadians(180));
+    static Pose depositBlock1 = new Pose(10.5,21,Math.toRadians(170));
+    static Pose scorePreset = new Pose(22,72,0); //X on this one might need to be altered (increasing moves closer to the bar)
     static Pose behindBlock2First = new Pose(20,37.53, Math.toRadians(90));
     static Pose behindBlock2Second = new Pose(57,20.805,Math.toRadians(180));
-    static Pose behindBlock2 = new Pose(57,13.666,Math.toRadians(180));
-    static Pose depositBlock2 = new Pose(10,13.666,Math.toRadians(170));
-    static Pose scoreBlock1 = new Pose(26,75,0); //X on this one might need to be altered (increasing moves closer to the bar)
+    static Pose behindBlock2 = new Pose(57,12,Math.toRadians(180));
+    static Pose depositBlock2 = new Pose(10.2, 12 ,Math.toRadians(160));
+    static Pose scoreBlock1 = new Pose(19.8,75,0); //X on this one might need to be altered (increasing moves closer to the bar)
     static Pose behindBlock3First = new Pose(20,28.555, Math.toRadians(90)); //not used
     static Pose behindBlock3 = new Pose(62,9.38,Math.toRadians(180)); //not used
     static Pose depositBlock3 = new Pose(8.16,9.38,Math.toRadians(180)); //not used
@@ -52,20 +52,32 @@ public class shuttleCycleAuto2 extends StealthOpMode {
         driveSubsystem = new DriveSubsystem(hardwareMap,telemetry);
         lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
         clawSubsystem = new ClawSubsystem(hardwareMap);
-        alignBehindBlock1 = follower.pathBuilder()
+        score1 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(startPose), new Point(scorePreset)))
+                .setLinearHeadingInterpolation(startPose.getHeading(), scorePreset.getHeading())
+                .build();
+        /*alignBehindBlock1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(startPose), new Point(behindBlock1First)))
                 .setLinearHeadingInterpolation(startPose.getHeading(), behindBlock1First.getHeading())
                 .addPath(new BezierCurve(new Point(behindBlock1First), new Point(behindBlock1)))
                 .setLinearHeadingInterpolation(behindBlock1First.getHeading(),behindBlock1.getHeading())
+                .build();*/
+        alignBehindBlock1 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(scorePreset), new Point(21.48,23.74,Point.CARTESIAN), new Point(69.49,44.53,Point.CARTESIAN), new Point(behindBlock1)))
+                .setLinearHeadingInterpolation(scorePreset.getHeading(), behindBlock1.getHeading())
+                .addPath(new BezierCurve(new Point(behindBlock1), new Point(depositBlock1)))
+                .setConstantHeadingInterpolation(behindBlock1.getHeading())
+                .addPath(new BezierCurve(new Point(depositBlock1), new Point(61.86,21.31,Point.CARTESIAN), new Point(behindBlock2)))
+                .setLinearHeadingInterpolation(depositBlock1.getHeading(), behindBlock2.getHeading())
                 .build();
         pushBlock1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(behindBlock1), new Point(depositBlock1)))
                 .setConstantHeadingInterpolation(behindBlock1.getHeading())
                 .build();
-        score1 = follower.pathBuilder()
+        /*score1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(depositBlock1), new Point(scorePreset)))
                 .setLinearHeadingInterpolation(depositBlock1.getHeading(), scorePreset.getHeading())
-                .build();
+                .build();*/
         alignBehindBlock2 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(scoreBlock1), new Point(behindBlock2First)))
                 .setLinearHeadingInterpolation(scoreBlock1.getHeading(), behindBlock2First.getHeading())
@@ -124,14 +136,9 @@ public class shuttleCycleAuto2 extends StealthOpMode {
         return new SequentialCommandGroup(
                 new InstantCommand(()->driveSubsystem.setPose(startPose)),
                 new InstantCommand(()->lifterSubsystem.setUsePID(true)),
-                driveSubsystem.FollowPath(alignBehindBlock1, true),
-                new WaitCommand(1000), //Wait to make sure robot is done driving, and get human player ready
-                driveSubsystem.FollowPath(pushBlock1, true),
-                grabBlock(),
                 driveSubsystem.FollowPath(score1, true),
                 scoreBlock(),
-                driveSubsystem.FollowPath(alignBehindBlock2, true),
-                new WaitCommand(1000), //Wait to make sure robot is done driving, and get human player ready
+                driveSubsystem.FollowPath(alignBehindBlock1, true),
                 driveSubsystem.FollowPath(pushBlock2, true),
                 grabBlock(),
                 driveSubsystem.FollowPath(score2, true),

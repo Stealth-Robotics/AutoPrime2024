@@ -20,8 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
-//This code is not used
-//@Autonomous (name = "bucketAuto")
+@Autonomous (name = "bucketAuto")
 public class bucketAuto extends StealthOpMode{
     DriveSubsystem driveSubsystem;
     IntakeSubsystem intakeSubsystem;
@@ -92,14 +91,14 @@ public class bucketAuto extends StealthOpMode{
     }
     @Override
     public Command getAutoCommand(){
-        return new SequentialCommandGroup(
+        return new SequentialCommandGroup(/*
                 new InstantCommand(()->driveSubsystem.setPose(new Pose(24,120,0))),
                 driveSubsystem.FollowPath(t1,true),
                 new WaitCommand(5000),
                 driveSubsystem.FollowPath(t2,true),
                 new WaitCommand(5000),
-                driveSubsystem.FollowPath(t3,true)
-                /*new InstantCommand(()->driveSubsystem.setPose(bucketStartingPose)),
+                driveSubsystem.FollowPath(t3,true)*/
+                new InstantCommand(()->driveSubsystem.setPose(bucketStartingPose)),
                 driveSubsystem.FollowPath(driveToBucket, true),
                 new InstantCommand(()-> flipperSubsystem.goToPos(0.35)),
                 new InstantCommand(()-> panSubsystem.setPos(panSubsystem.in)),
@@ -119,7 +118,7 @@ public class bucketAuto extends StealthOpMode{
                 //new WaitCommand(3000),
                 //new InstantCommand(()-> panSubsystem.setPos(panSubsystem.in)),
                 //new InstantCommand(()-> lifterSubsystem.moveArm(0))
-                //driveSubsystem.FollowPath(parkLeftFromBucket, true)*/
+                //driveSubsystem.FollowPath(parkLeftFromBucket, true)
         );
     }
 }

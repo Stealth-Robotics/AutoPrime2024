@@ -33,6 +33,8 @@ public class LifterSubsystem extends SubsystemBase {
     private final double maxSpeed = 1;
     public final double maxHeight = 3300;
     private final MotorGroup lifterMotors;
+
+    private boolean toggleHold = false;
     private Telemetry telemetry;
 
     public LifterSubsystem(HardwareMap hardwareMap, Telemetry telemetry){
@@ -66,6 +68,15 @@ public class LifterSubsystem extends SubsystemBase {
     }
     public boolean getLimitSwitch(){
         return limitSwitch.getState();
+    }
+
+
+    public void toggleHold(){
+        toggleHold = !toggleHold;
+    }
+
+    public boolean getHold(){
+        return  toggleHold;
     }
 
     @Override

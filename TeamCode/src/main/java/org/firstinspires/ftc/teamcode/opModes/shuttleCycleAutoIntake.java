@@ -40,12 +40,12 @@ public class shuttleCycleAutoIntake extends StealthOpMode {
     //X and Y are measured in inches
     //Increasing angle rotates you counter-clockwise
     static Pose startPose = new Pose(8.16,44.465,Math.toRadians(180));
-    static Pose grabBlock1 = new Pose(20,27,Math.toRadians(180));
-    static Pose depositBlock1 = new Pose(11,27,Math.toRadians(180));
-    static Pose scorePreset = new Pose(25,72,0); //X on this one might need to be altered (increasing moves closer to the bar)
-    static Pose grabBlock2 = new Pose(20,13.666,Math.toRadians(180));
-    static Pose depositBlock2 = new Pose(10,13.666,Math.toRadians(170));
-    static Pose scoreBlock1 = new Pose(26,75,0); //X on this one might need to be altered (increasing moves closer to the bar)
+    static Pose grabBlock1 = new Pose(23,18,Math.toRadians(180));
+    static Pose depositBlock1 = new Pose(9,20,Math.toRadians(180));
+    static Pose scorePreset = new Pose(26,72,0); //X on this one might need to be altered (increasing moves closer to the bar)
+    static Pose grabBlock2 = new Pose(20,9,Math.toRadians(180));
+    static Pose depositBlock2 = new Pose(8,8,Math.toRadians(175));
+    static Pose scoreBlock1 = new Pose(19,75,0); //X on this one might need to be altered (increasing moves closer to the bar)
     static Pose behindBlock3First = new Pose(20,28.555, Math.toRadians(90)); //not used
     static Pose behindBlock3 = new Pose(62,9.38,Math.toRadians(180)); //not used
     static Pose depositBlock3 = new Pose(8.16,9.38,Math.toRadians(180)); //not used

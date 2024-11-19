@@ -7,10 +7,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class EyesSubsystem extends SubsystemBase {
     private static Servo leftEye;
     private static Servo rightEye;
-    final double leftEyeMin = 0.5;
-    final double rightEyeMin = 0.2;
-    final double leftEyeMax = 0.8;
-    final double rightEyeMax = 0.5;
+    final double leftEyeMin = 0.0;
+    final double rightEyeMin = 0.0;
+    final double leftEyeMax = 1;
+    final double rightEyeMax = 1;
     public EyesSubsystem(HardwareMap hardwareMap){
         leftEye = hardwareMap.get(Servo.class, "leftEye");
         rightEye = hardwareMap.get(Servo.class, "rightEye");

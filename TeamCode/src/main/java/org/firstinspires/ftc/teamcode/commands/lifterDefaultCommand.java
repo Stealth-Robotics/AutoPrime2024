@@ -36,6 +36,10 @@ public class lifterDefaultCommand extends CommandBase {
     }
     @Override
     public void execute(){
+        if(lifter.getHold()){
+            lifter.setPower(1);
+            return;
+        }
         if(claw.getPos() == claw.clawClosed){ // Changes functionality based on claw state
             if (input3.getAsBoolean()){
                 lifter.setUsePID(true);
