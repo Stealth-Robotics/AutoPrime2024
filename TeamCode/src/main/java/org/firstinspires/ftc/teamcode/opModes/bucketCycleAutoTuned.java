@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.commands.groundIntakeCommand;
+import org.firstinspires.ftc.teamcode.commands.intakeForColorCommand;
 import org.firstinspires.ftc.teamcode.commands.retractIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.zeroLifterCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
@@ -21,6 +22,8 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
+import org.stealthrobotics.library.Commands;
+import org.stealthrobotics.library.commands.SaveAutoHeadingCommand;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
 @Autonomous(name = "bucketCycleAutoTuned")
@@ -34,12 +37,13 @@ public class bucketCycleAutoTuned extends StealthOpMode {
     FlipperSubsystem flipperSubsystem;
     static Pose startPose = new Pose(10.916,118,Math.toRadians(135));
     static Pose bucketPose = new Pose(15.0,127.71,Math.toRadians(135));
-    static Pose scorePose = new Pose(12.82,129.52,Math.toRadians(135));
+    static Pose scorePose = new Pose(13.82,129,Math.toRadians(135));
     static Pose intake1Pose = new Pose(20.96,126.32,Math.toRadians(175));
     static Pose intake2Pose = new Pose(21.04,133.5,Math.toRadians(180));
     static Pose intake3Pose = new Pose(27,130,Math.toRadians(225));
+    static Pose halfwayToPark = new Pose(47.13,116.1,Math.toRadians(230));
     static Pose parkPose = new Pose(63.25,93.93,Math.toRadians(270));
-    static PathChain startToScore, inchToBucket, driveToBlock1, block1ToScore, driveToBlock2, block2ToScore, driveToBlock3, block3ToScore, driveToPark;
+    static PathChain startToScore, inchToBucket, driveToBlock1, block1ToScore, driveToBlock2, block2ToScore, driveToBlock3, block3ToScore, driveToPark1, driveToPark2;
     @Override
     public void initialize(){
         driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
@@ -81,9 +85,13 @@ public class bucketCycleAutoTuned extends StealthOpMode {
                 .addPath(new BezierLine(new Point(intake3Pose), new Point(bucketPose)))
                 .setLinearHeadingInterpolation(intake3Pose.getHeading(), bucketPose.getHeading())
                 .build();
-        driveToPark = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scorePose), new Point(65.15,119.04,Point.CARTESIAN), new Point(parkPose)))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), parkPose.getHeading())
+        driveToPark1 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scorePose), new Point(halfwayToPark)))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), halfwayToPark.getHeading())
+                .build();
+        driveToPark2 = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(halfwayToPark), new Point(parkPose)))
+                .setLinearHeadingInterpolation(halfwayToPark.getHeading(), parkPose.getHeading())
                 .build();
     }
     public Command intakeBlock(){
@@ -134,7 +142,9 @@ public class bucketCycleAutoTuned extends StealthOpMode {
                 intakeBlock(),
                 driveSubsystem.FollowPath(block2ToScore, true),
                 scoreBlock(),
-                driveSubsystem.FollowPath(driveToPark, true)
-        );
+                driveSubsystem.FollowPath(driveToPark1, false),
+                new InstantCommand(()->lifterSubsystem.moveArm(0.1)),
+                driveSubsystem.FollowPath(driveToPark2, true)
+        ).raceWith(Commands.run(() -> new SaveAutoHeadingCommand(()->follower.getTotalHeading())));
     }
 }

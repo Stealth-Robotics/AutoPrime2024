@@ -36,8 +36,10 @@ import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
+import org.stealthrobotics.library.AutoToTeleStorage;
 import org.stealthrobotics.library.Commands;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
+
 @TeleOp(name = "TeleOp")
 public class TeleOpOpmode extends StealthOpMode {
     LifterSubsystem lifterSubsystem;
@@ -61,6 +63,7 @@ public class TeleOpOpmode extends StealthOpMode {
     @Override
     public void whileWaitingToStart(){
         //CommandScheduler.getInstance().run();
+
     }
 
     @Override
@@ -76,6 +79,7 @@ public class TeleOpOpmode extends StealthOpMode {
         mecanum = new Mecanum(hardwareMap, telemetry);
         eyesSubsystem = new EyesSubsystem(hardwareMap);
         limelightSubsystem = new LimelightSubsystem(hardwareMap, telemetry);
+        mecanum.setHeading(AutoToTeleStorage.finalAutoHeading);
 
         register(mecanum, reacherSubsystem);
 
@@ -114,3 +118,9 @@ public class TeleOpOpmode extends StealthOpMode {
 
     }
 }
+/*
+@SuppressWarnings("unused")
+@TeleOp(name = "red")
+class redOpMode extends TeleOpOpmode{
+
+}*/

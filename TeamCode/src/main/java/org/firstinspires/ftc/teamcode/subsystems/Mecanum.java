@@ -54,6 +54,9 @@ public class Mecanum extends StealthSubsystem {
 
         //imu.initialize(imuParameters);
     }
+    public void setHeading(double headingOffset){
+        otos.setOffset(new SparkFunOTOS.Pose2D(0,0,headingOffset));
+    }
 
     public double getHeading() {
         //return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset;
