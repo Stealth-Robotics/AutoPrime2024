@@ -38,9 +38,9 @@ public class bucketCycleAutoTuned extends StealthOpMode {
     static Pose startPose = new Pose(10.916,118,Math.toRadians(135));
     static Pose bucketPose = new Pose(15.0,127.71,Math.toRadians(135));
     static Pose scorePose = new Pose(13.82,129,Math.toRadians(135));
-    static Pose intake1Pose = new Pose(20.96,126.32,Math.toRadians(175));
-    static Pose intake2Pose = new Pose(21.04,133.5,Math.toRadians(180));
-    static Pose intake3Pose = new Pose(27,130,Math.toRadians(225));
+    static Pose intake1Pose = new Pose(22,124.32,Math.toRadians(175));
+    static Pose intake2Pose = new Pose(25.04,133.5,Math.toRadians(180));
+    static Pose intake3Pose = new Pose(30,130,Math.toRadians(225));
     static Pose halfwayToPark = new Pose(47.13,116.1,Math.toRadians(230));
     static Pose parkPose = new Pose(63.25,93.93,Math.toRadians(270));
     static PathChain startToScore, inchToBucket, driveToBlock1, block1ToScore, driveToBlock2, block2ToScore, driveToBlock3, block3ToScore, driveToPark1, driveToPark2;
@@ -97,21 +97,16 @@ public class bucketCycleAutoTuned extends StealthOpMode {
     public Command intakeBlock(){
         return new SequentialCommandGroup(
                 new InstantCommand(()->lifterSubsystem.moveArm(0)),
+                new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.5)),
                 new groundIntakeCommand(intakeSubsystem, reacherSubsystem, flipperSubsystem, 1),
                 new WaitCommand(1250),
                 new zeroLifterCommand(lifterSubsystem),
+                new InstantCommand(()->reacherSubsystem.setMaxSpeed(1)),
                 new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,lifterSubsystem,panSubsystem),
                 new InstantCommand(()->lifterSubsystem.moveArm(0.95)),
                 new WaitCommand(500));
     }
     public Command scoreBlock(){
-//        return new InstantCommand( ()->
-//        {
-//            lifterSubsystem.moveArm(0);
-//            groundIntakeCommand(intakeSubsystem, reacherSubsystem, flipperSubsystem, 1);
-//
-//
-//        });
         return new SequentialCommandGroup(
                 new InstantCommand(()->follower.setMaxPower(0.3)),
                 driveSubsystem.FollowPath(inchToBucket, true),
@@ -139,6 +134,7 @@ public class bucketCycleAutoTuned extends StealthOpMode {
                 driveSubsystem.FollowPath(block2ToScore, true),
                 scoreBlock(),
                 driveSubsystem.FollowPath(driveToBlock3, true),
+                //TODO: MAKE SURE IT INTAKES FASTER ON THIS ONE
                 intakeBlock(),
                 driveSubsystem.FollowPath(block2ToScore, true),
                 scoreBlock(),

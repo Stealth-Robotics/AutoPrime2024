@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import androidx.core.math.MathUtils;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -22,6 +24,7 @@ public class ReacherSubsystem extends SubsystemBase {
     public static double kD = 0.00000001;
     public static double tolerance = 0;
     public static double maxReach = 1300;
+    public double maxSpeed = 1;
 
 
     public ReacherSubsystem(HardwareMap hardwareMap, Telemetry telemetry){
@@ -34,6 +37,7 @@ public class ReacherSubsystem extends SubsystemBase {
         this.telemetry = telemetry;
     }
     public void setSetPoint (double setPoint){reacherPID.setSetPoint(setPoint*maxReach);}
+    public void setMaxSpeed (double speed){maxSpeed = speed;}
     public void resetEncoder(){
         reachMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         reachMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -51,7 +55,7 @@ public class ReacherSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         double calc = reacherPID.calculate(getPosition());
-        setPower(calc);
+        setPower(MathUtils.clamp(calc,-maxSpeed,maxSpeed));
         telemetry.addData("reacherPos", getPosition());
 
         FtcDashboard.getInstance().getTelemetry().addData("setpoint:", getSetPoint());
