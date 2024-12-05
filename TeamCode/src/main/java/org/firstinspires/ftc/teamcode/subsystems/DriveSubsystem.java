@@ -47,5 +47,8 @@ public class DriveSubsystem extends StealthSubsystem {
     public void periodic() {
         follower.update();
         telemetry.addData("isbusy", follower.isBusy());
+        telemetry.addData("followerHeading", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("followerX", Math.toDegrees(follower.getPose().getX()));
+        telemetry.addData("followerY", Math.toDegrees(follower.getPose().getY()));
     }
 }

@@ -23,12 +23,13 @@ public class eyesDefaultCommand extends CommandBase {
         this.eyebrows = eyebrows;
         this.input1 = input1;
         this.angle = angle;
-        addRequirements(eyes);
+        this.cross = cross;
+        addRequirements(eyes, eyebrows);
     }
 
     @Override
     public void execute() { //Enable the other code if you want eyes to run off A and B rather than stick position
-        eyes.pointEyes((angle.getAsDouble() + 1) / 2);
+        eyes.pointEyes((angle.getAsDouble() + 1) / 2, cross.getAsDouble());
         if (input1.getAsBoolean()) {
             eyebrows.setEyebrowPosition(0, 0);
         } else {

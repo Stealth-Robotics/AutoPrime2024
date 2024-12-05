@@ -26,17 +26,17 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     Follower follower;
     static Pose startPose = new Pose(8.25,65,0);
-    static Pose score1Pose = new Pose(38.123,65,0);
-    static Pose behindBlock1Pose1 = new Pose(59.264,32.058,Math.toRadians(180));
-    static Pose behindBlock1Pose2 = new Pose(59.264,26,Math.toRadians(180));
-    static Pose depositBlock1Pose = new Pose(9.704,26,Math.toRadians(180));
-    static Pose score2Pose = new Pose(37.603,62.383,0);
-    static Pose behindBlock2Pose1 = new Pose(59.09, 21.487, Math.toRadians(180));
-    static Pose behindBlock2Pose2 = new Pose(59.09,16,Math.toRadians(180));
-    static Pose depositBlock2Pose = new Pose(9.704,16,Math.toRadians(180));
-    static Pose score3Pose = new Pose(37.43,57.704,0);
+    static Pose score1Pose = new Pose(36,65,0);
+    static Pose behindBlock1Pose1 = new Pose(60,32.058,Math.toRadians(180));
+    static Pose behindBlock1Pose2 = new Pose(60,26,Math.toRadians(180));
+    static Pose depositBlock1Pose = new Pose(13,26,Math.toRadians(180));
+    static Pose score2Pose = new Pose(36,63,0);
+    static Pose behindBlock2Pose1 = new Pose(60, 23, Math.toRadians(180));
+    static Pose behindBlock2Pose2 = new Pose(60,16,Math.toRadians(180));
+    static Pose depositBlock2Pose = new Pose(13,16,Math.toRadians(180));
+    static Pose score3Pose = new Pose(38,65,0);
     static Pose behindBlock3Pose = new Pose(58.744,8,Math.toRadians(180));
-    static Pose depositBlock3Pose = new Pose(9.877,8,Math.toRadians(180));
+    static Pose depositBlock3Pose = new Pose(12,8,Math.toRadians(180));
     static PathChain driveToScore1,driveBehindBlock1,pushBlock1,driveToScore2,driveBehindBlock2,pushBlock2,driveToScore3,driveBehindBlock3, pushBlock3;
     @Override
     public void initialize(){
@@ -74,7 +74,7 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
                 .setConstantHeadingInterpolation(behindBlock2Pose2.getHeading())
                 .build();
         driveToScore3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(depositBlock2Pose), new Point(score3Pose)))
+                .addPath(new BezierCurve(new Point(depositBlock2Pose), new Point(18.19,48.584,Point.CARTESIAN), new Point(score3Pose)))
                 .setLinearHeadingInterpolation(depositBlock2Pose.getHeading(), score3Pose.getHeading())
                 .build();
         driveBehindBlock3 = follower.pathBuilder()
@@ -88,7 +88,7 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
     }
     private Command score(){
         return new SequentialCommandGroup(
-                new InstantCommand(()->lifterSubsystem.moveArm(0.3)),
+                new InstantCommand(()->lifterSubsystem.moveArm(0.28)),
                 new WaitCommand(300),
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawOpen)),
                 new WaitCommand(300),
@@ -108,18 +108,19 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
                 new InstantCommand(()->driveSubsystem.setPose(startPose)),
                 new InstantCommand(()->lifterSubsystem.setUsePID(true)),
                 new InstantCommand(()->lifterSubsystem.moveArm(0.42)),
+                new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawClosed)),
                 driveSubsystem.FollowPath(driveToScore1, true),
-                //score(),
+                score(),
                 driveSubsystem.FollowPath(driveBehindBlock1, false),
                 driveSubsystem.FollowPath(pushBlock1, true),
                 grab(),
                 driveSubsystem.FollowPath(driveToScore2, true),
-                //score(),
+                score(),
                 driveSubsystem.FollowPath(driveBehindBlock2, false),
                 driveSubsystem.FollowPath(pushBlock2, true),
                 grab(),
                 driveSubsystem.FollowPath(driveToScore3, true),
-                //score(),
+                score(),
                 driveSubsystem.FollowPath(driveBehindBlock3, false),
                 driveSubsystem.FollowPath(pushBlock3, true),
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawClosed))

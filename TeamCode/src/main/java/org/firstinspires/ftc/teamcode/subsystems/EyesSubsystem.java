@@ -21,7 +21,7 @@ public class EyesSubsystem extends SubsystemBase {
     public void leftEyeToPos(double pos){
         leftEye.setPosition(pos);
     }
-    public void pointEyes(double angle){
+    public void pointEyes(double angle, double cross){
         rightEyeToPos(rightEyeMin + (rightEyeMax-rightEyeMin) * angle);
         leftEyeToPos(leftEyeMin + (leftEyeMax-leftEyeMin) * angle);
     }
