@@ -26,19 +26,19 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     Follower follower;
     static Pose startPose = new Pose(8.25,65,0);
-    static Pose score1Pose = new Pose(36.25,65,0);
+    static Pose score1Pose = new Pose(35.25,65,0);
     static Pose behindBlock1Pose1 = new Pose(61,33,Math.toRadians(180));
     static Pose behindBlock1Pose2 = new Pose(61,26,Math.toRadians(180));
-    static Pose depositBlock1Pose = new Pose(12,26,Math.toRadians(179));
-    static Pose score2Pose = new Pose(36,63,0);
+    static Pose depositBlock1Pose = new Pose(11.75,26,Math.toRadians(179));
+    static Pose score2Pose = new Pose(36.25,62.5,0);
     static Pose behindBlock2Pose1 = new Pose(61, 25, Math.toRadians(180));
     static Pose behindBlock2Pose2 = new Pose(61,16,Math.toRadians(180));
     static Pose depositBlock2Pose = new Pose(12,16,Math.toRadians(179));
-    static Pose score3Pose = new Pose(34.25,66,0);
+    static Pose score3Pose = new Pose(35.25,66,0);
     //static Pose behindBlock3Pose = new Pose(58.744,8,Math.toRadians(180));
     //static Pose depositBlock3Pose = new Pose(11.25,8,Math.toRadians(180));
-    static Pose grabBlock4Pose = new Pose(12, 32, Math.toRadians(179));
-    static Pose score4Pose = new Pose(36,61.17,Math.toRadians(0));
+    static Pose grabBlock4Pose = new Pose(12.75, 32, Math.toRadians(179));
+    static Pose score4Pose = new Pose(35,64,Math.toRadians(0));
     static PathChain driveToScore1,driveBehindBlock1,pushBlock1,driveToScore2,driveBehindBlock2,pushBlock2,driveToScore3,driveBackHome3,driveToScore4;
     @Override
     public void initialize(){
@@ -65,11 +65,16 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
                 .addPath(new BezierLine(new Point(depositBlock1Pose), new Point(score2Pose)))
                 .setLinearHeadingInterpolation(depositBlock1Pose.getHeading(), score2Pose.getHeading())
                 .build();
-        driveBehindBlock2 = follower.pathBuilder()
+        /*driveBehindBlock2 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(score2Pose), new Point(27.726,22.874,Point.CARTESIAN), new Point(behindBlock2Pose1)))
                 .setLinearHeadingInterpolation(score2Pose.getHeading(),behindBlock2Pose1.getHeading())
                 .addPath(new BezierLine(new Point(behindBlock2Pose1), new Point(behindBlock2Pose2)))
                 .setConstantHeadingInterpolation(behindBlock2Pose1.getHeading())
+                .build();*/
+
+        driveBehindBlock2 = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(score2Pose), new Point(26,23.5,Point.CARTESIAN), new Point(60.823,37.429, Point.CARTESIAN), new Point (behindBlock2Pose2)))
+                .setLinearHeadingInterpolation(score2Pose.getHeading(),behindBlock2Pose2.getHeading())
                 .build();
         pushBlock2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(behindBlock2Pose2), new Point(depositBlock2Pose)))
@@ -80,7 +85,8 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
                 .setLinearHeadingInterpolation(depositBlock2Pose.getHeading(), score3Pose.getHeading())
                 .build();
         driveBackHome3 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(score3Pose), new Point(grabBlock4Pose)))
+                //.addPath(new BezierCurve(new Point(score3Pose), new Point(grabBlock4Pose)))
+                .addPath(new BezierCurve(new Point(score3Pose), new Point(37.949,36.91,Point.CARTESIAN),new Point(grabBlock4Pose)))
                 .setLinearHeadingInterpolation(score3Pose.getHeading(), grabBlock4Pose.getHeading())
                 .build();
         driveToScore4 = follower.pathBuilder()
@@ -90,7 +96,7 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
     }
     private Command score(){
         return new SequentialCommandGroup(
-                new InstantCommand(()->lifterSubsystem.moveArm(0.28)),
+                new InstantCommand(()->lifterSubsystem.moveArm(0.26)),
                 new WaitCommand(300),
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawOpen)),
                 new WaitCommand(300),
@@ -101,7 +107,7 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
         return new SequentialCommandGroup(
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawClosed)),
                 new WaitCommand(300),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.42))
+                new InstantCommand(()->lifterSubsystem.moveArm(0.39))
         );
     }
     @Override

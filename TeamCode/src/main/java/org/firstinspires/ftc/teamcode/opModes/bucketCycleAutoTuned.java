@@ -26,7 +26,7 @@ import org.stealthrobotics.library.Commands;
 import org.stealthrobotics.library.commands.SaveAutoHeadingCommand;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
-@Autonomous(name = "bucketCycleAutoTuned")
+@Autonomous(name = "bucketAuto")
 public class bucketCycleAutoTuned extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     Follower follower;
@@ -38,9 +38,9 @@ public class bucketCycleAutoTuned extends StealthOpMode {
     static Pose startPose = new Pose(10.916,118,Math.toRadians(135));
     static Pose bucketPose = new Pose(15.0,127.71,Math.toRadians(135));
     static Pose scorePose = new Pose(13.82,129,Math.toRadians(135));
-    static Pose intake1Pose = new Pose(22,124.32,Math.toRadians(175));
-    static Pose intake2Pose = new Pose(25.04,133.5,Math.toRadians(180));
-    static Pose intake3Pose = new Pose(30,130,Math.toRadians(225));
+    static Pose intake1Pose = new Pose(22,121.32,Math.toRadians(175));
+    static Pose intake2Pose = new Pose(25.04,130.5,Math.toRadians(180));
+    static Pose intake3Pose = new Pose(33,130,Math.toRadians(225));
     static Pose halfwayToPark = new Pose(47.13,116.1,Math.toRadians(230));
     static Pose parkPose = new Pose(63.25,93.93,Math.toRadians(270));
     static PathChain startToScore, inchToBucket, driveToBlock1, block1ToScore, driveToBlock2, block2ToScore, driveToBlock3, block3ToScore, driveToPark1, driveToPark2;
@@ -121,7 +121,10 @@ public class bucketCycleAutoTuned extends StealthOpMode {
         return new SequentialCommandGroup(
                 new InstantCommand(()->driveSubsystem.setPose(startPose)),
                 new InstantCommand(()->lifterSubsystem.setUsePID(true)),
+                new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.5)),
                 new InstantCommand(()->lifterSubsystem.moveArm(1)),
+                new InstantCommand(()->flipperSubsystem.goToPos(0.55)),
+                new InstantCommand(()->reacherSubsystem.setSetPoint(0.3)),
                 new WaitCommand(1000),
                 driveSubsystem.FollowPath(startToScore, true),
                 scoreBlock(),
