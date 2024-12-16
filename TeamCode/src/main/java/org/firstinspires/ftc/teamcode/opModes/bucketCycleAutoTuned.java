@@ -97,9 +97,9 @@ public class bucketCycleAutoTuned extends StealthOpMode {
     public Command intakeBlock(){
         return new SequentialCommandGroup(
                 new InstantCommand(()->lifterSubsystem.moveArm(0)),
-                new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.5)),
+                new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.7)),
                 new groundIntakeCommand(intakeSubsystem, reacherSubsystem, flipperSubsystem, 1),
-                new WaitCommand(1250),
+                new WaitCommand(1000),
                 new zeroLifterCommand(lifterSubsystem),
                 new InstantCommand(()->reacherSubsystem.setMaxSpeed(1)),
                 new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,lifterSubsystem,panSubsystem),
@@ -112,7 +112,11 @@ public class bucketCycleAutoTuned extends StealthOpMode {
                 driveSubsystem.FollowPath(inchToBucket, true),
                 new InstantCommand(()->follower.setMaxPower(1)),
                 new InstantCommand(()->panSubsystem.setPos(panSubsystem.out)),
-                new WaitCommand(750),
+                new WaitCommand(250),
+                new InstantCommand(()->panSubsystem.setPos(panSubsystem.in)),
+                new WaitCommand(100),
+                new InstantCommand(()->panSubsystem.setPos(panSubsystem.out)),
+                new WaitCommand(400),
                 new InstantCommand(()->reacherSubsystem.setSetPoint(0.3))
         );
     }

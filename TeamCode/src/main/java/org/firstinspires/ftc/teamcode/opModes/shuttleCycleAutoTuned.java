@@ -115,7 +115,7 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
         return new SequentialCommandGroup(
                 new InstantCommand(()->driveSubsystem.setPose(startPose)),
                 new InstantCommand(()->lifterSubsystem.setUsePID(true)),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.42)),
+                new InstantCommand(()->lifterSubsystem.moveArm(0.39)),
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawClosed)),
                 driveSubsystem.FollowPath(driveToScore1, true),
                 score(),
