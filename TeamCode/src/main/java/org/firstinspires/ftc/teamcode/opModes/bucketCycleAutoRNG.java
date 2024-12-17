@@ -2,12 +2,12 @@ package org.firstinspires.ftc.teamcode.opModes;
 
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.commands.groundIntakeCommand;
-import org.firstinspires.ftc.teamcode.commands.intakeForColorCommand;
 import org.firstinspires.ftc.teamcode.commands.retractIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.zeroLifterCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
@@ -26,8 +26,8 @@ import org.stealthrobotics.library.Commands;
 import org.stealthrobotics.library.commands.SaveAutoHeadingCommand;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
-@Autonomous(name = "bucketAuto")
-public class bucketCycleAutoTuned extends StealthOpMode {
+@Autonomous(name = "bucketAuto: RNG edition")
+public class bucketCycleAutoRNG extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     Follower follower;
     LifterSubsystem lifterSubsystem;
@@ -39,11 +39,13 @@ public class bucketCycleAutoTuned extends StealthOpMode {
     static Pose bucketPose = new Pose(15.0,127.71,Math.toRadians(135));
     static Pose scorePose = new Pose(13.82,129,Math.toRadians(135));
     static Pose intake1Pose = new Pose(22,121.32,Math.toRadians(175));
-    static Pose intake2Pose = new Pose(25.04,130.5,Math.toRadians(180));
-    static Pose intake3Pose = new Pose(30,133,Math.toRadians(225));
+    static Pose intake2Pose = new Pose(25.04,129,Math.toRadians(180));
+    static Pose intake3Pose = new Pose(27,123,Math.toRadians(225));
+    static Pose intake4Pose = new Pose(61.343,96.52,Math.toRadians(90));
+    static Point intake4Handle = new Point(53.89,119.39,1);
     static Pose halfwayToPark = new Pose(47.13,116.1,Math.toRadians(230));
     static Pose parkPose = new Pose(63.25,93.93,Math.toRadians(270));
-    static PathChain startToScore, inchToBucket, driveToBlock1, block1ToScore, driveToBlock2, block2ToScore, driveToBlock3, block3ToScore, driveToPark1, driveToPark2;
+    static PathChain startToScore, inchToBucket, driveToBlock1, block1ToScore, driveToBlock2, block2ToScore, driveToBlock3, block3ToScore, driveToSub, subToScore, driveToPark1, driveToPark2;
     @Override
     public void initialize(){
         driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
@@ -85,6 +87,14 @@ public class bucketCycleAutoTuned extends StealthOpMode {
                 .addPath(new BezierLine(new Point(intake3Pose), new Point(scorePose)))
                 .setLinearHeadingInterpolation(intake3Pose.getHeading(), scorePose.getHeading())
                 .build();
+        driveToSub = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(scorePose), intake4Handle, new Point(intake4Pose)))
+                .setLinearHeadingInterpolation(scorePose.getHeading(),intake4Pose.getHeading())
+                .build();
+        subToScore = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(intake4Pose), intake4Handle, new Point(scorePose)))
+                .setLinearHeadingInterpolation(intake4Pose.getHeading(),scorePose.getHeading())
+                .build();
         driveToPark1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(scorePose), new Point(halfwayToPark)))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), halfwayToPark.getHeading())
@@ -96,10 +106,7 @@ public class bucketCycleAutoTuned extends StealthOpMode {
     }
     public Command intakeBlock(){
         return new SequentialCommandGroup(
-                new InstantCommand(()->lifterSubsystem.moveArm(0)),
-                new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.7)),
-                new groundIntakeCommand(intakeSubsystem, reacherSubsystem, flipperSubsystem, 1),
-                new WaitCommand(1000),
+                new WaitCommand(750),
                 new zeroLifterCommand(lifterSubsystem),
                 new InstantCommand(()->reacherSubsystem.setMaxSpeed(1)),
                 new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,lifterSubsystem,panSubsystem),
@@ -116,6 +123,22 @@ public class bucketCycleAutoTuned extends StealthOpMode {
                 new InstantCommand(()->reacherSubsystem.setSetPoint(0.3))
         );
     }
+    private Command delayedScore(long delay){
+        return new SequentialCommandGroup(
+                new WaitCommand(delay),
+                new InstantCommand(()->panSubsystem.setPos(panSubsystem.out))
+        );
+    }
+    private Command delayedDeploy(long delay1, double position){
+        return new SequentialCommandGroup(
+                new WaitCommand(delay1),
+                new InstantCommand(()->lifterSubsystem.moveArm(0)),
+                new InstantCommand(()->flipperSubsystem.goToPos(0.85)),
+                new InstantCommand(()->intakeSubsystem.setPower(-1)),
+                new WaitCommand(300),
+                new InstantCommand(()->reacherSubsystem.setSetPoint(position))
+        );
+    }
     @Override
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
@@ -126,30 +149,49 @@ public class bucketCycleAutoTuned extends StealthOpMode {
                 new InstantCommand(()->flipperSubsystem.goToPos(0.55)),
                 new InstantCommand(()->reacherSubsystem.setSetPoint(0.3)),
                 new WaitCommand(1000),
-                driveSubsystem.FollowPath(startToScore, true),
-                scoreBlock(),
-                driveSubsystem.FollowPath(driveToBlock1, true),
+                new ParallelCommandGroup(
+                        driveSubsystem.FollowPath(startToScore, true),
+                        delayedScore(750)),
+                new InstantCommand(()->reacherSubsystem.setSetPoint(0.3)),
+                new ParallelCommandGroup(
+                        driveSubsystem.FollowPath(driveToBlock1, true),
+                        new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.7)),
+                        delayedDeploy(750,1)),
                 intakeBlock(),
                 new WaitCommand(750),
-                driveSubsystem.FollowPath(block1ToScore, true),
-                scoreBlock(),
-                driveSubsystem.FollowPath(driveToBlock2, true),
+                new ParallelCommandGroup(
+                        driveSubsystem.FollowPath(block1ToScore, true),
+                        delayedScore(750)),
+                new InstantCommand(()->reacherSubsystem.setSetPoint(0.3)),
+                new ParallelCommandGroup(
+                        driveSubsystem.FollowPath(driveToBlock2, true),
+                        new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.7)),
+                        delayedDeploy(800,0.8)),
                 intakeBlock(),
                 new WaitCommand(750),
-                driveSubsystem.FollowPath(block2ToScore, true),
-                scoreBlock(),
-                driveSubsystem.FollowPath(driveToBlock3, true),
-                new InstantCommand(()->lifterSubsystem.moveArm(0)),
-                new groundIntakeCommand(intakeSubsystem, reacherSubsystem, flipperSubsystem, 0.5),
-                new WaitCommand(500),
-                new zeroLifterCommand(lifterSubsystem),
-                new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,lifterSubsystem,panSubsystem),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.95)),
-                driveSubsystem.FollowPath(block2ToScore, true),
-                scoreBlock(),
-                driveSubsystem.FollowPath(driveToPark1, false),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.1)),
-                driveSubsystem.FollowPath(driveToPark2, true)
-        ).raceWith(Commands.run(() -> new SaveAutoHeadingCommand(()->follower.getTotalHeading())));
+                new ParallelCommandGroup(
+                        driveSubsystem.FollowPath(block2ToScore, true),
+                        delayedScore(1250)),
+                new InstantCommand(()->reacherSubsystem.setSetPoint(0.3)),
+                new ParallelCommandGroup(
+                        driveSubsystem.FollowPath(driveToBlock3, true),
+                        new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.7)),
+                        delayedDeploy(800,0.7)),
+                intakeBlock(),
+                new ParallelCommandGroup(
+                        driveSubsystem.FollowPath(block3ToScore, true),
+                        delayedScore(1750)),
+                new InstantCommand(()->reacherSubsystem.setSetPoint(0.3)),
+                driveSubsystem.FollowPath(driveToSub, true),
+                new ParallelCommandGroup(
+                        driveSubsystem.FollowPath(driveToSub, true),
+                        new InstantCommand(()->reacherSubsystem.setMaxSpeed(1)),
+                        delayedDeploy(1000,0.6)),
+                intakeBlock(),
+                driveSubsystem.FollowPath(subToScore, true),
+                new ParallelCommandGroup(
+                        driveSubsystem.FollowPath(subToScore, true),
+                        delayedScore(2000))
+        );//.raceWith(Commands.run(() -> new SaveAutoHeadingCommand(()->follower.getTotalHeading())));
     }
 }

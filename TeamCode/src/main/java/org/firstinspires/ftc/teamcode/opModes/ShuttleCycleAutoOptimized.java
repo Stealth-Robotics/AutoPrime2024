@@ -24,13 +24,13 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
     LifterSubsystem lifterSubsystem;
     ClawSubsystem clawSubsystem;
     static Pose startPose = new Pose(8.25,65,0);
-    static Pose score1Pose = new Pose(35.25,65,0);
+    static Pose score1Pose = new Pose(35.5,65,0);
     static Pose behindBlock1Pose = new Pose(61,26,Math.toRadians(180));
-    static Pose depositBlock1Pose = new Pose(20,26,Math.toRadians(180));
+    static Pose depositBlock1Pose = new Pose(30,26,Math.toRadians(180));
     static Pose behindBlock2Pose = new Pose(61,16,Math.toRadians(180));
-    static Pose depositBlock2Pose = new Pose(20,16,Math.toRadians(180));
-    static Pose behindBlock3Pose = new Pose(61,8,Math.toRadians(180));
-    static Pose depositBlock3Pose = new Pose(12,8,Math.toRadians(180));
+    static Pose depositBlock2Pose = new Pose(30,16,Math.toRadians(180));
+    static Pose behindBlock3Pose = new Pose(61,10,Math.toRadians(180));
+    static Pose depositBlock3Pose = new Pose(12,10,Math.toRadians(180));
     static Pose score2Pose = new Pose(35.5,62,0);
     static Pose score3Pose = new Pose(35.5, 61,0);
     static Pose score4Pose = new Pose(35.5,60,0);
