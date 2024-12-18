@@ -35,7 +35,7 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
     static Pose score3Pose = new Pose(35.5, 61,0);
     static Pose score4Pose = new Pose(35.5,60,0);
     static Pose score5Pose = new Pose(35.5,63,0);
-    static Pose optimalPickupPose = new Pose(12,40,Math.toRadians(180));
+    static Pose optimalPickupPose = new Pose(12,40,Math.toRadians(179));
     static PathChain driveToScore1, driveToStop1, shuttle1, driveToStop2, shuttle2;
     static PathChain driveToStop3, shuttle3, driveToScore2, driveHome2, driveToScore3;
     static PathChain driveHome3, driveToScore4, driveHome4, driveToScore5, shuttleBlocks;

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -218,11 +219,13 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                         driveSubsystem.FollowPath(wobble1, true),
                         new SequentialCommandGroup(
                                 new WaitCommand(750),
+                                new RunCommand(()->{if(intakeSensorSubsystem.readSensorColor() == IntakeSensorSubsystem.ColorList.RED){
+                                    intakeSubsystem.setPower(1);
+                                    new WaitCommand(1000);
+                                }}),
                                 intakeBlock()
                         )
                 ),
-                new InstantCommand(()-> {if(intakeSensorSubsystem.readSensorColor() == IntakeSensorSubsystem.ColorList.RED)
-                        {intakeSubsystem.setPower(1);}}),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(subToScore, true),
                         delayedScore(2000))
