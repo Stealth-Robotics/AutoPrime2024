@@ -20,10 +20,10 @@ public class retractIntakeCommand extends SequentialCommandGroup {
                 new InstantCommand(()-> flipper.goToPos(0.15)),
                 new InstantCommand(()-> intake.setPower(0)),
                 new InstantCommand(()-> pan.setPos(pan.in)),
-                new WaitCommand(500),//Wait time before handoff is attempted
+                new WaitCommand(400),//Wait time before handoff is attempted
                 new InstantCommand(()-> flipper.goToPos(0.25)),
                 new InstantCommand(()-> intake.setPower(1)),
-                new WaitCommand(400),//Wait time before handoff stops and intake moves out of the way
+                new WaitCommand(500),//Wait time before handoff stops and intake moves out of the way
                 new InstantCommand(()-> reacher.resetEncoder()),
                 new InstantCommand(()-> reacher.setSetPoint(0)),
                 new InstantCommand(()-> intake.setPower(0)),

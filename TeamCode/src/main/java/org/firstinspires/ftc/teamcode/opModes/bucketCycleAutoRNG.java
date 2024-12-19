@@ -40,15 +40,15 @@ public class bucketCycleAutoRNG extends StealthOpMode {
     FlipperSubsystem flipperSubsystem;
     static Pose startPose = new Pose(10.916,118,Math.toRadians(135));
     static Pose bucketPose = new Pose(15.0,127.71,Math.toRadians(135));
-    static Pose scorePose = new Pose(13.82,129,Math.toRadians(135));
-    static Pose intake1Pose = new Pose(22,121.32,Math.toRadians(175));
-    static Pose intake2Pose = new Pose(25.04,129,Math.toRadians(180));
-    static Pose intake3Pose = new Pose(28,123,Math.toRadians(225));
+    static Pose scorePose = new Pose(14,129,Math.toRadians(135));
+    static Pose intake1Pose = new Pose(23,121.32,Math.toRadians(175));
+    static Pose intake2Pose = new Pose(26,129,Math.toRadians(180));
+    static Pose intake3Pose = new Pose(30,123,Math.toRadians(235));
     static Pose intake4Pose = new Pose(59,98,Math.toRadians(90));
     static Point intake4Handle = new Point(53.89,119.39,1);
     static Pose halfwayToPark = new Pose(59,100,Math.toRadians(180));
     static Pose parkPose = new Pose(63.25,93.93,Math.toRadians(270));
-    static Pose wobble1Pose = new Pose(59,96,Math.toRadians(90));
+    static Pose wobble1Pose = new Pose(59,94,Math.toRadians(135));
     static Pose wobble2Pose1 = new Pose(59,98,Math.toRadians(80));
     static Pose wobble2Pose2 = new Pose(59,98,Math.toRadians(100));
     static PathChain startToScore, inchToBucket, driveToBlock1, block1ToScore, driveToBlock2, block2ToScore, driveToBlock3, block3ToScore, driveToSub, subToScore, driveToPark1, driveToPark2;
@@ -107,6 +107,8 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                 .setConstantHeadingInterpolation(intake4Pose.getHeading())
                 .addPath(new BezierLine(new Point(wobble1Pose), new Point(intake4Pose)))
                 .setConstantHeadingInterpolation(intake4Pose.getHeading())
+                .addPath(new BezierLine(new Point(intake4Pose), new Point(wobble1Pose)))
+                .setConstantHeadingInterpolation(intake4Pose.getHeading())
                 .build();
         wobble2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(intake4Pose), new Point(wobble2Pose1)))
@@ -148,7 +150,7 @@ public class bucketCycleAutoRNG extends StealthOpMode {
         return new SequentialCommandGroup(
                 new WaitCommand(delay1),
                 new InstantCommand(()->lifterSubsystem.moveArm(0)),
-                new InstantCommand(()->flipperSubsystem.goToPos(0.84)),
+                new InstantCommand(()->flipperSubsystem.goToPos(0.83)),
                 new InstantCommand(()->intakeSubsystem.setPower(-1)),
                 new WaitCommand(300),
                 new InstantCommand(()->reacherSubsystem.setSetPoint(position))
@@ -193,8 +195,8 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(driveToBlock2, true),
                         new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.7)),
-                        delayedDeploy(500,0.8)),
-                new WaitCommand(600),
+                        delayedDeploy(500,0.9)),
+                new WaitCommand(400),
                 intakeBlock(),
                 new WaitCommand(750),
                 new ParallelCommandGroup(
@@ -214,21 +216,22 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(driveToSub, false),
                         new InstantCommand(()->reacherSubsystem.setMaxSpeed(1)),
-                        delayedDeploy(3000,0.6)),
+                        delayedDeploy(3000,1)),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(wobble1, true),
                         new SequentialCommandGroup(
-                                new WaitCommand(750),
-                                new RunCommand(()->{if(intakeSensorSubsystem.readSensorColor() == IntakeSensorSubsystem.ColorList.RED){
+                                new WaitCommand(1500),
+                                /*new RunCommand(()->{if(intakeSensorSubsystem.readSensorColor() == IntakeSensorSubsystem.ColorList.RED){
                                     intakeSubsystem.setPower(1);
                                     new WaitCommand(1000);
-                                }}),
+                                }}),*/
                                 intakeBlock()
                         )
                 ),
+                new InstantCommand(()->flipperSubsystem.goToPos(0.7)),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(subToScore, true),
-                        delayedScore(2000))
+                        delayedScore(3000))
         );//.raceWith(Commands.run(() -> new SaveAutoHeadingCommand(()->follower.getTotalHeading())));
     }
 }

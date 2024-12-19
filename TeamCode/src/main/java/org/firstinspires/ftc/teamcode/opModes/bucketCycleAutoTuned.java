@@ -7,7 +7,6 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.commands.groundIntakeCommand;
-import org.firstinspires.ftc.teamcode.commands.intakeForColorCommand;
 import org.firstinspires.ftc.teamcode.commands.retractIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.zeroLifterCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;

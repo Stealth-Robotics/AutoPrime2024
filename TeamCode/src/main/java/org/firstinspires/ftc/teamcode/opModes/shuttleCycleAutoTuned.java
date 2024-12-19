@@ -73,7 +73,7 @@ public class shuttleCycleAutoTuned extends StealthOpMode {
                 .build();*/
 
         driveBehindBlock2 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(score2Pose), new Point(26,23.5,Point.CARTESIAN), new Point(60.823,37.429, Point.CARTESIAN), new Point (behindBlock2Pose2)))
+                .addPath(new BezierCurve(new Point(score2Pose), new Point(24,23.5,Point.CARTESIAN), new Point(60.823,37.429, Point.CARTESIAN), new Point (behindBlock2Pose2)))
                 .setLinearHeadingInterpolation(score2Pose.getHeading(),behindBlock2Pose2.getHeading())
                 .build();
         pushBlock2 = follower.pathBuilder()
