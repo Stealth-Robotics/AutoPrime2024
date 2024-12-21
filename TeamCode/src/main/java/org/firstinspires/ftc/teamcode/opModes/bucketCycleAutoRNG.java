@@ -40,18 +40,19 @@ public class bucketCycleAutoRNG extends StealthOpMode {
     FlipperSubsystem flipperSubsystem;
     static Pose startPose = new Pose(10.916,118,Math.toRadians(135));
     static Pose bucketPose = new Pose(15.0,127.71,Math.toRadians(135));
-    static Pose scorePose = new Pose(14,129,Math.toRadians(135));
-    static Pose intake1Pose = new Pose(23,121.32,Math.toRadians(175));
+    static Pose scorePose = new Pose(14.25,129.25,Math.toRadians(135));
+    static Pose intake1Pose = new Pose(23.5,122.5,Math.toRadians(175));
     static Pose intake2Pose = new Pose(26,129,Math.toRadians(180));
-    static Pose intake3Pose = new Pose(30,123,Math.toRadians(235));
-    static Pose intake4Pose = new Pose(59,98,Math.toRadians(90));
+    static Pose intake3Pose = new Pose(31,123,Math.toRadians(240));
+    static Pose intake4Pose = new Pose(58,98,Math.toRadians(90));
     static Point intake4Handle = new Point(53.89,119.39,1);
     static Pose halfwayToPark = new Pose(59,100,Math.toRadians(180));
     static Pose parkPose = new Pose(63.25,93.93,Math.toRadians(270));
-    static Pose wobble1Pose = new Pose(59,94,Math.toRadians(135));
+    static Pose wobble1Pose = new Pose(68,98,Math.toRadians(120));
+    static Pose wobble1Pose2 = new Pose(65,94,Math.toRadians(90));
     static Pose wobble2Pose1 = new Pose(59,98,Math.toRadians(80));
     static Pose wobble2Pose2 = new Pose(59,98,Math.toRadians(100));
-    static PathChain startToScore, inchToBucket, driveToBlock1, block1ToScore, driveToBlock2, block2ToScore, driveToBlock3, block3ToScore, driveToSub, subToScore, driveToPark1, driveToPark2;
+    static PathChain startToScore, inchFromBucket, driveToBlock1, block1ToScore, driveToBlock2, block2ToScore, driveToBlock3, block3ToScore, driveToSub, subToScore, driveToPark1, driveToPark2;
     static PathChain wobble1, wobble2;
     @Override
     public void initialize(){
@@ -66,9 +67,9 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                 .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
                 .build();
-        inchToBucket = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(bucketPose), new Point(scorePose)))
-                .setConstantHeadingInterpolation(bucketPose.getHeading())
+        inchFromBucket = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scorePose), new Point(bucketPose)))
+                .setConstantHeadingInterpolation(scorePose.getHeading())
                 .build();
         driveToBlock1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(scorePose), new Point(intake1Pose)))
@@ -100,15 +101,11 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                 .build();
         wobble1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(intake4Pose), new Point(wobble1Pose)))
-                .setConstantHeadingInterpolation(intake4Pose.getHeading())
+                .setLinearHeadingInterpolation(intake4Pose.getHeading(),wobble1Pose.getHeading())
                 .addPath(new BezierLine(new Point(wobble1Pose), new Point(intake4Pose)))
-                .setConstantHeadingInterpolation(intake4Pose.getHeading())
-                .addPath(new BezierLine(new Point(intake4Pose), new Point(wobble1Pose)))
-                .setConstantHeadingInterpolation(intake4Pose.getHeading())
-                .addPath(new BezierLine(new Point(wobble1Pose), new Point(intake4Pose)))
-                .setConstantHeadingInterpolation(intake4Pose.getHeading())
-                .addPath(new BezierLine(new Point(intake4Pose), new Point(wobble1Pose)))
-                .setConstantHeadingInterpolation(intake4Pose.getHeading())
+                .setLinearHeadingInterpolation(wobble1Pose.getHeading(), intake4Pose.getHeading())
+                .addPath(new BezierLine(new Point(intake4Pose), new Point(wobble1Pose2)))
+                .setLinearHeadingInterpolation(intake4Pose.getHeading(), wobble1Pose2.getHeading())
                 .build();
         wobble2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(intake4Pose), new Point(wobble2Pose1)))
@@ -121,8 +118,8 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                 .setLinearHeadingInterpolation(wobble2Pose1.getHeading(),intake4Pose.getHeading())
                 .build();
         subToScore = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(intake4Pose), intake4Handle, new Point(scorePose)))
-                .setLinearHeadingInterpolation(intake4Pose.getHeading(),scorePose.getHeading())
+                .addPath(new BezierCurve(new Point(wobble1Pose2), intake4Handle, new Point(scorePose)))
+                .setLinearHeadingInterpolation(wobble1Pose2.getHeading(),scorePose.getHeading())
                 .build();
         driveToPark1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(intake4Pose), new Point(halfwayToPark)))
@@ -220,7 +217,7 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(wobble1, true),
                         new SequentialCommandGroup(
-                                new WaitCommand(1500),
+                                new WaitCommand(2500),
                                 /*new RunCommand(()->{if(intakeSensorSubsystem.readSensorColor() == IntakeSensorSubsystem.ColorList.RED){
                                     intakeSubsystem.setPower(1);
                                     new WaitCommand(1000);
@@ -231,7 +228,8 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                 new InstantCommand(()->flipperSubsystem.goToPos(0.7)),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(subToScore, true),
-                        delayedScore(3000))
+                        delayedScore(3000)),
+                driveSubsystem.FollowPath(inchFromBucket, false)
         );//.raceWith(Commands.run(() -> new SaveAutoHeadingCommand(()->follower.getTotalHeading())));
     }
 }

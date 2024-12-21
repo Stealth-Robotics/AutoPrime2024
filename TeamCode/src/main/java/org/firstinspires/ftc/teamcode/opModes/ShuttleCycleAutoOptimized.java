@@ -24,18 +24,18 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
     LifterSubsystem lifterSubsystem;
     ClawSubsystem clawSubsystem;
     static Pose startPose = new Pose(8.25,65,0);
-    static Pose score1Pose = new Pose(35.5,65,0);
+    static Pose score1Pose = new Pose(37.75,65,0);
     static Pose behindBlock1Pose = new Pose(61,26,Math.toRadians(180));
-    static Pose depositBlock1Pose = new Pose(30,26,Math.toRadians(180));
+    static Pose depositBlock1Pose = new Pose(31,26,Math.toRadians(180));
     static Pose behindBlock2Pose = new Pose(61,16,Math.toRadians(180));
-    static Pose depositBlock2Pose = new Pose(30,16,Math.toRadians(180));
-    static Pose behindBlock3Pose = new Pose(61,10,Math.toRadians(180));
-    static Pose depositBlock3Pose = new Pose(12,10,Math.toRadians(180));
-    static Pose score2Pose = new Pose(35.5,63,0);
-    static Pose score3Pose = new Pose(35.5, 66,0);
-    static Pose score4Pose = new Pose(35.5,64,0);
-    static Pose score5Pose = new Pose(35.5,62,0);
-    static Pose optimalPickupPose = new Pose(12,40,Math.toRadians(179));
+    static Pose depositBlock2Pose = new Pose(31,16,Math.toRadians(180));
+    static Pose behindBlock3Pose = new Pose(61,9,Math.toRadians(180));
+    static Pose depositBlock3Pose = new Pose(13.25,9,Math.toRadians(179));
+    static Pose score2Pose = new Pose(37,63,0);
+    static Pose score3Pose = new Pose(37, 66,0);
+    static Pose score4Pose = new Pose(37,64,0);
+    static Pose score5Pose = new Pose(37,62,0);
+    static Pose optimalPickupPose = new Pose(13.25,36,Math.toRadians(179));
     static PathChain driveToScore1, driveToStop1, shuttle1, driveToStop2, shuttle2;
     static PathChain driveToStop3, shuttle3, driveToScore2, driveHome2, driveToScore3;
     static PathChain driveHome3, driveToScore4, driveHome4, driveToScore5, shuttleBlocks;
@@ -50,7 +50,7 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
                 .setConstantHeadingInterpolation(startPose.getHeading())
                 .build();
         driveToStop1 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(score1Pose), new Point(19.785,17.745,1), new Point(57.926,48.952,1), new Point(behindBlock1Pose)))
+                .addPath(new BezierCurve(new Point(score1Pose), new Point(19.785,17.745,1), new Point(57.926,46.952,1), new Point(behindBlock1Pose)))
                 .setLinearHeadingInterpolation(score1Pose.getHeading(),behindBlock1Pose.getHeading())
                 .build();
         shuttle1 = follower.pathBuilder()
@@ -74,11 +74,11 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
                 .setConstantHeadingInterpolation(behindBlock3Pose.getHeading())
                 .build();
         shuttleBlocks = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(score1Pose), new Point(19.785,17.745,1), new Point(57.926,48.952,1), new Point(behindBlock1Pose)))
+                .addPath(new BezierCurve(new Point(score1Pose), new Point(30.325,20.968,1), new Point(49.906,48.347,1), new Point(behindBlock1Pose)))
                 .setLinearHeadingInterpolation(score1Pose.getHeading(),behindBlock1Pose.getHeading())
                 .addPath(new BezierLine(new Point(behindBlock1Pose), new Point(depositBlock1Pose)))
                 .setConstantHeadingInterpolation(behindBlock1Pose.getHeading())
-                .addPath(new BezierCurve(new Point(depositBlock1Pose), new Point(64.045,26.516,1), new Point(behindBlock2Pose)))
+                .addPath(new BezierCurve(new Point(depositBlock1Pose), new Point(59.264,27.032,1), new Point(behindBlock2Pose)))
                 .setConstantHeadingInterpolation(depositBlock1Pose.getHeading())
                 .addPath(new BezierLine(new Point(behindBlock2Pose), new Point(depositBlock2Pose)))
                 .setConstantHeadingInterpolation(behindBlock2Pose.getHeading())
@@ -92,7 +92,7 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
                 .setLinearHeadingInterpolation(depositBlock3Pose.getHeading(), score2Pose.getHeading())
                 .build();
         driveHome2 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(score2Pose), new Point(33.450,39.365,1), new Point(optimalPickupPose)))
+                .addPath(new BezierCurve(new Point(score2Pose), new Point(32.450,40.365,1), new Point(optimalPickupPose)))
                 .setLinearHeadingInterpolation(score2Pose.getHeading(),optimalPickupPose.getHeading())
                 .build();
         driveToScore3 = follower.pathBuilder()
@@ -100,7 +100,7 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
                 .setLinearHeadingInterpolation(optimalPickupPose.getHeading(),score3Pose.getHeading())
                 .build();
         driveHome3 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(score3Pose), new Point(33.042,41.405,1), new Point(optimalPickupPose)))
+                .addPath(new BezierCurve(new Point(score3Pose), new Point(32.042,40.405,1), new Point(optimalPickupPose)))
                 .setLinearHeadingInterpolation(score3Pose.getHeading(), optimalPickupPose.getHeading())
                 .build();
         driveToScore4 = follower.pathBuilder()
@@ -108,7 +108,7 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
                 .setLinearHeadingInterpolation(optimalPickupPose.getHeading(),score4Pose.getHeading())
                 .build();
         driveHome4 = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(score4Pose), new Point(35.286,42.221,1), new Point(optimalPickupPose)))
+                .addPath(new BezierCurve(new Point(score4Pose), new Point(34.286,41.221,1), new Point(optimalPickupPose)))
                 .setLinearHeadingInterpolation(score4Pose.getHeading(), optimalPickupPose.getHeading())
                 .build();
         driveToScore5 = follower.pathBuilder()
@@ -128,7 +128,7 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
                 new InstantCommand(()->lifterSubsystem.moveArm(0.26)),
                 new WaitCommand(300),
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawOpen)),
-                new WaitCommand(300),
+                new WaitCommand(100),
                 new InstantCommand(()->lifterSubsystem.moveArm(0))
         );
     }
