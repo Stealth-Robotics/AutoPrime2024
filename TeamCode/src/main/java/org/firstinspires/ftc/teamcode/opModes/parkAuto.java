@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
-@Autonomous(name = "parkAuto")
+//@Autonomous(name = "parkAuto")
 public class parkAuto extends StealthOpMode {
     Follower follower;
     DriveSubsystem driveSubsystem;

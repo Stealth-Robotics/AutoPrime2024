@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
-@Autonomous (name = "5clip")
+@Autonomous (name = "clipAuto")
 public class ShuttleCycleAutoOptimized extends StealthOpMode {
     Follower follower;
     DriveSubsystem driveSubsystem;

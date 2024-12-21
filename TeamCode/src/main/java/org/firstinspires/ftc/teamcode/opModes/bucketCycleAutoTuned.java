@@ -25,7 +25,7 @@ import org.stealthrobotics.library.Commands;
 import org.stealthrobotics.library.commands.SaveAutoHeadingCommand;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
-@Autonomous(name = "bucketAuto")
+//@Autonomous(name = "bucketAuto")
 public class bucketCycleAutoTuned extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     Follower follower;

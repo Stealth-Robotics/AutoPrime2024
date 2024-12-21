@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
-@Autonomous(name = "clipAuto")
+//@Autonomous(name = "clipAuto")
 public class shuttleCycleAutoTuned extends StealthOpMode {
     LifterSubsystem lifterSubsystem;
     LifterPanSubsystem panSubsystem;
