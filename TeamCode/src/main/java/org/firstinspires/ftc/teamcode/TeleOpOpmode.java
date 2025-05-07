@@ -121,9 +121,3 @@ public class TeleOpOpmode extends StealthOpMode {
 
     }
 }
-/*
-@SuppressWarnings("unused")
-@TeleOp(name = "red")
-class redOpMode extends TeleOpOpmode{
-
-}*/
