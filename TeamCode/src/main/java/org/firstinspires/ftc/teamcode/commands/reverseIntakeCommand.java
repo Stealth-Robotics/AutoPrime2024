@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 
 public class reverseIntakeCommand extends CommandBase {
     IntakeSubsystem intake;
-    public reverseIntakeCommand(IntakeSubsystem intake){
+    public reverseIntakeCommand(IntakeSubsystem intake) {
         this.intake = intake;
     }
     @Override

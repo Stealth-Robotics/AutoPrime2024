@@ -1,40 +1,70 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.hardware.CRServo;
+import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
+
+import com.arcrobotics.ftclib.command.Command;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.stealthrobotics.library.StealthSubsystem;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+public class IntakeSubsystem extends StealthSubsystem {
+    private final Servo intakeServo;
+    private final Servo wristServo;
 
-public class IntakeSubsystem extends SubsystemBase {
-    private Servo intakeServo;
-    //private RevColorSensorV3 intakeSensor;
-    public enum ColorList {RED,BLUE,BLACK}
-    public int intakeDirection = 1;
+    private final ColorSensor colorSensor;
 
-    public IntakeSubsystem(HardwareMap hardwareMap){
+    public enum ColorList {
+        RED,
+        BLUE,
+        YELLOW,
+        BLACK
+    }
+
+    public IntakeSubsystem(HardwareMap hardwareMap) {
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
+        wristServo = hardwareMap.get(Servo.class, "wristServo");
+
+        colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
     }
 
-    public void setPower(double power){
-        intakeServo.setPosition((power+1)/2);
+    public void setWristPosition(double pos) {
+        wristServo.setPosition(pos);
     }
-    /*public IntakeSensorSubsystem.ColorList readSensorColor(){
-        if(intakeSensor.red()> intakeSensor.blue()){
-            return(IntakeSensorSubsystem.ColorList.RED);
-        } else {
-            return(IntakeSensorSubsystem.ColorList.BLUE);
+
+    public double getWristPosition() {
+        return wristServo.getPosition();
+    }
+
+    public void setIntakeSpeed(double speed) {
+        intakeServo.setPosition((speed + 1) / 2);
+    }
+
+    public ColorList readSensorColor() {
+        if ((colorSensor.red() > 75) || (colorSensor.blue() > 75) || getYellowAmount() > 75) {
+            if (colorSensor.red() > colorSensor.blue()) {
+                if (colorSensor.red() > getYellowAmount()) {
+                    return ColorList.RED;
+                }
+                else {
+                    return ColorList.YELLOW;
+                }
+            }
+            else {
+                return ColorList.BLUE;
+            }
+        }
+        else {
+            return ColorList.BLACK;
         }
     }
-    public double readSensorDistance(){
-        return intakeSensor.getDistance(DistanceUnit.INCH);
+
+    private int getYellowAmount() {
+        return (colorSensor.red() + colorSensor.green()) / 2;
     }
+
     @Override
-    public void periodic(){
-        telemetry.addData("Color",readSensorColor());
-        telemetry.addData("Distance",readSensorDistance());
-    }*/
+    public void periodic() {
+        telemetry.addData("detectedColor: ", readSensorColor());
+    }
 }

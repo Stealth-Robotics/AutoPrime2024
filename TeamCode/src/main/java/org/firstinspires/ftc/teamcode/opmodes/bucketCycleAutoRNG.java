@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes;
+package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -8,7 +8,6 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.commands.groundIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.retractIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.zeroLifterCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
@@ -24,8 +23,6 @@ import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
-import org.stealthrobotics.library.Commands;
-import org.stealthrobotics.library.commands.SaveAutoHeadingCommand;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
 @Autonomous(name = "bucketAuto")
