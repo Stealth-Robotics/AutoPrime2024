@@ -17,21 +17,19 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.FlipperSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeSensorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
 @Autonomous(name = "bucketAuto")
 public class bucketCycleAutoRNG extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     Follower follower;
-    LifterSubsystem lifterSubsystem;
-    LifterPanSubsystem panSubsystem;
-    ReacherSubsystem reacherSubsystem;
+    ElevatorSubsystem elevatorSubsystem;
+    PanSubsystem panSubsystem;
+    ExtendoSubsystem extendoSubsystem;
     IntakeSubsystem intakeSubsystem;
     IntakeSensorSubsystem intakeSensorSubsystem;
     FlipperSubsystem flipperSubsystem;
@@ -55,9 +53,9 @@ public class bucketCycleAutoRNG extends StealthOpMode {
     public void initialize(){
         driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
         follower = new Follower(hardwareMap);
-        lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
-        panSubsystem = new LifterPanSubsystem(hardwareMap);
-        reacherSubsystem = new ReacherSubsystem(hardwareMap, telemetry);
+        elevatorSubsystem = new ElevatorSubsystem(hardwareMap, telemetry);
+        panSubsystem = new PanSubsystem(hardwareMap);
+        extendoSubsystem = new ExtendoSubsystem(hardwareMap, telemetry);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         flipperSubsystem = new FlipperSubsystem(hardwareMap);
         intakeSensorSubsystem = new IntakeSensorSubsystem(hardwareMap, telemetry);
@@ -130,10 +128,10 @@ public class bucketCycleAutoRNG extends StealthOpMode {
     }
     private Command intakeBlock(){
         return new SequentialCommandGroup(
-                new zeroLifterCommand(lifterSubsystem),
-                new InstantCommand(()->reacherSubsystem.setMaxSpeed(1)),
-                new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,lifterSubsystem,panSubsystem),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.95)),
+                new zeroLifterCommand(elevatorSubsystem),
+                new InstantCommand(()-> extendoSubsystem.setMaxSpeed(1)),
+                new retractIntakeCommand(extendoSubsystem,flipperSubsystem,intakeSubsystem, elevatorSubsystem,panSubsystem),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0.95)),
                 new InstantCommand(()->panSubsystem.setPos(panSubsystem.out)),
                 new WaitCommand(50),
                 new InstantCommand(()->panSubsystem.setPos(panSubsystem.in)));
@@ -147,21 +145,21 @@ public class bucketCycleAutoRNG extends StealthOpMode {
     private Command delayedDeploy(long delay1, double position){
         return new SequentialCommandGroup(
                 new WaitCommand(delay1),
-                new InstantCommand(()->lifterSubsystem.moveArm(0)),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0)),
                 new InstantCommand(()->flipperSubsystem.goToPos(0.83)),
                 new InstantCommand(()->intakeSubsystem.setPower(-1)),
                 new WaitCommand(150),
-                new InstantCommand(()->reacherSubsystem.setSetPoint(position))
+                new InstantCommand(()-> extendoSubsystem.setSetPoint(position))
         );
     }
     private Command park(){
         return new SequentialCommandGroup(
                 new InstantCommand(()->intakeSubsystem.setPower(1)),
                 new InstantCommand(()->flipperSubsystem.goToPos(0.55)),
-                new InstantCommand(()->reacherSubsystem.setSetPoint(0)),
+                new InstantCommand(()-> extendoSubsystem.setSetPoint(0)),
                 new WaitCommand(500),
                 driveSubsystem.FollowPath(driveToPark1, false),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.1)),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0.1)),
                 driveSubsystem.FollowPath(driveToPark2,true)
         );
     }
@@ -169,19 +167,19 @@ public class bucketCycleAutoRNG extends StealthOpMode {
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
                 new InstantCommand(()->driveSubsystem.setPose(startPose)),
-                new InstantCommand(()->lifterSubsystem.setUsePID(true)),
-                new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.5)),
-                new InstantCommand(()->lifterSubsystem.moveArm(1)),
+                new InstantCommand(()-> elevatorSubsystem.setUsePID(true)),
+                new InstantCommand(()-> extendoSubsystem.setMaxSpeed(0.5)),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(1)),
                 new InstantCommand(()->flipperSubsystem.goToPos(0.55)),
-                new InstantCommand(()->reacherSubsystem.setSetPoint(0.3)),
+                new InstantCommand(()-> extendoSubsystem.setSetPoint(0.3)),
                 new WaitCommand(1000),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(startToScore, true),
                         delayedScore(750)),
-                new InstantCommand(()->reacherSubsystem.setSetPoint(0.3)),
+                new InstantCommand(()-> extendoSubsystem.setSetPoint(0.3)),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(driveToBlock1, true),
-                        new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.7)),
+                        new InstantCommand(()-> extendoSubsystem.setMaxSpeed(0.7)),
                         delayedDeploy(600,1)),
                 new WaitCommand(600),
                 intakeBlock(),
@@ -189,10 +187,10 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(block1ToScore, true),
                         delayedScore(750)),
-                new InstantCommand(()->reacherSubsystem.setSetPoint(0.3)),
+                new InstantCommand(()-> extendoSubsystem.setSetPoint(0.3)),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(driveToBlock2, true),
-                        new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.7)),
+                        new InstantCommand(()-> extendoSubsystem.setMaxSpeed(0.7)),
                         delayedDeploy(500,0.9)),
                 new WaitCommand(400),
                 intakeBlock(),
@@ -200,20 +198,20 @@ public class bucketCycleAutoRNG extends StealthOpMode {
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(block2ToScore, true),
                         delayedScore(900)),
-                new InstantCommand(()->reacherSubsystem.setSetPoint(0.6)),
+                new InstantCommand(()-> extendoSubsystem.setSetPoint(0.6)),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(driveToBlock3, true),
-                        new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.7)),
+                        new InstantCommand(()-> extendoSubsystem.setMaxSpeed(0.7)),
                         delayedDeploy(800,0.9)),
                 new WaitCommand(400),
                 intakeBlock(),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(block3ToScore, true),
                         delayedScore(1500)),
-                new InstantCommand(()->reacherSubsystem.setSetPoint(0.5)),
+                new InstantCommand(()-> extendoSubsystem.setSetPoint(0.5)),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(driveToSub, false),
-                        new InstantCommand(()->reacherSubsystem.setMaxSpeed(1)),
+                        new InstantCommand(()-> extendoSubsystem.setMaxSpeed(1)),
                         delayedDeploy(3000,1)),
                 new ParallelCommandGroup(
                         driveSubsystem.FollowPath(wobble1, true),

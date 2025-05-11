@@ -4,10 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleSupplier;
 @Config
 public class lifterDefaultCommand extends CommandBase {
@@ -16,14 +15,14 @@ public class lifterDefaultCommand extends CommandBase {
     private final BooleanSupplier input3;
     private final DoubleSupplier input4;
     private final DoubleSupplier input5;
-    private final LifterSubsystem lifter;
+    private final ElevatorSubsystem lifter;
     private final ClawSubsystem claw;
     private final double manualControlIncrement = 300;
     private final double zeroThreshold = 50;
     private boolean manualControl;
     public static double zeroPowerConstant = -0.1;
 
-    public lifterDefaultCommand (LifterSubsystem lifter, ClawSubsystem claw, BooleanSupplier input1, BooleanSupplier input2, BooleanSupplier input3, DoubleSupplier input4, DoubleSupplier input5){
+    public lifterDefaultCommand (ElevatorSubsystem lifter, ClawSubsystem claw, BooleanSupplier input1, BooleanSupplier input2, BooleanSupplier input3, DoubleSupplier input4, DoubleSupplier input5){
         this.lifter = lifter;
         this.claw = claw;
         this.input1 = input1;

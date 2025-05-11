@@ -46,7 +46,4 @@ public class StealthSubsystem extends SubsystemBase {
     public Command runEnd(Runnable run, Runnable end) {
         return Commands.runEnd(run, end, this);
     }
-
-
-
 }

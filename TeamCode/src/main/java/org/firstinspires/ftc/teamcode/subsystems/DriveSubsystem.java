@@ -22,7 +22,7 @@ public class DriveSubsystem extends StealthSubsystem {
         this.telemetry = telemetry;
     }
 
-    public void startTeleopDrive(){
+    public void startTeleopDrive() {
         follower.startTeleopDrive();
     }
 

@@ -27,10 +27,6 @@ public class ClawSubsystem extends StealthSubsystem {
         clawServo = hardwareMap.get(Servo.class, "clawServo");
     }
 
-    public Command defaultCommand(BooleanSupplier toggle) {
-        return this.run(() -> );
-    }
-
     public ClawState getState() {
         return state;
     }

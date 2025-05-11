@@ -1,28 +1,18 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.arcrobotics.ftclib.command.InstantCommand;
-        import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-        import org.firstinspires.ftc.teamcode.commands.deployIntakeCommand;
-        import org.firstinspires.ftc.teamcode.commands.eyesDefaultCommand;
-import org.firstinspires.ftc.teamcode.commands.lifterDefaultCommand;
-        import org.firstinspires.ftc.teamcode.commands.retractIntakeCommand;
-import org.firstinspires.ftc.teamcode.commands.reverseIntakeCommand;
-import org.firstinspires.ftc.teamcode.commands.toggleClawCommand;
-import org.firstinspires.ftc.teamcode.commands.togglePanTiltCommand;
-import org.firstinspires.ftc.teamcode.commands.zeroLifterCommand;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
-import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
 import org.stealthrobotics.library.AutoToTeleStorage;
         import org.stealthrobotics.library.opmodes.StealthOpMode;
 
@@ -31,11 +21,10 @@ public class Teleop extends StealthOpMode {
     DriveSubsystem drive;
     Mecanum mecanum;
 
-    LifterSubsystem elevator;
-    LifterPanSubsystem pan;
-    ReacherSubsystem extendo;
+    ElevatorSubsystem elevator;
+    PanSubsystem pan;
+    ExtendoSubsystem extendo;
     IntakeSubsystem intake;
-
     ClawSubsystem claw;
 
     LimelightSubsystem ll;
@@ -45,15 +34,16 @@ public class Teleop extends StealthOpMode {
 
     @Override
     public void initialize() {
-//        elevator = new LifterSubsystem(hardwareMap, telemetry);
-//        extendo = new ReacherSubsystem(hardwareMap, telemetry);
+        elevator = new ElevatorSubsystem(hardwareMap, telemetry);
+        extendo = new ExtendoSubsystem(hardwareMap, telemetry);
         intake = new IntakeSubsystem(hardwareMap);
         claw = new ClawSubsystem(hardwareMap);
         drive = new DriveSubsystem(hardwareMap, telemetry);
-//        pan = new LifterPanSubsystem(hardwareMap);
+        pan = new PanSubsystem(hardwareMap);
         mecanum = new Mecanum(hardwareMap, telemetry);
-//        ll = new LimelightSubsystem(hardwareMap, telemetry);
+        ll = new LimelightSubsystem(hardwareMap, telemetry);
 
+        //! What is this?
         mecanum.setHeading(AutoToTeleStorage.finalAutoHeading);
 
         driverGamepad = new GamepadEx(gamepad1);
@@ -68,6 +58,6 @@ public class Teleop extends StealthOpMode {
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> mecanum.resetHeading()));
 //        driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(new togglePanTiltCommand(panSubsystem));
-        driverGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new toggleClawCommand(claw));
+        driverGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new InstantCommand(() -> claw.toggleState()));
     }
 }

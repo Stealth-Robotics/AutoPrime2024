@@ -2,14 +2,12 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
-
-import java.util.function.BooleanSupplier;
+import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 
 public class zeroLifterCommand extends CommandBase {
-    private LifterSubsystem lifter;
+    private ElevatorSubsystem lifter;
 
-    public zeroLifterCommand(LifterSubsystem lifter){
+    public zeroLifterCommand(ElevatorSubsystem lifter){
         this.lifter = lifter;
     }
     @Override

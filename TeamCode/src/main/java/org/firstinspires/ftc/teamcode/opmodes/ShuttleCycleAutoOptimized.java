@@ -15,13 +15,13 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 @Autonomous (name = "clipAuto")
 public class ShuttleCycleAutoOptimized extends StealthOpMode {
     Follower follower;
     DriveSubsystem driveSubsystem;
-    LifterSubsystem lifterSubsystem;
+    ElevatorSubsystem elevatorSubsystem;
     ClawSubsystem clawSubsystem;
     static Pose startPose = new Pose(8.25,65,0);
     static Pose score1Pose = new Pose(37.75,65,0);
@@ -43,7 +43,7 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
     public void initialize(){
         follower = new Follower(hardwareMap);
         driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
-        lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
+        elevatorSubsystem = new ElevatorSubsystem(hardwareMap, telemetry);
         clawSubsystem = new ClawSubsystem(hardwareMap);
         driveToScore1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(startPose), new Point(score1Pose)))
@@ -120,24 +120,24 @@ public class ShuttleCycleAutoOptimized extends StealthOpMode {
         return new SequentialCommandGroup(
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawClosed)),
                 new WaitCommand(300),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.39))
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0.39))
         );
     }
     private Command score(){
         return new SequentialCommandGroup(
-                new InstantCommand(()->lifterSubsystem.moveArm(0.26)),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0.26)),
                 new WaitCommand(300),
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawOpen)),
                 new WaitCommand(100),
-                new InstantCommand(()->lifterSubsystem.moveArm(0))
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0))
         );
     }
     @Override
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
                 new InstantCommand(()->driveSubsystem.setPose(startPose)),
-                new InstantCommand(()->lifterSubsystem.setUsePID(true)),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.39)),
+                new InstantCommand(()-> elevatorSubsystem.setUsePID(true)),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0.39)),
                 new InstantCommand(()->clawSubsystem.setPos(clawSubsystem.clawClosed)),
                 driveSubsystem.FollowPath(driveToScore1,true),
                 score(),

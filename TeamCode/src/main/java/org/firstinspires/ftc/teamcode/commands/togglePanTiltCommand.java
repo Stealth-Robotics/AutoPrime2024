@@ -2,11 +2,11 @@ package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 
 public class togglePanTiltCommand extends CommandBase {
-    LifterPanSubsystem pan;
-    public togglePanTiltCommand(LifterPanSubsystem pan){
+    PanSubsystem pan;
+    public togglePanTiltCommand(PanSubsystem pan){
         this.pan = pan;
     }
     @Override

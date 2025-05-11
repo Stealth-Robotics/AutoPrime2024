@@ -5,10 +5,10 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 //This command is not used
 public class placeSpecimenCommand extends SequentialCommandGroup {
-    public placeSpecimenCommand(LifterSubsystem lifter, ClawSubsystem claw, double lifterPosition){
+    public placeSpecimenCommand(ElevatorSubsystem lifter, ClawSubsystem claw, double lifterPosition){
         addCommands(
                 new InstantCommand(()->lifter.moveArm((lifter.getPosition()-100)/lifterPosition)),
                 new WaitCommand(1000),

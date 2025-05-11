@@ -14,11 +14,10 @@ import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.FlipperSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LifterPanSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LifterSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.ReacherSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
 import org.stealthrobotics.library.Commands;
 import org.stealthrobotics.library.commands.SaveAutoHeadingCommand;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
@@ -27,9 +26,9 @@ import org.stealthrobotics.library.opmodes.StealthOpMode;
 public class bucketCycleAutoTuned extends StealthOpMode {
     DriveSubsystem driveSubsystem;
     Follower follower;
-    LifterSubsystem lifterSubsystem;
-    LifterPanSubsystem panSubsystem;
-    ReacherSubsystem reacherSubsystem;
+    ElevatorSubsystem elevatorSubsystem;
+    PanSubsystem panSubsystem;
+    ExtendoSubsystem extendoSubsystem;
     IntakeSubsystem intakeSubsystem;
     FlipperSubsystem flipperSubsystem;
     static Pose startPose = new Pose(10.916,118,Math.toRadians(135));
@@ -45,9 +44,9 @@ public class bucketCycleAutoTuned extends StealthOpMode {
     public void initialize(){
         driveSubsystem = new DriveSubsystem(hardwareMap, telemetry);
         follower = new Follower(hardwareMap);
-        lifterSubsystem = new LifterSubsystem(hardwareMap, telemetry);
-        panSubsystem = new LifterPanSubsystem(hardwareMap);
-        reacherSubsystem = new ReacherSubsystem(hardwareMap, telemetry);
+        elevatorSubsystem = new ElevatorSubsystem(hardwareMap, telemetry);
+        panSubsystem = new PanSubsystem(hardwareMap);
+        extendoSubsystem = new ExtendoSubsystem(hardwareMap, telemetry);
         intakeSubsystem = new IntakeSubsystem(hardwareMap);
         flipperSubsystem = new FlipperSubsystem(hardwareMap);
         startToScore = follower.pathBuilder()
@@ -93,14 +92,14 @@ public class bucketCycleAutoTuned extends StealthOpMode {
     }
     public Command intakeBlock(){
         return new SequentialCommandGroup(
-                new InstantCommand(()->lifterSubsystem.moveArm(0)),
-                new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.7)),
-                new groundIntakeCommand(intakeSubsystem, reacherSubsystem, flipperSubsystem, 1),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0)),
+                new InstantCommand(()-> extendoSubsystem.setMaxSpeed(0.7)),
+                new groundIntakeCommand(intakeSubsystem, extendoSubsystem, flipperSubsystem, 1),
                 new WaitCommand(1000),
-                new zeroLifterCommand(lifterSubsystem),
-                new InstantCommand(()->reacherSubsystem.setMaxSpeed(1)),
-                new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,lifterSubsystem,panSubsystem),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.95)));
+                new zeroLifterCommand(elevatorSubsystem),
+                new InstantCommand(()-> extendoSubsystem.setMaxSpeed(1)),
+                new retractIntakeCommand(extendoSubsystem,flipperSubsystem,intakeSubsystem, elevatorSubsystem,panSubsystem),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0.95)));
     }
     public Command scoreBlock(){
         return new SequentialCommandGroup(
@@ -110,18 +109,18 @@ public class bucketCycleAutoTuned extends StealthOpMode {
                 new WaitCommand(50),
                 new InstantCommand(()->panSubsystem.setPos(panSubsystem.out)),
                 new WaitCommand(400),
-                new InstantCommand(()->reacherSubsystem.setSetPoint(0.3))
+                new InstantCommand(()-> extendoSubsystem.setSetPoint(0.3))
         );
     }
     @Override
     public Command getAutoCommand(){
         return new SequentialCommandGroup(
                 new InstantCommand(()->driveSubsystem.setPose(startPose)),
-                new InstantCommand(()->lifterSubsystem.setUsePID(true)),
-                new InstantCommand(()->reacherSubsystem.setMaxSpeed(0.5)),
-                new InstantCommand(()->lifterSubsystem.moveArm(1)),
+                new InstantCommand(()-> elevatorSubsystem.setUsePID(true)),
+                new InstantCommand(()-> extendoSubsystem.setMaxSpeed(0.5)),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(1)),
                 new InstantCommand(()->flipperSubsystem.goToPos(0.55)),
-                new InstantCommand(()->reacherSubsystem.setSetPoint(0.3)),
+                new InstantCommand(()-> extendoSubsystem.setSetPoint(0.3)),
                 new WaitCommand(1000),
                 driveSubsystem.FollowPath(startToScore, true),
                 scoreBlock(),
@@ -136,16 +135,16 @@ public class bucketCycleAutoTuned extends StealthOpMode {
                 driveSubsystem.FollowPath(block2ToScore, true),
                 scoreBlock(),
                 driveSubsystem.FollowPath(driveToBlock3, true),
-                new InstantCommand(()->lifterSubsystem.moveArm(0)),
-                new groundIntakeCommand(intakeSubsystem, reacherSubsystem, flipperSubsystem, 0.5),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0)),
+                new groundIntakeCommand(intakeSubsystem, extendoSubsystem, flipperSubsystem, 0.5),
                 new WaitCommand(500),
-                new zeroLifterCommand(lifterSubsystem),
-                new retractIntakeCommand(reacherSubsystem,flipperSubsystem,intakeSubsystem,lifterSubsystem,panSubsystem),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.95)),
+                new zeroLifterCommand(elevatorSubsystem),
+                new retractIntakeCommand(extendoSubsystem,flipperSubsystem,intakeSubsystem, elevatorSubsystem,panSubsystem),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0.95)),
                 driveSubsystem.FollowPath(block2ToScore, true),
                 scoreBlock(),
                 driveSubsystem.FollowPath(driveToPark1, false),
-                new InstantCommand(()->lifterSubsystem.moveArm(0.1)),
+                new InstantCommand(()-> elevatorSubsystem.moveArm(0.1)),
                 driveSubsystem.FollowPath(driveToPark2, true)
         ).raceWith(Commands.run(() -> new SaveAutoHeadingCommand(()->follower.getTotalHeading())));
     }
