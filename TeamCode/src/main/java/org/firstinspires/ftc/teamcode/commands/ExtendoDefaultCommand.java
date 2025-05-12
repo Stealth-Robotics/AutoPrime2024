@@ -29,7 +29,7 @@ public class ExtendoDefaultCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (Math.abs(elevator.getPosition()) < 0.1) {
+        if (Math.abs(elevator.getPosition()) < 0.1 && Math.abs(leftTrigger.getAsDouble() - rightTrigger.getAsDouble()) > 0.1) {
             extendo.setMode(ExtendoMode.MANUAL);
             extendo.setPower(leftTrigger.getAsDouble() - rightTrigger.getAsDouble());
         }

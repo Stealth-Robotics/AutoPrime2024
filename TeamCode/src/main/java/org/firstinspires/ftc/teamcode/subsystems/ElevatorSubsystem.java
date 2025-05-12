@@ -4,12 +4,10 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
@@ -17,17 +15,21 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 
 import org.stealthrobotics.library.StealthSubsystem;
 
-import java.util.function.DoubleSupplier;
-
 @Config
 public class ElevatorSubsystem extends StealthSubsystem {
     private final MotorEx leftMotor;
     private final MotorEx rightMotor;
 
+    //Only used for telemetry
+    private ElevatorPosition currTarget = ElevatorPosition.HOME;
+
+    private boolean usePID = false;
+    private boolean hold = false;
+
+    private DigitalChannel limitSwitch;
+
     private final MotorGroup elevatorMotors;
     private final PIDFController elevatorPID;
-
-    private ElevatorMode mode = ElevatorMode.PID;
 
     private final double kP = 0.006;
     private final double kI = 0.0;
@@ -35,15 +37,14 @@ public class ElevatorSubsystem extends StealthSubsystem {
     private final double kF = 0.0;
 
     private final double TOLERANCE = 10.0;
-    private final double ELEVATOR_SPEED = 1.0;
     private final double MAX_HEIGHT = 3300;
 
     public enum ElevatorPosition {
-        HIGH_BUCKET(0),
-        LOW_BUCKET(0),
-        LOW_CHAMBER(0),
-        HIGH_CHAMBER(0),
-        HOME(0);
+        HIGH_BUCKET(1.0),
+        LOW_BUCKET(0.5),
+        LOW_CHAMBER(0.7),
+        HIGH_CHAMBER(0.2),
+        HOME(0.0);
 
         private final double position;
         ElevatorPosition(double position) {
@@ -51,15 +52,11 @@ public class ElevatorSubsystem extends StealthSubsystem {
         }
     }
 
-    public enum ElevatorMode {
-        MANUAL,
-        PID,
-        HOLDING
-    }
-
     public ElevatorSubsystem(HardwareMap hardwareMap) {
         leftMotor = new MotorEx(hardwareMap, "leftElevatorMotor");
         rightMotor = new MotorEx(hardwareMap, "rightElevatorMotor");
+
+        limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
 
         rightMotor.setInverted(true);
 
@@ -68,49 +65,55 @@ public class ElevatorSubsystem extends StealthSubsystem {
         elevatorMotors.setRunMode(Motor.RunMode.RawPower);
         elevatorMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
 
-        elevatorMotors.stopAndResetEncoder();
+        rightMotor.stopAndResetEncoder();
 
         elevatorPID = new PIDFController(kP, kI, kD, kF);
         elevatorPID.setTolerance(TOLERANCE);
     }
 
-    //Set the elevator position as a percentage of its max height
     public void setPosition(ElevatorPosition pos) {
-        setMode(ElevatorMode.PID);
+        currTarget = pos;
         elevatorPID.setSetPoint(pos.position * MAX_HEIGHT);
     }
 
-    public void home() {
-        elevatorMotors.resetEncoder();
-        setPosition(ElevatorPosition.HOME);
+    public void setPower(double power) {
+        elevatorMotors.set(power);
+    }
+
+    public void setUsePID(boolean value){
+        usePID = value;
+    }
+
+    public boolean getHold() {
+        return hold;
+    }
+
+    public void toggleHold() {
+        hold = !hold;
     }
 
     public int getPosition() {
         return -rightMotor.getCurrentPosition();
     }
 
-    public void setMode(ElevatorMode mode) {
-        this.mode = mode;
+    public void resetEncoder() {
+        rightMotor.resetEncoder();
     }
 
-    public void setElevatorPower(double power) {
-        rightMotor.set(power * ELEVATOR_SPEED);
-    }
-
-    private void holdPosition() {
+    public void holdPosition() {
         elevatorPID.setSetPoint(elevatorMotors.getCurrentPosition());
+    }
+
+    public boolean getLimitSwitch() {
+        return limitSwitch.getState();
     }
 
     @Override
     public void periodic() {
-        if (mode == ElevatorMode.PID) {
-            double calc = elevatorPID.calculate(getPosition());
-            setElevatorPower(-calc);
-        }
-        else if (mode == ElevatorMode.HOLDING) {
-            holdPosition();
+        if (usePID) {
+            setPower(-elevatorPID.calculate(getPosition()));
         }
 
-        telemetry.addData("ElevatorMode: ", mode.name());
+        telemetry.addData("Elevator Target: ", currTarget);
     }
 }
