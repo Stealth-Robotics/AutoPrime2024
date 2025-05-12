@@ -6,6 +6,7 @@ import androidx.core.math.MathUtils;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -26,7 +27,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
     private final double kD = 0.00000001;
     
     private final double tolerance = 0.0;
-    private final double maxReach = 1300;
+    private final double MAX_EXTENSION = 1300;
 
     public ExtendoSubsystem(HardwareMap hardwareMap) {
         extensionMotor = hardwareMap.get(DcMotorEx.class, "extensionMotor");
@@ -36,9 +37,15 @@ public class ExtendoSubsystem extends StealthSubsystem {
         extensionPID = new PIDController(kP, kI, kD);
         extensionPID.setTolerance(tolerance);
     }
+
+    public Command home() {
+        return this.runOnce(
+                () -> setSetPoint(0.0)
+        );
+    }
     
-    public void setSetPoint(double setPoint) {
-        extensionPID.setSetPoint(setPoint * maxReach);
+    private void setSetPoint(double setPoint) {
+        extensionPID.setSetPoint(setPoint * MAX_EXTENSION);
     }
 
     public void resetEncoder() {

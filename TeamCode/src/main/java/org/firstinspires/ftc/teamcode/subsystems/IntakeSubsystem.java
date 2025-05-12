@@ -12,6 +12,10 @@ public class IntakeSubsystem extends StealthSubsystem {
     private final Servo intakeServo;
     private final Servo wristServo;
 
+    //TODO tune
+    private final double WRIST_UP_POSITION = 0.0;
+    private final double WRIST_DOWN_POSITION = 0.0;
+
     private final ColorSensor colorSensor;
 
     public enum ColorList {
@@ -28,12 +32,38 @@ public class IntakeSubsystem extends StealthSubsystem {
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
     }
 
-    public void setWristPosition(double pos) {
-        wristServo.setPosition(pos);
+    public Command wristUp() {
+        return this.runOnce(
+                () -> setWristPosition(WRIST_UP_POSITION)
+        );
     }
 
-    public double getWristPosition() {
-        return wristServo.getPosition();
+    public Command wristDown() {
+        return this.runOnce(
+                () -> setWristPosition(WRIST_DOWN_POSITION)
+        );
+    }
+
+    public Command intake() {
+        return this.runOnce(
+                () -> setIntakeSpeed(1)
+        );
+    }
+
+    public Command outtake() {
+        return this.runOnce(
+                () -> setIntakeSpeed(-1)
+        );
+    }
+
+    public Command stop() {
+        return this.runOnce(
+                () -> setIntakeSpeed(0)
+        );
+    }
+
+    public void setWristPosition(double pos) {
+        wristServo.setPosition(pos);
     }
 
     public void setIntakeSpeed(double speed) {

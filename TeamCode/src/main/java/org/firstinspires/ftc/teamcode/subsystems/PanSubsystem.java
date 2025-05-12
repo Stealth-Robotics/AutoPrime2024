@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.arcrobotics.ftclib.command.Command;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -10,7 +11,7 @@ public class PanSubsystem extends StealthSubsystem {
     private PanState state;
 
     public enum PanState {
-        INTAKE(0.7),
+        HOME(0.7),
         SCORE(0.3);
 
         private final double setpoint;
@@ -23,7 +24,19 @@ public class PanSubsystem extends StealthSubsystem {
         panServo = hardwareMap.get(Servo.class,"panServo");
     }
 
-    public void setPanPosition(PanState state) {
+    public Command home() {
+        return this.runOnce(
+                () -> setPanPosition(PanState.HOME)
+        );
+    }
+
+    public Command score() {
+        return this.runOnce(
+                () -> setPanPosition(PanState.SCORE)
+        );
+    }
+
+    private void setPanPosition(PanState state) {
         this.state = state;
         panServo.setPosition(state.setpoint);
     }

@@ -1,38 +1,31 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.stealthrobotics.library.Commands;
 import org.stealthrobotics.library.StealthSubsystem;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-public class Mecanum extends StealthSubsystem {
+import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
+
+public class MecanumSubsystem extends StealthSubsystem {
     private final DcMotorEx frontLeft;
     private final DcMotorEx frontRight;
     private final DcMotorEx backLeft;
     private final DcMotorEx backRight;
-    private Telemetry telemetry;
-    SparkFunOTOS otos;
-    double headingOffset = 0;
 
-    public Mecanum(HardwareMap hardwareMap, Telemetry telemetry) {
+    private final SparkFunOTOS otos;
+
+    public MecanumSubsystem(HardwareMap hardwareMap) {
         frontLeft = hardwareMap.get(DcMotorEx.class, "leftFront");
         frontRight = hardwareMap.get(DcMotorEx.class, "rightFront");
         backLeft = hardwareMap.get(DcMotorEx.class, "leftRear");
         backRight = hardwareMap.get(DcMotorEx.class, "rightRear");
-        this.telemetry = telemetry;
 
-        //TODO: Check
         frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
         backLeft.setDirection(DcMotorEx.Direction.REVERSE);
 
@@ -41,31 +34,19 @@ public class Mecanum extends StealthSubsystem {
         backLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        //imu = hardwareMap.get(IMU.class, "imu");
         otos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
-        //TODO: Must update with correct values
-        IMU.Parameters imuParameters = new IMU.Parameters(
-                new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
-                )
-        );
         otos.calibrateImu();
-
-        //imu.initialize(imuParameters);
     }
-    public void setHeading(double headingOffset){
-        otos.setOffset(new SparkFunOTOS.Pose2D(0,0,headingOffset));
+
+    public void setHeading(double headingOffset) {
+        otos.setOffset(new SparkFunOTOS.Pose2D(0,0, headingOffset));
     }
 
     public double getHeading() {
-        //return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset;
-        //return Math.PI;
         return otos.getPosition().h;
     }
 
     public void resetHeading() {
-        //headingOffset = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         otos.resetTracking();
     }
 
@@ -100,8 +81,9 @@ public class Mecanum extends StealthSubsystem {
     public Command driveTeleop(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot, BooleanSupplier halfSpeedBumper) {
         return this.run(() -> drive(x.getAsDouble(), -y.getAsDouble(), rot.getAsDouble(), halfSpeedBumper.getAsBoolean()));
     }
+
     @Override
-    public void periodic(){
+    public void periodic() {
         telemetry.addData("heading", getHeading());
     }
 }

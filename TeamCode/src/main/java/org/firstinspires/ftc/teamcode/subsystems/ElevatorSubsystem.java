@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.command.Command;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
@@ -15,13 +17,7 @@ import org.stealthrobotics.library.StealthSubsystem;
 
 @Config
 public class ElevatorSubsystem extends StealthSubsystem {
-    private final MotorEx leftMotor;
-    private final MotorEx rightMotor;
-
     private final MotorGroup elevatorMotors;
-
-    private final DigitalChannel limitSwitch;
-
     private final PIDFController elevatorPID;
 
     private final double kP = 0.006;
@@ -31,12 +27,12 @@ public class ElevatorSubsystem extends StealthSubsystem {
 
     private final double tolerance = 10.0;
 
-    private final double SPEED = 1.0;
+    private final double ELEVATOR_SPEED = 1.0;
     private final double MAX_HEIGHT = 3300;
 
     public ElevatorSubsystem(HardwareMap hardwareMap) {
-        leftMotor = new MotorEx(hardwareMap, "leftElevatorMotor");
-        rightMotor = new MotorEx(hardwareMap, "rightElevatorMotor");
+        MotorEx leftMotor = new MotorEx(hardwareMap, "leftElevatorMotor");
+        MotorEx rightMotor = new MotorEx(hardwareMap, "rightElevatorMotor");
 
         rightMotor.setInverted(true);
 
@@ -49,29 +45,32 @@ public class ElevatorSubsystem extends StealthSubsystem {
 
         elevatorPID = new PIDFController(kP, kI, kD, kF);
         elevatorPID.setTolerance(tolerance);
-
-        limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
-    }
-
-    //Set the elevator position as a percentage of its max height
-    public void setElevatorPosition(double position) {
-        if (position > 1.0) throw new IllegalArgumentException("Trying to exceed elevator's height limit");
-        elevatorPID.setSetPoint(position * MAX_HEIGHT);
     }
 
     //TODO Add a hold mode for automatic climb sequence
+
+    //Set the elevator position as a percentage of its max height
+    public Command setPosition(double position) {
+        if (position > 1.0) throw new IllegalArgumentException("Trying to exceed elevator's height limit");
+        return this.runOnce(
+                () -> elevatorPID.setSetPoint(position * MAX_HEIGHT)
+        );
+    }
+
+    public Command home() {
+        return new SequentialCommandGroup(
+                new InstantCommand(elevatorMotors::resetEncoder),
+                setPosition(0.0)
+        );
+    }
 
     public int getPosition() {
         return -elevatorMotors.getCurrentPosition();
     }
 
-    public boolean getLimitSwitch() {
-        return limitSwitch.getState();
-    }
-
     @Override
     public void periodic() {
         double calc = elevatorPID.calculate(getPosition());
-        elevatorMotors.set(-calc * SPEED);
+        elevatorMotors.set(-calc * ELEVATOR_SPEED);
     }
 }

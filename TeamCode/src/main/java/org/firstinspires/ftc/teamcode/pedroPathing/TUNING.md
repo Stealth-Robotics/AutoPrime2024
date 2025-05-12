@@ -1,6 +1,6 @@
 ## Prerequisites
 Obviously, you have to have a robot to use Pedro Pathing. Also, Pedro Pathing is only able to work
-with omnidirectional drives, like mecanum drive. There is currently no support for swerve drives.
+with omnidirectional drives, like mecanumSubsystem drive. There is currently no support for swerve drives.
 You must also have a localizer of some sort. Pedro Pathing has a drive encoder, a two tracking wheel,
 and a three tracking wheel localizer. You will need to have your localizer tuned before starting to
 tune PedroPathing. Check out the tuning guide under the localization tab if you're planning on using one of the
@@ -18,7 +18,7 @@ measurements will be in centimeters.
   and the mass, with the variable name `mass`, should be put on line `86` in the `FollowerConstants`
   class under the `tuning` package.
 
-* Next, we need to find the preferred mecanum drive vectors. The rollers on mecanum wheels point at a
+* Next, we need to find the preferred mecanumSubsystem drive vectors. The rollers on mecanumSubsystem wheels point at a
   45 degree angle from the forward direction, but the actual direction the force is output is actually
   closer to forward. To find the direction your wheels will go, you will need to run the
   `Forward Velocity Tuner` and `Strafe Velocity Tuner` OpModes. These will run your robot at full
