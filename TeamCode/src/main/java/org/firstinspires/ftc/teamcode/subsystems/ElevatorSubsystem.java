@@ -21,6 +21,9 @@ import java.util.function.DoubleSupplier;
 
 @Config
 public class ElevatorSubsystem extends StealthSubsystem {
+    private final MotorEx leftMotor;
+    private final MotorEx rightMotor;
+
     private final MotorGroup elevatorMotors;
     private final PIDFController elevatorPID;
 
@@ -55,8 +58,8 @@ public class ElevatorSubsystem extends StealthSubsystem {
     }
 
     public ElevatorSubsystem(HardwareMap hardwareMap) {
-        MotorEx leftMotor = new MotorEx(hardwareMap, "leftElevatorMotor");
-        MotorEx rightMotor = new MotorEx(hardwareMap, "rightElevatorMotor");
+        leftMotor = new MotorEx(hardwareMap, "leftElevatorMotor");
+        rightMotor = new MotorEx(hardwareMap, "rightElevatorMotor");
 
         rightMotor.setInverted(true);
 
@@ -83,7 +86,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
     }
 
     public int getPosition() {
-        return -elevatorMotors.getCurrentPosition();
+        return -rightMotor.getCurrentPosition();
     }
 
     public void setMode(ElevatorMode mode) {
@@ -91,7 +94,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
     }
 
     public void setElevatorPower(double power) {
-        elevatorMotors.set(power * ELEVATOR_SPEED);
+        rightMotor.set(power * ELEVATOR_SPEED);
     }
 
     private void holdPosition() {
@@ -102,7 +105,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
     public void periodic() {
         if (mode == ElevatorMode.PID) {
             double calc = elevatorPID.calculate(getPosition());
-            elevatorMotors.set(-calc * ELEVATOR_SPEED);
+            setElevatorPower(-calc);
         }
         else if (mode == ElevatorMode.HOLDING) {
             holdPosition();
