@@ -20,14 +20,32 @@ import org.stealthrobotics.library.StealthSubsystem;
 public class ExtendoSubsystem extends StealthSubsystem {
     private final DcMotorEx extensionMotor;
     private final PIDController extensionPID;
+
+    private ExtendoMode mode = ExtendoMode.PID;
     
-    //Extension PID constants
     private final double kP = 0.002;
     private final double kI = 0.00000001;
     private final double kD = 0.00000001;
+
+    private final double EXTENDO_SPEED = 1.0;
     
     private final double tolerance = 0.0;
     private final double MAX_EXTENSION = 1300;
+
+    public enum ExtendoPosition {
+        DEPLOYED(0.0),
+        HOME(0.0);
+
+        private final double position;
+        ExtendoPosition(double position) {
+            this.position = position;
+        }
+    }
+
+    public enum ExtendoMode {
+        MANUAL,
+        PID
+    }
 
     public ExtendoSubsystem(HardwareMap hardwareMap) {
         extensionMotor = hardwareMap.get(DcMotorEx.class, "extensionMotor");
@@ -38,14 +56,17 @@ public class ExtendoSubsystem extends StealthSubsystem {
         extensionPID.setTolerance(tolerance);
     }
 
-    public Command home() {
-        return this.runOnce(
-                () -> setSetPoint(0.0)
-        );
+    public void setPower(double power) {
+        extensionMotor.setPower(power * EXTENDO_SPEED);
+    }
+
+    public void setMode(ExtendoMode mode) {
+        this.mode = mode;
     }
     
-    private void setSetPoint(double setPoint) {
-        extensionPID.setSetPoint(setPoint * MAX_EXTENSION);
+    private void setPosition(ExtendoPosition pos) {
+        setMode(ExtendoMode.PID);
+        extensionPID.setSetPoint(pos.position * MAX_EXTENSION);
     }
 
     public void resetEncoder() {
@@ -59,7 +80,9 @@ public class ExtendoSubsystem extends StealthSubsystem {
 
     @Override
     public void periodic() {
-        double calc = extensionPID.calculate(getPosition());
-        extensionMotor.setPower(calc);
+        if (mode == ExtendoMode.PID) {
+            double calc = extensionPID.calculate(getPosition());
+            extensionMotor.setPower(calc);
+        }
     }
 }
