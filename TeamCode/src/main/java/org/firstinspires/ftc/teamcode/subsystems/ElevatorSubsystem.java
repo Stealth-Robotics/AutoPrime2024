@@ -4,6 +4,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.command.Command;
+import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
@@ -15,18 +17,21 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 
 import org.stealthrobotics.library.StealthSubsystem;
 
+import java.util.function.DoubleSupplier;
+
 @Config
 public class ElevatorSubsystem extends StealthSubsystem {
     private final MotorEx leftMotor;
     private final MotorEx rightMotor;
 
+    private final DoubleSupplier manualControl;
+
     //Only used for telemetry
     private ElevatorPosition currTarget = ElevatorPosition.HOME;
 
-    private boolean usePID = false;
-    private boolean hold = false;
+    private ElevatorMode mode = ElevatorMode.PID;
 
-    private DigitalChannel limitSwitch;
+    private final DigitalChannel limitSwitch;
 
     private final MotorGroup elevatorMotors;
     private final PIDFController elevatorPID;
@@ -52,9 +57,17 @@ public class ElevatorSubsystem extends StealthSubsystem {
         }
     }
 
-    public ElevatorSubsystem(HardwareMap hardwareMap) {
+    public enum ElevatorMode {
+        PID,
+        MANUAL,
+        HOLD
+    }
+
+    public ElevatorSubsystem(HardwareMap hardwareMap, DoubleSupplier manualControl) {
         leftMotor = new MotorEx(hardwareMap, "leftElevatorMotor");
         rightMotor = new MotorEx(hardwareMap, "rightElevatorMotor");
+
+        this.manualControl = manualControl;
 
         limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
 
@@ -80,28 +93,25 @@ public class ElevatorSubsystem extends StealthSubsystem {
         elevatorMotors.set(power);
     }
 
-    public void setUsePID(boolean value){
-        usePID = value;
-    }
-
-    public boolean getHold() {
-        return hold;
-    }
-
-    public void toggleHold() {
-        hold = !hold;
-    }
-
     public int getPosition() {
         return -rightMotor.getCurrentPosition();
+    }
+
+    public void setMode(ElevatorMode newMode) {
+        mode = newMode;
     }
 
     public void resetEncoder() {
         rightMotor.resetEncoder();
     }
 
-    public void holdPosition() {
+    private void holdPosition() {
         elevatorPID.setSetPoint(elevatorMotors.getCurrentPosition());
+    }
+
+    public Command manual() {
+        return this.runOnce(() -> mode = ElevatorMode.MANUAL).andThen(new WaitUntilCommand(() -> Math.abs((long) manualControl.getAsDouble()) < 0.05))
+                .andThen(this.runOnce(() -> mode = ElevatorMode.PID)).andThen(this.runOnce(this::holdPosition));
     }
 
     public boolean getLimitSwitch() {
@@ -110,10 +120,23 @@ public class ElevatorSubsystem extends StealthSubsystem {
 
     @Override
     public void periodic() {
-        if (usePID) {
+        if (mode == ElevatorMode.PID) {
             setPower(-elevatorPID.calculate(getPosition()));
+        }
+        else if (mode == ElevatorMode.MANUAL) {
+            setPower(manualControl.getAsDouble());
+        }
+        else if (mode == ElevatorMode.HOLD) {
+            holdPosition();
+        }
+
+        //Re-localize if limit switch triggered
+        if (getLimitSwitch()) {
+            resetEncoder();
+            setPosition(ElevatorPosition.HOME);
         }
 
         telemetry.addData("Elevator Target: ", currTarget);
+        telemetry.addData("Elevator Mode: ", mode.name());
     }
 }

@@ -2,24 +2,25 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
-import androidx.core.math.MathUtils;
-
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.stealthrobotics.library.StealthSubsystem;
+
+import java.util.function.DoubleSupplier;
 
 @Config
 public class ExtendoSubsystem extends StealthSubsystem {
     private final DcMotorEx extensionMotor;
     private final PIDController extensionPID;
+
+    private final DoubleSupplier manualControl;
 
     private ExtendoMode mode = ExtendoMode.PID;
     
@@ -27,13 +28,12 @@ public class ExtendoSubsystem extends StealthSubsystem {
     private final double kI = 0.00000001;
     private final double kD = 0.00000001;
 
-    private final double EXTENDO_SPEED = 1.0;
-    
-    private final double tolerance = 0.0;
+    private final double POSITION_TOLERANCE = 0.0;
+    private final double HOMED_TOLERANCE = 0.0;
     private final double MAX_EXTENSION = 1300;
 
     public enum ExtendoPosition {
-        DEPLOYED(0.0),
+        DEPLOYED(0.5),
         HOME(0.0);
 
         private final double position;
@@ -47,26 +47,36 @@ public class ExtendoSubsystem extends StealthSubsystem {
         PID
     }
 
-    public ExtendoSubsystem(HardwareMap hardwareMap) {
+    public ExtendoSubsystem(HardwareMap hardwareMap, DoubleSupplier manualControl) {
         extensionMotor = hardwareMap.get(DcMotorEx.class, "extensionMotor");
         resetEncoder();
 
         extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         extensionPID = new PIDController(kP, kI, kD);
-        extensionPID.setTolerance(tolerance);
+        extensionPID.setTolerance(POSITION_TOLERANCE);
+
+        this.manualControl = manualControl;
     }
 
     public void setPower(double power) {
-        extensionMotor.setPower(power * EXTENDO_SPEED);
+        extensionMotor.setPower(power);
     }
 
     public void setMode(ExtendoMode mode) {
         this.mode = mode;
     }
+
+    public Command manual() {
+        return this.runOnce(() -> mode = ExtendoMode.MANUAL).andThen(new WaitUntilCommand(() -> Math.abs((long) manualControl.getAsDouble()) < 0.05))
+                .andThen(this.runOnce(() -> mode = ExtendoMode.PID)).andThen(new InstantCommand(() -> extensionPID.setSetPoint(getPosition())));
+    }
     
     private void setPosition(ExtendoPosition pos) {
-        setMode(ExtendoMode.PID);
         extensionPID.setSetPoint(pos.position * MAX_EXTENSION);
+    }
+
+    public boolean isHomed() {
+        return Math.abs(getPosition()) < HOMED_TOLERANCE;
     }
 
     public void resetEncoder() {
@@ -81,8 +91,12 @@ public class ExtendoSubsystem extends StealthSubsystem {
     @Override
     public void periodic() {
         if (mode == ExtendoMode.PID) {
-            double calc = extensionPID.calculate(getPosition());
-            extensionMotor.setPower(calc);
+            extensionMotor.setPower(extensionPID.calculate(getPosition()));
         }
+        else if (mode == ExtendoMode.MANUAL) {
+            setPower(manualControl.getAsDouble());
+        }
+
+        telemetry.addData("Extendo Mode: ", mode.name());
     }
 }
