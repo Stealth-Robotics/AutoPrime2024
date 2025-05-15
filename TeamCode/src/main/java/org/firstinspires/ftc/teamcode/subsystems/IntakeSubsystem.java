@@ -32,34 +32,24 @@ public class IntakeSubsystem extends StealthSubsystem {
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
     }
 
-    public Command wristUp() {
-        return this.runOnce(
-                () -> setWristPosition(WRIST_UP_POSITION)
-        );
+    public void wristUp() {
+        setWristPosition(WRIST_UP_POSITION);
     }
 
-    public Command wristDown() {
-        return this.runOnce(
-                () -> setWristPosition(WRIST_DOWN_POSITION)
-        );
+    public void wristDown() {
+        setWristPosition(WRIST_DOWN_POSITION);
     }
 
-    public Command intake() {
-        return this.runOnce(
-                () -> setIntakeSpeed(1)
-        );
+    public void intake() {
+        setIntakeSpeed(1);
     }
 
-    public Command outtake() {
-        return this.runOnce(
-                () -> setIntakeSpeed(-1)
-        );
+    public void outtake() {
+        setIntakeSpeed(-1);
     }
 
-    public Command stop() {
-        return this.runOnce(
-                () -> setIntakeSpeed(0)
-        );
+    public void stop() {
+        setIntakeSpeed(0);
     }
 
     public void setWristPosition(double pos) {

@@ -7,16 +7,19 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorPosition;
-
 import org.firstinspires.ftc.teamcode.commands.ElevatorDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.ExtendoDefaultCommand;
+import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorPosition;
+import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorMode;
+
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem.ExtendoPosition;
+import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem.ExtendoMode;
 import org.stealthrobotics.library.AutoToTeleStorage;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
@@ -38,8 +41,8 @@ public class Teleop extends StealthOpMode {
     public void initialize() {
         DoubleSupplier triggerManualControl = () -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
 
-        elevator = new ElevatorSubsystem(hardwareMap, triggerManualControl);
-        extendo = new ExtendoSubsystem(hardwareMap, triggerManualControl);
+        elevator = new ElevatorSubsystem(hardwareMap);
+        extendo = new ExtendoSubsystem(hardwareMap);
         intake = new IntakeSubsystem(hardwareMap);
         claw = new ClawSubsystem(hardwareMap);
         pan = new PanSubsystem(hardwareMap);
@@ -56,26 +59,29 @@ public class Teleop extends StealthOpMode {
                 )
         );
 
-        //Manual elevator controls
-        new Trigger(() -> Math.abs(triggerManualControl.getAsDouble()) > 0.05 && extendo.isHomed())
-                .whenActive(elevator.manual(), true);
-
-        //Manual extendo controls
-        new Trigger(() -> Math.abs(triggerManualControl.getAsDouble()) > 0.05 && !extendo.isHomed())
-                .whenActive(extendo.manual(), true);
+//        //Manual elevator controls
+//        elevator.setDefaultCommand(
+//                new ElevatorDefaultCommand(elevator, extendo, triggerManualControl)
+//        );
+//
+//        //Manual extendo controls
+//        extendo.setDefaultCommand(
+//                new ExtendoDefaultCommand(extendo, triggerManualControl)
+//        );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.START).whenPressed(new InstantCommand(() -> mecanum.resetHeading()));
         driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> claw.toggleState()));
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.BACK).whenPressed(
-                () -> elevator.setMode(ElevatorSubsystem.ElevatorMode.HOLD)
+                () -> elevator.setMode(ElevatorMode.HOLD)
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new SequentialCommandGroup(
                         new InstantCommand(() -> elevator.setPosition(ElevatorPosition.HOME)),
+                        new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME)),
                         pan.home(),
-                        intake.stop()
+                        new InstantCommand(() -> intake.stop())
                 )
         );
 
@@ -83,14 +89,18 @@ public class Teleop extends StealthOpMode {
         driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 //Deploy intake & extendo
                 new SequentialCommandGroup(
-
+                        new InstantCommand(() -> extendo.setPosition(ExtendoPosition.DEPLOYED)),
+                        new InstantCommand(() -> intake.intake()),
+                        new InstantCommand(() -> intake.wristDown())
                 )
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                //Retract intake & extendo + transfer gamepiece into pan
+                //Retract intake & extendo + transfer game piece into pan
                 new SequentialCommandGroup(
-
+                        new InstantCommand(() -> intake.stop()),
+                        new InstantCommand(() -> intake.wristUp()),
+                        new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME))
                 )
         );
 

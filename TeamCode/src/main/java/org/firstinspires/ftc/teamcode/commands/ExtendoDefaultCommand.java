@@ -11,27 +11,24 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class ExtendoDefaultCommand extends CommandBase {
-    private final ElevatorSubsystem elevator;
     private final ExtendoSubsystem extendo;
+    private final DoubleSupplier triggers;
 
-    private final DoubleSupplier leftTrigger;
-    private final DoubleSupplier rightTrigger;
-
-    public ExtendoDefaultCommand(ExtendoSubsystem extendo, ElevatorSubsystem elevator, DoubleSupplier leftTrigger, DoubleSupplier rightTrigger) {
-        this.elevator = elevator;
+    public ExtendoDefaultCommand(ExtendoSubsystem extendo, DoubleSupplier triggers) {
         this.extendo = extendo;
+        this.triggers = triggers;
 
-        this.leftTrigger = leftTrigger;
-        this.rightTrigger = rightTrigger;
-
-        addRequirements(elevator, extendo);
+        addRequirements(extendo);
     }
 
     @Override
     public void execute() {
-        if (Math.abs(elevator.getPosition()) < 0.1 && Math.abs(leftTrigger.getAsDouble() - rightTrigger.getAsDouble()) > 0.1) {
+        if (Math.abs(triggers.getAsDouble()) > 0.05 && !extendo.isHomed()) {
             extendo.setMode(ExtendoMode.MANUAL);
-            extendo.setPower(leftTrigger.getAsDouble() - rightTrigger.getAsDouble());
+            extendo.setPower(triggers.getAsDouble());
+        }
+        else {
+            extendo.setMode(ExtendoMode.PID);
         }
     }
 }

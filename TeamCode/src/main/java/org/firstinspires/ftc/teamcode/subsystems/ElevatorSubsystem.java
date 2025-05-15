@@ -24,8 +24,6 @@ public class ElevatorSubsystem extends StealthSubsystem {
     private final MotorEx leftMotor;
     private final MotorEx rightMotor;
 
-    private final DoubleSupplier manualControl;
-
     //Only used for telemetry
     private ElevatorPosition currTarget = ElevatorPosition.HOME;
 
@@ -63,11 +61,9 @@ public class ElevatorSubsystem extends StealthSubsystem {
         HOLD
     }
 
-    public ElevatorSubsystem(HardwareMap hardwareMap, DoubleSupplier manualControl) {
+    public ElevatorSubsystem(HardwareMap hardwareMap) {
         leftMotor = new MotorEx(hardwareMap, "leftElevatorMotor");
         rightMotor = new MotorEx(hardwareMap, "rightElevatorMotor");
-
-        this.manualControl = manualControl;
 
         limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
 
@@ -105,13 +101,8 @@ public class ElevatorSubsystem extends StealthSubsystem {
         rightMotor.resetEncoder();
     }
 
-    private void holdPosition() {
+    public void holdPosition() {
         elevatorPID.setSetPoint(elevatorMotors.getCurrentPosition());
-    }
-
-    public Command manual() {
-        return this.runOnce(() -> mode = ElevatorMode.MANUAL).andThen(new WaitUntilCommand(() -> Math.abs((long) manualControl.getAsDouble()) < 0.05))
-                .andThen(this.runOnce(() -> mode = ElevatorMode.PID)).andThen(this.runOnce(this::holdPosition));
     }
 
     public boolean getLimitSwitch() {
@@ -122,9 +113,6 @@ public class ElevatorSubsystem extends StealthSubsystem {
     public void periodic() {
         if (mode == ElevatorMode.PID) {
             setPower(-elevatorPID.calculate(getPosition()));
-        }
-        else if (mode == ElevatorMode.MANUAL) {
-            setPower(manualControl.getAsDouble());
         }
         else if (mode == ElevatorMode.HOLD) {
             holdPosition();

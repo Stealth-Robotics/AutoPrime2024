@@ -20,8 +20,6 @@ public class ExtendoSubsystem extends StealthSubsystem {
     private final DcMotorEx extensionMotor;
     private final PIDController extensionPID;
 
-    private final DoubleSupplier manualControl;
-
     private ExtendoMode mode = ExtendoMode.PID;
     
     private final double kP = 0.002;
@@ -47,15 +45,13 @@ public class ExtendoSubsystem extends StealthSubsystem {
         PID
     }
 
-    public ExtendoSubsystem(HardwareMap hardwareMap, DoubleSupplier manualControl) {
+    public ExtendoSubsystem(HardwareMap hardwareMap) {
         extensionMotor = hardwareMap.get(DcMotorEx.class, "extensionMotor");
         resetEncoder();
 
         extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         extensionPID = new PIDController(kP, kI, kD);
         extensionPID.setTolerance(POSITION_TOLERANCE);
-
-        this.manualControl = manualControl;
     }
 
     public void setPower(double power) {
@@ -66,12 +62,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
         this.mode = mode;
     }
 
-    public Command manual() {
-        return this.runOnce(() -> mode = ExtendoMode.MANUAL).andThen(new WaitUntilCommand(() -> Math.abs((long) manualControl.getAsDouble()) < 0.05))
-                .andThen(this.runOnce(() -> mode = ExtendoMode.PID)).andThen(new InstantCommand(() -> extensionPID.setSetPoint(getPosition())));
-    }
-    
-    private void setPosition(ExtendoPosition pos) {
+    public void setPosition(ExtendoPosition pos) {
         extensionPID.setSetPoint(pos.position * MAX_EXTENSION);
     }
 
@@ -92,9 +83,6 @@ public class ExtendoSubsystem extends StealthSubsystem {
     public void periodic() {
         if (mode == ExtendoMode.PID) {
             extensionMotor.setPower(extensionPID.calculate(getPosition()));
-        }
-        else if (mode == ExtendoMode.MANUAL) {
-            setPower(manualControl.getAsDouble());
         }
 
         telemetry.addData("Extendo Mode: ", mode.name());
