@@ -29,8 +29,6 @@ public class ElevatorSubsystem extends StealthSubsystem {
 
     private ElevatorMode mode = ElevatorMode.PID;
 
-    private final DigitalChannel limitSwitch;
-
     private final MotorGroup elevatorMotors;
     private final PIDFController elevatorPID;
 
@@ -43,7 +41,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
     private final double MAX_HEIGHT = 3300;
 
     public enum ElevatorPosition {
-        HIGH_BUCKET(1.0),
+        HIGH_BUCKET(0.85),
         LOW_BUCKET(0.5),
         LOW_CHAMBER(0.7),
         HIGH_CHAMBER(0.2),
@@ -64,8 +62,6 @@ public class ElevatorSubsystem extends StealthSubsystem {
     public ElevatorSubsystem(HardwareMap hardwareMap) {
         leftMotor = new MotorEx(hardwareMap, "leftElevatorMotor");
         rightMotor = new MotorEx(hardwareMap, "rightElevatorMotor");
-
-        limitSwitch = hardwareMap.get(DigitalChannel.class, "limitSwitch");
 
         rightMotor.setInverted(true);
 
@@ -105,10 +101,6 @@ public class ElevatorSubsystem extends StealthSubsystem {
         elevatorPID.setSetPoint(elevatorMotors.getCurrentPosition());
     }
 
-    public boolean getLimitSwitch() {
-        return limitSwitch.getState();
-    }
-
     @Override
     public void periodic() {
         if (mode == ElevatorMode.PID) {
@@ -118,13 +110,9 @@ public class ElevatorSubsystem extends StealthSubsystem {
             holdPosition();
         }
 
-        //Re-localize if limit switch triggered
-        if (getLimitSwitch()) {
-            resetEncoder();
-            setPosition(ElevatorPosition.HOME);
-        }
-
         telemetry.addData("Elevator Target: ", currTarget);
+        telemetry.addData("Elevator Position", getPosition());
+        telemetry.addData("Elevator Setpoint", elevatorPID.getSetPoint());
         telemetry.addData("Elevator Mode: ", mode.name());
     }
 }

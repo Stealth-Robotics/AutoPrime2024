@@ -59,15 +59,15 @@ public class Teleop extends StealthOpMode {
                 )
         );
 
-//        //Manual elevator controls
-//        elevator.setDefaultCommand(
-//                new ElevatorDefaultCommand(elevator, extendo, triggerManualControl)
-//        );
-//
-//        //Manual extendo controls
-//        extendo.setDefaultCommand(
-//                new ExtendoDefaultCommand(extendo, triggerManualControl)
-//        );
+        //Manual elevator controls
+        elevator.setDefaultCommand(
+                new ElevatorDefaultCommand(elevator, extendo, triggerManualControl)
+        );
+
+        //Manual extendo controls
+        extendo.setDefaultCommand(
+                new ExtendoDefaultCommand(extendo, triggerManualControl)
+        );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.START).whenPressed(new InstantCommand(() -> mecanum.resetHeading()));
         driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> claw.toggleState()));
