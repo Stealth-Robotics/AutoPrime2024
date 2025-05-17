@@ -30,5 +30,8 @@ public class ExtendoDefaultCommand extends CommandBase {
         else {
             extendo.setMode(ExtendoMode.PID);
         }
+
+        if (Math.abs(extendo.getPosition()) <= 10.0)
+            extendo.resetEncoder();
     }
 }

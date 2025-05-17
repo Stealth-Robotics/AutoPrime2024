@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.Command;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.stealthrobotics.library.StealthSubsystem;
 
 import java.util.function.BooleanSupplier;
@@ -18,7 +21,8 @@ public class MecanumSubsystem extends StealthSubsystem {
     private final DcMotorEx backLeft;
     private final DcMotorEx backRight;
 
-    private final SparkFunOTOS otos;
+    private final IMU imu;
+    private double headingOffset = 0;
 
     public MecanumSubsystem(HardwareMap hardwareMap) {
         frontLeft = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -34,32 +38,42 @@ public class MecanumSubsystem extends StealthSubsystem {
         backLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        otos = hardwareMap.get(SparkFunOTOS.class, "sensor_otos");
-        otos.calibrateImu();
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        IMU.Parameters imuParameters = new IMU.Parameters(
+                new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                        RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+                )
+        );
+
+        imu.initialize(imuParameters);
     }
 
     public void setHeading(double headingOffset) {
-        otos.setOffset(new SparkFunOTOS.Pose2D(0,0, headingOffset));
+        this.headingOffset = headingOffset;
     }
 
     public double getHeading() {
-        return otos.getPosition().h;
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset;
     }
 
     public void resetHeading() {
-        otos.resetTracking();
+        headingOffset = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
     }
 
     public void drive(double x, double y, double rot, boolean slow) {
-        double speedMult;
-        if(slow){
-            speedMult = 0.3;
-        } else {
-            speedMult = 1;
+        double speedMultiplier;
+        if (slow) {
+            speedMultiplier = 0.3;
         }
-        y = -speedMult*y;
-        x = speedMult*x;
-        rot = speedMult*rot;
+        else {
+            speedMultiplier = 1;
+        }
+
+        y = -speedMultiplier*y;
+        x = speedMultiplier*x;
+        rot = speedMultiplier*rot;
 
         double rotX = x * Math.cos(-getHeading()) - y * Math.sin(-getHeading());
         double rotY = x * Math.sin(-getHeading()) + y * Math.cos(-getHeading());

@@ -21,23 +21,20 @@ public class ExtendoSubsystem extends StealthSubsystem {
     private final PIDController extensionPID;
 
     private ExtendoMode mode = ExtendoMode.PID;
-    
-    private final double kP = 0.002;
-    private final double kI = 0.00000001;
-    private final double kD = 0.00000001;
 
-    private final double POSITION_TOLERANCE = 0.0;
-    private final double HOMED_TOLERANCE = 0.0;
-    private final double MAX_EXTENSION = 1300;
+    //TODO: set to private and final once tuned
+    public static double kP = 0.002;
+    public static double kI = 0.00000001;
+    public static double kD = 0.00000001;
 
-    public enum ExtendoPosition {
-        DEPLOYED(0.5),
-        HOME(0.0);
+    public static double POSITION_TOLERANCE = 10.0;
+    public static double HOMED_TOLERANCE = 10.0;
+    public static double MAX_EXTENSION = 1300;
 
-        private final double position;
-        ExtendoPosition(double position) {
-            this.position = position;
-        }
+    @Config
+    public static class ExtendoPosition {
+        public static double DEPLOYED = 0.85;
+        public static double HOME = 0;
     }
 
     public enum ExtendoMode {
@@ -62,8 +59,8 @@ public class ExtendoSubsystem extends StealthSubsystem {
         this.mode = mode;
     }
 
-    public void setPosition(ExtendoPosition pos) {
-        extensionPID.setSetPoint(pos.position * MAX_EXTENSION);
+    public void setPosition(double pos) {
+        extensionPID.setSetPoint(pos * MAX_EXTENSION);
     }
 
     public boolean isHomed() {
@@ -86,5 +83,6 @@ public class ExtendoSubsystem extends StealthSubsystem {
         }
 
         telemetry.addData("Extendo Mode: ", mode.name());
+        telemetry.addData("Extendo Position: ", getPosition());
     }
 }

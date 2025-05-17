@@ -2,19 +2,20 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
-import com.arcrobotics.ftclib.command.Command;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.stealthrobotics.library.StealthSubsystem;
 
+@Config
 public class IntakeSubsystem extends StealthSubsystem {
     private final Servo intakeServo;
     private final Servo wristServo;
 
-    //TODO tune
-    private final double WRIST_UP_POSITION = 0.0;
-    private final double WRIST_DOWN_POSITION = 0.0;
+    public static double WRIST_UP_POSITION = 0.2;
+    public static double WRIST_HOME_POSITION = 0.7;
+    public static double WRIST_DOWN_POSITION = 0.815;
 
     private final ColorSensor colorSensor;
 
@@ -36,16 +37,20 @@ public class IntakeSubsystem extends StealthSubsystem {
         setWristPosition(WRIST_UP_POSITION);
     }
 
+    public void wristHome() {
+        setWristPosition(WRIST_HOME_POSITION);
+    }
+
     public void wristDown() {
         setWristPosition(WRIST_DOWN_POSITION);
     }
 
     public void intake() {
-        setIntakeSpeed(1);
+        setIntakeSpeed(-1);
     }
 
     public void outtake() {
-        setIntakeSpeed(-1);
+        setIntakeSpeed(1);
     }
 
     public void stop() {
@@ -85,6 +90,6 @@ public class IntakeSubsystem extends StealthSubsystem {
 
     @Override
     public void periodic() {
-        telemetry.addData("detectedColor: ", readSensorColor());
+        telemetry.addData("DetectedColor: ", readSensorColor());
     }
 }

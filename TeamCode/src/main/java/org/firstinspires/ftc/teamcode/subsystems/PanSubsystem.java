@@ -24,16 +24,12 @@ public class PanSubsystem extends StealthSubsystem {
         panServo = hardwareMap.get(Servo.class,"panServo");
     }
 
-    public Command home() {
-        return this.runOnce(
-                () -> setPanPosition(PanState.HOME)
-        );
+    public void home() {
+        setPanPosition(PanState.HOME);
     }
 
-    public Command score() {
-        return this.runOnce(
-                () -> setPanPosition(PanState.SCORE)
-        );
+    public void score() {
+        setPanPosition(PanState.SCORE);
     }
 
     private void setPanPosition(PanState state) {

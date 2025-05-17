@@ -24,33 +24,27 @@ public class ElevatorSubsystem extends StealthSubsystem {
     private final MotorEx leftMotor;
     private final MotorEx rightMotor;
 
-    //Only used for telemetry
-    private ElevatorPosition currTarget = ElevatorPosition.HOME;
-
     private ElevatorMode mode = ElevatorMode.PID;
 
     private final MotorGroup elevatorMotors;
     private final PIDFController elevatorPID;
 
-    private final double kP = 0.006;
-    private final double kI = 0.0;
-    private final double kD = 0.0;
-    private final double kF = 0.0;
+    //TODO: set to private and final once tuned
+    public static double kP = 0.006;
+    public static double kI = 0.0;
+    public static double kD = 0.0;
+    public static double kF = 0.0;
 
-    private final double TOLERANCE = 10.0;
-    private final double MAX_HEIGHT = 3300;
+    public static double TOLERANCE = 10.0;
+    public static double MAX_HEIGHT = 3150;
 
-    public enum ElevatorPosition {
-        HIGH_BUCKET(0.85),
-        LOW_BUCKET(0.5),
-        LOW_CHAMBER(0.7),
-        HIGH_CHAMBER(0.2),
-        HOME(0.0);
-
-        private final double position;
-        ElevatorPosition(double position) {
-            this.position = position;
-        }
+    @Config
+    public static class ElevatorPosition {
+        public static double HIGH_BUCKET = 1.0;
+        public static double LOW_BUCKET = 0.5;
+        public static double HIGH_CHAMBER = 0.4;
+        public static double LOW_CHAMBER = 0.2;
+        public static double HOME = 0.0;
     }
 
     public enum ElevatorMode {
@@ -76,9 +70,8 @@ public class ElevatorSubsystem extends StealthSubsystem {
         elevatorPID.setTolerance(TOLERANCE);
     }
 
-    public void setPosition(ElevatorPosition pos) {
-        currTarget = pos;
-        elevatorPID.setSetPoint(pos.position * MAX_HEIGHT);
+    public void setPosition(double pos) {
+        elevatorPID.setSetPoint(pos * MAX_HEIGHT);
     }
 
     public void setPower(double power) {
@@ -98,7 +91,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
     }
 
     public void holdPosition() {
-        elevatorPID.setSetPoint(elevatorMotors.getCurrentPosition());
+        elevatorPID.setSetPoint(getPosition());
     }
 
     @Override
@@ -110,9 +103,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
             holdPosition();
         }
 
-        telemetry.addData("Elevator Target: ", currTarget);
         telemetry.addData("Elevator Position", getPosition());
-        telemetry.addData("Elevator Setpoint", elevatorPID.getSetPoint());
         telemetry.addData("Elevator Mode: ", mode.name());
     }
 }

@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -13,6 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorPosit
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem.ClawState;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
@@ -80,7 +83,7 @@ public class Teleop extends StealthOpMode {
                 new SequentialCommandGroup(
                         new InstantCommand(() -> elevator.setPosition(ElevatorPosition.HOME)),
                         new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME)),
-                        pan.home(),
+                        new InstantCommand(() -> pan.home()),
                         new InstantCommand(() -> intake.stop())
                 )
         );
@@ -89,40 +92,65 @@ public class Teleop extends StealthOpMode {
         driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 //Deploy intake & extendo
                 new SequentialCommandGroup(
-                        new InstantCommand(() -> extendo.setPosition(ExtendoPosition.DEPLOYED)),
                         new InstantCommand(() -> intake.intake()),
+                        new InstantCommand(() -> extendo.setPosition(ExtendoPosition.DEPLOYED)),
                         new InstantCommand(() -> intake.wristDown())
                 )
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                //Retract intake & extendo + transfer game piece into pan
                 new SequentialCommandGroup(
                         new InstantCommand(() -> intake.stop()),
                         new InstantCommand(() -> intake.wristUp()),
-                        new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME))
+                        new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME)),
+                        new WaitCommand(1000),
+                        new InstantCommand(() -> intake.outtake()),
+                        new WaitCommand(1000),
+                        new InstantCommand(() -> intake.stop()),
+                        new InstantCommand(() -> intake.wristHome())
                 )
         );
 
-        if (claw.getState() == ClawSubsystem.ClawState.CLOSED) {
-            //Presets for specimens
-            driverGamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                    () -> elevator.setPosition(ElevatorPosition.HIGH_CHAMBER)
-            );
+        driverGamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+                () -> {
+                    if (claw.getState().equals(ClawState.CLOSED)) {
+                        elevator.setPosition(ElevatorPosition.HIGH_CHAMBER);
+                    }
+                    else {
+                        elevator.setPosition(ElevatorPosition.HIGH_BUCKET);
+                    }
+                }
+        );
 
-            driverGamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                    () -> elevator.setPosition(ElevatorPosition.LOW_CHAMBER)
-            );
-        }
-        else {
-            //Presets for samples
-            driverGamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
-                    () -> elevator.setPosition(ElevatorPosition.HIGH_BUCKET)
-            );
+        driverGamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+                () -> {
+                    if (claw.getState().equals(ClawState.CLOSED)) {
+                        elevator.setPosition(ElevatorPosition.LOW_CHAMBER);
+                    }
+                    else {
+                        elevator.setPosition(ElevatorPosition.LOW_BUCKET);
+                    }
+                }
+        );
 
-            driverGamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
-                    () -> elevator.setPosition(ElevatorPosition.LOW_BUCKET)
-            );
-        }
+        //Scoring presets
+        driverGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(
+                new ConditionalCommand(
+                        //Specimen Scoring
+                        new SequentialCommandGroup(
+                                //set elevator a bit lower than current and then toggle claw open
+                                new InstantCommand(() -> claw.toggleState())
+                        ),
+
+                        //Sample Scoring
+                        new SequentialCommandGroup(
+                                new InstantCommand(() -> pan.score()),
+                                new WaitCommand(1200),
+                                new InstantCommand(() -> pan.home())
+                        ),
+
+                        () -> claw.getState().equals(ClawState.CLOSED)
+                )
+        );
     }
 }

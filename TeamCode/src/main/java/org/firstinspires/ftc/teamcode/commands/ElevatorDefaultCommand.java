@@ -42,5 +42,8 @@ public class ElevatorDefaultCommand extends CommandBase {
             }
             elevator.setMode(ElevatorMode.PID);
         }
+
+        if (Math.abs(elevator.getPosition()) <= 10.0)
+            elevator.resetEncoder();
     }
 }
