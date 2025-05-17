@@ -29,10 +29,10 @@ public class ElevatorSubsystem extends StealthSubsystem {
     private final MotorGroup elevatorMotors;
     private final PIDFController elevatorPID;
 
-    public static double kP = 0.006;
+    public static double kP = 0.005;
     public static double kI = 0.0;
     public static double kD = 0.0;
-    public static double kF = 0.0;
+    public static double kF = 0.0; //! This does what?
 
     public static double TOLERANCE = 10.0;
     public static double MAX_HEIGHT = 3150;

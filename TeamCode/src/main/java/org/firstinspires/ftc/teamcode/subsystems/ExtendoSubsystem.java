@@ -25,8 +25,10 @@ public class ExtendoSubsystem extends StealthSubsystem {
     public static double kP = 0.02;
     public static double kI = 0.00000001;
     public static double kD = 0.00000001;
+    public static double kS = 0.0; //Static friction
+    
 
-    public static double POSITION_TOLERANCE = 10.0;
+    public static double POSITION_TOLERANCE = 0.0;
     public static double HOMED_TOLERANCE = 10.0;
     public static double MAX_EXTENSION = 1300;
 
@@ -62,6 +64,10 @@ public class ExtendoSubsystem extends StealthSubsystem {
         extensionPID.setSetPoint(pos * MAX_EXTENSION);
     }
 
+    public void holdPosition() {
+        extensionPID.setSetPoint(getPosition());
+    }
+
     public boolean isHomed() {
         return Math.abs(getPosition()) < HOMED_TOLERANCE;
     }
@@ -82,6 +88,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
         }
 
         telemetry.addData("Extendo Mode: ", mode.name());
+        telemetry.addData("Extendo Homed: ", isHomed());
         telemetry.addData("Extendo Position: ", getPosition());
     }
 }

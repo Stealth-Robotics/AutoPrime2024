@@ -42,8 +42,6 @@ public class Teleop extends StealthOpMode {
 
     @Override
     public void initialize() {
-        DoubleSupplier triggerManualControl = () -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-
         elevator = new ElevatorSubsystem(hardwareMap);
         extendo = new ExtendoSubsystem(hardwareMap);
         intake = new IntakeSubsystem(hardwareMap);
@@ -64,12 +62,12 @@ public class Teleop extends StealthOpMode {
 
         //Manual elevator controls
         elevator.setDefaultCommand(
-                new ElevatorDefaultCommand(elevator, extendo, triggerManualControl)
+                new ElevatorDefaultCommand(elevator, extendo, () -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))
         );
 
         //Manual extendo controls
         extendo.setDefaultCommand(
-                new ExtendoDefaultCommand(extendo, triggerManualControl)
+                new ExtendoDefaultCommand(extendo, () -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.START).whenPressed(new InstantCommand(() -> mecanum.resetHeading()));

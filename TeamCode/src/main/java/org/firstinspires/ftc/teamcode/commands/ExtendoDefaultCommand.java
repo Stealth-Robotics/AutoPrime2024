@@ -14,6 +14,8 @@ public class ExtendoDefaultCommand extends CommandBase {
     private final ExtendoSubsystem extendo;
     private final DoubleSupplier triggers;
 
+    private boolean holdPosition = false;
+
     public ExtendoDefaultCommand(ExtendoSubsystem extendo, DoubleSupplier triggers) {
         this.extendo = extendo;
         this.triggers = triggers;
@@ -25,13 +27,15 @@ public class ExtendoDefaultCommand extends CommandBase {
     public void execute() {
         if (Math.abs(triggers.getAsDouble()) > 0.05 && !extendo.isHomed()) {
             extendo.setMode(ExtendoMode.MANUAL);
-            extendo.setPower(triggers.getAsDouble());
+            extendo.setPower(-triggers.getAsDouble());
+            holdPosition = true;
         }
         else {
+            if (holdPosition) {
+                holdPosition = false;
+                extendo.holdPosition();
+            }
             extendo.setMode(ExtendoMode.PID);
         }
-
-        if (Math.abs(extendo.getPosition()) <= 10.0)
-            extendo.resetEncoder();
     }
 }

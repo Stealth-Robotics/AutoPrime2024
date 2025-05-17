@@ -25,7 +25,7 @@ public class ElevatorDefaultCommand extends CommandBase {
 
         this.triggers = triggers;
 
-        addRequirements(elevator, extendo);
+        addRequirements(elevator);
     }
 
     @Override
