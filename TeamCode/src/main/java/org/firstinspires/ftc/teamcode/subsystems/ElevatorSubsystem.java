@@ -73,6 +73,10 @@ public class ElevatorSubsystem extends StealthSubsystem {
         elevatorPID.setSetPoint(pos * MAX_HEIGHT);
     }
 
+    public void setSetPoint(double pos) {
+        elevatorPID.setSetPoint(pos);
+    }
+
     public void setPower(double power) {
         elevatorMotors.set(power);
     }

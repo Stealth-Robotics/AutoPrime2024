@@ -4,13 +4,16 @@ import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.commands.DeployIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.ExtendoDefaultCommand;
+import org.firstinspires.ftc.teamcode.commands.RetractIntakeCommand;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorPosition;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorMode;
 
@@ -78,36 +81,16 @@ public class Teleop extends StealthOpMode {
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
-                new SequentialCommandGroup(
-                        new InstantCommand(() -> elevator.setPosition(ElevatorPosition.HOME)),
-                        new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME)),
-                        new InstantCommand(() -> pan.home()),
-                        new InstantCommand(() -> intake.stop())
-                ),
-                true
+                new InstantCommand(() -> elevator.setPosition(ElevatorPosition.HOME))
         );
 
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                new SequentialCommandGroup(
-                        new InstantCommand(() -> intake.intake()),
-                        new InstantCommand(() -> extendo.setPosition(ExtendoPosition.DEPLOYED)),
-                        new WaitCommand(200),
-                        new InstantCommand(() -> intake.wristDown())
-                )
+                new DeployIntakeCommand(extendo, intake)
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new SequentialCommandGroup(
-                        new InstantCommand(() -> intake.stop()),
-                        new InstantCommand(() -> intake.wristUp()),
-                        new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME)),
-                        new WaitCommand(1000),
-                        new InstantCommand(() -> intake.outtake()),
-                        new WaitCommand(1000),
-                        new InstantCommand(() -> intake.stop()),
-                        new InstantCommand(() -> intake.wristHome())
-                )
+                new RetractIntakeCommand(extendo, intake, elevator, pan)
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
@@ -138,6 +121,7 @@ public class Teleop extends StealthOpMode {
                         //Specimen Scoring
                         new SequentialCommandGroup(
                                 //set elevator a bit lower than current and then toggle claw open
+                                new InstantCommand(() -> elevator.setSetPoint(elevator.getPosition() - 300)),
                                 new InstantCommand(() -> claw.toggleState())
                         ),
 

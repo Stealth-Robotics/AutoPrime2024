@@ -22,7 +22,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
 
     private ExtendoMode mode = ExtendoMode.PID;
 
-    public static double kP = 0.02;
+    public static double kP = 0.025;
     public static double kI = 0.0;
     public static double kD = 0.0;
 

@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+@Config
 public class ElevatorDefaultCommand extends CommandBase {
     private final ElevatorSubsystem elevator;
     private final ExtendoSubsystem extendo;
