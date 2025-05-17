@@ -22,8 +22,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
 
     private ExtendoMode mode = ExtendoMode.PID;
 
-    //TODO: set to private and final once tuned
-    public static double kP = 0.002;
+    public static double kP = 0.02;
     public static double kI = 0.00000001;
     public static double kD = 0.00000001;
 
@@ -33,7 +32,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
 
     @Config
     public static class ExtendoPosition {
-        public static double DEPLOYED = 0.85;
+        public static double DEPLOYED = 0.6;
         public static double HOME = 0;
     }
 

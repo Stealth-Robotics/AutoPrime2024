@@ -29,7 +29,6 @@ public class ElevatorSubsystem extends StealthSubsystem {
     private final MotorGroup elevatorMotors;
     private final PIDFController elevatorPID;
 
-    //TODO: set to private and final once tuned
     public static double kP = 0.006;
     public static double kI = 0.0;
     public static double kD = 0.0;
@@ -41,9 +40,9 @@ public class ElevatorSubsystem extends StealthSubsystem {
     @Config
     public static class ElevatorPosition {
         public static double HIGH_BUCKET = 1.0;
-        public static double LOW_BUCKET = 0.5;
+        public static double LOW_BUCKET = 0.55;
         public static double HIGH_CHAMBER = 0.4;
-        public static double LOW_CHAMBER = 0.2;
+        public static double LOW_CHAMBER = 0.1;
         public static double HOME = 0.0;
     }
 

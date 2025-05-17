@@ -85,15 +85,16 @@ public class Teleop extends StealthOpMode {
                         new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME)),
                         new InstantCommand(() -> pan.home()),
                         new InstantCommand(() -> intake.stop())
-                )
+                ),
+                true
         );
 
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
-                //Deploy intake & extendo
                 new SequentialCommandGroup(
                         new InstantCommand(() -> intake.intake()),
                         new InstantCommand(() -> extendo.setPosition(ExtendoPosition.DEPLOYED)),
+                        new WaitCommand(200),
                         new InstantCommand(() -> intake.wristDown())
                 )
         );
