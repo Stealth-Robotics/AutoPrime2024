@@ -22,9 +22,9 @@ public class ExtendoSubsystem extends StealthSubsystem {
 
     private ExtendoMode mode = ExtendoMode.PID;
 
-    public static double kP = 0.05;
+    public static double kP = 0.02;
     public static double kI = 0.0;
-    public static double kD = 0.01;
+    public static double kD = 0.0;
 
     public static double POSITION_TOLERANCE = 0.0;
     public static double HOMED_TOLERANCE = 10.0;
@@ -33,7 +33,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
     @Config
     public static class ExtendoPosition {
         public static double DEPLOYED = 0.6;
-        public static double HOME = 0;
+        public static double HOME = -0.5;
     }
 
     public enum ExtendoMode {
