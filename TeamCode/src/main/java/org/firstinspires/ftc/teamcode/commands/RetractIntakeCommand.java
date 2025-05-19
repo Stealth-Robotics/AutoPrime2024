@@ -36,5 +36,7 @@ public class RetractIntakeCommand extends SequentialCommandGroup {
                     new InstantCommand(extendo::resetEncoder)
             );
         }
+
+        addRequirements(extendo, intake, elevator, pan);
     }
 }

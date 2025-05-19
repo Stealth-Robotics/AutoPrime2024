@@ -17,6 +17,8 @@ import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorPosit
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem.ClawState;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem.LLPipeline;
 import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
@@ -32,6 +34,7 @@ public class Teleop extends StealthOpMode {
     ExtendoSubsystem extendo;
     IntakeSubsystem intake;
     ClawSubsystem claw;
+    LimelightSubsystem ll;
 
     GamepadEx driverGamepad;
     GamepadEx operatorGamepad;
@@ -44,6 +47,7 @@ public class Teleop extends StealthOpMode {
         claw = new ClawSubsystem(hardwareMap);
         pan = new PanSubsystem(hardwareMap);
         mecanum = new MecanumSubsystem(hardwareMap);
+        ll = new LimelightSubsystem(hardwareMap);
 
         //Home wrist
         schedule(new InstantCommand(() -> intake.wristHome()));
@@ -52,6 +56,11 @@ public class Teleop extends StealthOpMode {
 
         driverGamepad = new GamepadEx(gamepad1);
         operatorGamepad = new GamepadEx(gamepad2);
+
+        //Color coded limelight pipeline switching
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.YELLOW)));
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.BLUE)));
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.RED)));
 
         mecanum.setDefaultCommand(
                 mecanum.driveTeleop(

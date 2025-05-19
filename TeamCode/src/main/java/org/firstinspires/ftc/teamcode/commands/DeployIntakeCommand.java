@@ -18,5 +18,7 @@ public class DeployIntakeCommand extends SequentialCommandGroup {
                 new WaitCommand(500),
                 new InstantCommand(intake::wristDown)
         );
+
+        addRequirements(extendo, intake);
     }
 }
