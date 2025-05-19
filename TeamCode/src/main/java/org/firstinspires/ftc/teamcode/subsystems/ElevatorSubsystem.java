@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import com.arcrobotics.ftclib.controller.PIDFController;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.MathFunctions;
 import org.stealthrobotics.library.StealthSubsystem;
 
 import java.util.function.DoubleSupplier;
@@ -24,15 +25,13 @@ public class ElevatorSubsystem extends StealthSubsystem {
     private final MotorEx leftMotor;
     private final MotorEx rightMotor;
 
-    private ElevatorMode mode = ElevatorMode.PID;
-
     private final MotorGroup elevatorMotors;
     private final PIDFController elevatorPID;
 
-    public static double kP = 0.005;
-    public static double kI = 0.0;
+    public static double kP = 0.003;
+    public static double kI = 0.002;
     public static double kD = 0.0;
-    public static double kF = 0.0; //! This does what?
+    public static double kF = 0.0;
 
     public static double TOLERANCE = 10.0;
     public static double MAX_HEIGHT = 3150;
@@ -44,12 +43,6 @@ public class ElevatorSubsystem extends StealthSubsystem {
         public static double HIGH_CHAMBER = 0.4;
         public static double LOW_CHAMBER = 0.1;
         public static double HOME = 0.0;
-    }
-
-    public enum ElevatorMode {
-        PID,
-        MANUAL,
-        HOLD
     }
 
     public ElevatorSubsystem(HardwareMap hardwareMap) {
@@ -70,6 +63,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
     }
 
     public void setPosition(double pos) {
+        pos = MathFunctions.clamp(pos, 0.0, 1.0);
         elevatorPID.setSetPoint(pos * MAX_HEIGHT);
     }
 
@@ -81,32 +75,22 @@ public class ElevatorSubsystem extends StealthSubsystem {
         elevatorMotors.set(power);
     }
 
-    public int getPosition() {
-        return -rightMotor.getCurrentPosition();
+    public double getPositionPercentage() {
+        return getPosition() / MAX_HEIGHT;
     }
 
-    public void setMode(ElevatorMode newMode) {
-        mode = newMode;
+    public int getPosition() {
+        return -rightMotor.getCurrentPosition();
     }
 
     public void resetEncoder() {
         rightMotor.resetEncoder();
     }
 
-    public void holdPosition() {
-        elevatorPID.setSetPoint(getPosition());
-    }
-
     @Override
     public void periodic() {
-        if (mode == ElevatorMode.PID) {
-            setPower(-elevatorPID.calculate(getPosition()));
-        }
-        else if (mode == ElevatorMode.HOLD) {
-            holdPosition();
-        }
+        setPower(-elevatorPID.calculate(getPosition()));
 
         telemetry.addData("Elevator Position", getPosition());
-        telemetry.addData("Elevator Mode: ", mode.name());
     }
 }

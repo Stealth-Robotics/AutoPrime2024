@@ -19,12 +19,12 @@ public class ElevatorDefaultCommand extends CommandBase {
     private final ExtendoSubsystem extendo;
 
     private final DoubleSupplier triggers;
-    private boolean holdPosition = false;
+
+    public static double manualSpeed = 0.2;
 
     public ElevatorDefaultCommand(ElevatorSubsystem elevator, ExtendoSubsystem extendo, DoubleSupplier triggers) {
         this.elevator = elevator;
         this.extendo = extendo;
-
         this.triggers = triggers;
 
         addRequirements(elevator);
@@ -32,17 +32,8 @@ public class ElevatorDefaultCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (Math.abs(triggers.getAsDouble()) > 0.05 && extendo.isHomed()) {
-            elevator.setMode(ElevatorMode.MANUAL);
-            elevator.setPower(triggers.getAsDouble());
-            holdPosition = true;
-        }
-        else {
-            if (holdPosition) {
-                holdPosition = false;
-                elevator.holdPosition();
-            }
-            elevator.setMode(ElevatorMode.PID);
+        if (Math.abs(triggers.getAsDouble()) > 0.1 && extendo.isHomed()) {
+            elevator.setPosition(elevator.getPositionPercentage() + triggers.getAsDouble() * manualSpeed);
         }
 
         if (Math.abs(elevator.getPosition()) <= 10.0)

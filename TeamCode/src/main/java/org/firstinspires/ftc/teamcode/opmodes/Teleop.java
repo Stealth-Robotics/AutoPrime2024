@@ -4,8 +4,6 @@ import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
-import com.arcrobotics.ftclib.command.WaitUntilCommand;
-import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -15,7 +13,6 @@ import org.firstinspires.ftc.teamcode.commands.ElevatorDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.ExtendoDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.RetractIntakeCommand;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorPosition;
-import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem.ClawState;
@@ -24,12 +21,8 @@ import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem.ExtendoPosition;
-import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem.ExtendoMode;
 import org.stealthrobotics.library.AutoToTeleStorage;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
-
-import java.util.function.DoubleSupplier;
 
 @TeleOp(name = "Teleop")
 public class Teleop extends StealthOpMode {
@@ -51,6 +44,9 @@ public class Teleop extends StealthOpMode {
         claw = new ClawSubsystem(hardwareMap);
         pan = new PanSubsystem(hardwareMap);
         mecanum = new MecanumSubsystem(hardwareMap);
+
+        //Home wrist
+        schedule(new InstantCommand(() -> intake.wristHome()));
 
         mecanum.setHeading(AutoToTeleStorage.finalAutoHeading);
 
@@ -76,14 +72,9 @@ public class Teleop extends StealthOpMode {
         driverGamepad.getGamepadButton(GamepadKeys.Button.START).whenPressed(new InstantCommand(() -> mecanum.resetHeading()));
         driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> claw.toggleState()));
 
-        driverGamepad.getGamepadButton(GamepadKeys.Button.BACK).whenPressed(
-                () -> elevator.setMode(ElevatorMode.HOLD)
-        );
-
         driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new InstantCommand(() -> elevator.setPosition(ElevatorPosition.HOME))
         );
-
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new DeployIntakeCommand(extendo, intake)
