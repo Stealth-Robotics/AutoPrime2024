@@ -40,7 +40,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
     public static class ElevatorPosition {
         public static double HIGH_BUCKET = 1.0;
         public static double LOW_BUCKET = 0.55;
-        public static double HIGH_CHAMBER = 0.4;
+        public static double HIGH_CHAMBER = 0.43;
         public static double LOW_CHAMBER = 0.1;
         public static double HOME = 0.0;
     }

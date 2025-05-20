@@ -14,26 +14,31 @@ public class RetractIntakeCommand extends SequentialCommandGroup {
     public RetractIntakeCommand(ExtendoSubsystem extendo, IntakeSubsystem intake, ElevatorSubsystem elevator, PanSubsystem pan) {
         if (elevator.getPosition() <= 10) {
             addCommands(
-                    new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME)),
+                    new InstantCommand(() -> extendo.setPosition(ExtendoPosition.PAST_HOME)),
                     new InstantCommand(intake::wristUp),
                     new InstantCommand(intake::stop),
                     new InstantCommand(pan::home),
                     new WaitCommand(1000),
-                    new InstantCommand(intake::outtake),
-                    new WaitCommand(1000),
                     new InstantCommand(extendo::resetEncoder),
-                    new InstantCommand(intake::stop),
-                    new InstantCommand(intake::wristHome)
+                    new InstantCommand(() -> extendo.setPosition(ExtendoPosition.TRANSFER)),
+                    new WaitCommand(200),
+                    new InstantCommand(intake::outtake),
+                    new WaitCommand(500),
+                    new InstantCommand(intake::wristHome),
+                    new WaitCommand(500),
+                    new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME)),
+                    new InstantCommand(intake::stop)
             );
         }
         else {
             addCommands(
-                    new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME)),
+                    new InstantCommand(() -> extendo.setPosition(ExtendoPosition.PAST_HOME)),
                     new InstantCommand(intake::wristHome),
                     new InstantCommand(intake::stop),
                     new InstantCommand(pan::home),
                     new WaitCommand(1000),
-                    new InstantCommand(extendo::resetEncoder)
+                    new InstantCommand(extendo::resetEncoder),
+                    new InstantCommand(() -> extendo.setPosition(ExtendoPosition.HOME))
             );
         }
 

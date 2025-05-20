@@ -34,7 +34,7 @@ public class Teleop extends StealthOpMode {
     ExtendoSubsystem extendo;
     IntakeSubsystem intake;
     ClawSubsystem claw;
-    LimelightSubsystem ll;
+//    LimelightSubsystem ll;
 
     GamepadEx driverGamepad;
     GamepadEx operatorGamepad;
@@ -47,7 +47,9 @@ public class Teleop extends StealthOpMode {
         claw = new ClawSubsystem(hardwareMap);
         pan = new PanSubsystem(hardwareMap);
         mecanum = new MecanumSubsystem(hardwareMap);
-        ll = new LimelightSubsystem(hardwareMap);
+//        ll = new LimelightSubsystem(hardwareMap);
+
+        register(elevator, extendo, intake, claw, pan, mecanum);
 
         //Home wrist
         schedule(new InstantCommand(() -> intake.wristHome()));
@@ -58,9 +60,9 @@ public class Teleop extends StealthOpMode {
         operatorGamepad = new GamepadEx(gamepad2);
 
         //Color coded limelight pipeline switching
-        operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.YELLOW)));
-        operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.BLUE)));
-        operatorGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.RED)));
+//        operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.YELLOW)));
+//        operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.BLUE)));
+//        operatorGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.RED)));
 
         mecanum.setDefaultCommand(
                 mecanum.driveTeleop(
@@ -70,7 +72,7 @@ public class Teleop extends StealthOpMode {
 
         //Manual elevator controls
         elevator.setDefaultCommand(
-                new ElevatorDefaultCommand(elevator, extendo, () -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))
+                new ElevatorDefaultCommand(elevator, extendo, () -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER))
         );
 
         //Manual extendo controls

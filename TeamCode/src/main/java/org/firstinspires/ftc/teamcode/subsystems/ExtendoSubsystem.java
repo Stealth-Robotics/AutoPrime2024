@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -11,6 +12,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.stealthrobotics.library.StealthSubsystem;
 
 import java.util.function.DoubleSupplier;
@@ -22,7 +25,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
 
     private ExtendoMode mode = ExtendoMode.PID;
 
-    public static double kP = 0.025;
+    public static double kP = 0.01;
     public static double kI = 0.0;
     public static double kD = 0.0;
 
@@ -33,7 +36,9 @@ public class ExtendoSubsystem extends StealthSubsystem {
     @Config
     public static class ExtendoPosition {
         public static double DEPLOYED = 0.6;
-        public static double HOME = -0.5;
+        public static double TRANSFER = 0.15;
+        public static double HOME = 0.0;
+        public static double PAST_HOME = -0.1;
     }
 
     public enum ExtendoMode {
@@ -85,8 +90,16 @@ public class ExtendoSubsystem extends StealthSubsystem {
             extensionMotor.setPower(extensionPID.calculate(getPosition()));
         }
 
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
+        dashboardTelemetry.addData("Extendo position", getPosition());
+        dashboardTelemetry.addData("Extendo target", extensionPID.getSetPoint());
+        dashboardTelemetry.update();
+
         telemetry.addData("Extendo Mode: ", mode.name());
         telemetry.addData("Extendo Homed: ", isHomed());
         telemetry.addData("Extendo Position: ", getPosition());
+        telemetry.addData("Extendo Current:", extensionMotor.getCurrent(CurrentUnit.AMPS));
     }
 }
