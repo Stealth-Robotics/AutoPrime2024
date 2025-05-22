@@ -83,7 +83,7 @@ public class Teleop extends StealthOpMode {
 
         mecanum.setDefaultCommand(
                 mecanum.driveTeleop(
-                    () -> driverGamepad.getLeftX(), () -> driverGamepad.getLeftY(), () -> driverGamepad.getRightX(), () -> driverGamepad.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)
+                    () -> driverGamepad.getLeftX(), () -> driverGamepad.getLeftY(), () -> driverGamepad.getRightX()
                 )
         );
 

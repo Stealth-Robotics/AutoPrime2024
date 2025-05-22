@@ -64,19 +64,7 @@ public class MecanumSubsystem extends StealthSubsystem {
         headingOffset = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
     }
 
-    public void drive(double x, double y, double rot, boolean slow) {
-        double speedMultiplier;
-        if (slow) {
-            speedMultiplier = 0.3;
-        }
-        else {
-            speedMultiplier = 1;
-        }
-
-        y = -speedMultiplier*y;
-        x = speedMultiplier*x;
-        rot = speedMultiplier*rot;
-
+    public void drive(double x, double y, double rot) {
         double rotX = x * Math.cos(-getHeading()) - y * Math.sin(-getHeading());
         double rotY = x * Math.sin(-getHeading()) + y * Math.cos(-getHeading());
 
@@ -94,8 +82,8 @@ public class MecanumSubsystem extends StealthSubsystem {
         backRight.setPower(backRightPower);
     }
 
-    public Command driveTeleop(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot, BooleanSupplier halfSpeedBumper) {
-        return this.run(() -> drive(x.getAsDouble(), -y.getAsDouble(), rot.getAsDouble(), halfSpeedBumper.getAsBoolean()));
+    public Command driveTeleop(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rot) {
+        return this.run(() -> drive(x.getAsDouble(), y.getAsDouble(), -rot.getAsDouble()));
     }
 
     @Override
