@@ -83,6 +83,10 @@ public class ElevatorSubsystem extends StealthSubsystem {
         return -rightMotor.getCurrentPosition();
     }
 
+    public void setIsHomed(boolean newVal) {
+        isHomed = newVal;
+    }
+
     public boolean isHomed() {
         return isHomed;
     }

@@ -162,13 +162,13 @@ public class Teleop extends StealthOpMode {
     }
 
     @SuppressWarnings("unused")
-    @TeleOp(name = "RED | Tele-Op", group = "Red")
+    @TeleOp(name = "Red Teleop", group = "Red")
     public static class RedTeleop extends Teleop {
 
     }
 
     @SuppressWarnings("unused")
-    @TeleOp(name = "BLUE | Tele-Op", group = "Blue")
+    @TeleOp(name = "Blue Teleop", group = "Blue")
     public static class BlueTeleop extends Teleop {
 
     }
