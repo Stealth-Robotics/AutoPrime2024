@@ -3,14 +3,10 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.stealthrobotics.library.StealthSubsystem;
-
-import java.util.function.BooleanSupplier;
 
 @Config
 public class ClawSubsystem extends StealthSubsystem {

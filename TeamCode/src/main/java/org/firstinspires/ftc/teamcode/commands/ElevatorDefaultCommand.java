@@ -35,8 +35,5 @@ public class ElevatorDefaultCommand extends CommandBase {
         if (Math.abs(triggers.getAsDouble()) > 0.1 && extendo.isHomed()) {
             elevator.setPosition(elevator.getPositionPercentage() + triggers.getAsDouble() * manualSpeed);
         }
-
-        if (Math.abs(elevator.getPosition()) <= 10.0)
-            elevator.resetEncoder();
     }
 }

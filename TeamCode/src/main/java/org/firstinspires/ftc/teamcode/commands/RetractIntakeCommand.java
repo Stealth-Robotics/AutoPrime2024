@@ -12,8 +12,9 @@ import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 
 public class RetractIntakeCommand extends SequentialCommandGroup {
     public RetractIntakeCommand(ExtendoSubsystem extendo, IntakeSubsystem intake, ElevatorSubsystem elevator, PanSubsystem pan) {
-        if (elevator.getPosition() <= 10) {
+        if (elevator.isHomed()) {
             addCommands(
+                    new InstantCommand(() -> extendo.setIsHomed(true)),
                     new InstantCommand(() -> extendo.setPosition(ExtendoPosition.PAST_HOME)),
                     new InstantCommand(intake::wristUp),
                     new InstantCommand(intake::stop),
@@ -32,6 +33,7 @@ public class RetractIntakeCommand extends SequentialCommandGroup {
         }
         else {
             addCommands(
+                    new InstantCommand(() -> extendo.setIsHomed(true)),
                     new InstantCommand(() -> extendo.setPosition(ExtendoPosition.PAST_HOME)),
                     new InstantCommand(intake::wristHome),
                     new InstantCommand(intake::stop),

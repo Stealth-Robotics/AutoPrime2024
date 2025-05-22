@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 public class DeployIntakeCommand extends SequentialCommandGroup {
     public DeployIntakeCommand(ExtendoSubsystem extendo, IntakeSubsystem intake) {
         addCommands(
+                new InstantCommand(() -> extendo.setIsHomed(false)),
                 new InstantCommand(intake::intake),
                 new InstantCommand(() -> extendo.setPosition(ExtendoPosition.DEPLOYED)),
                 new WaitCommand(500),

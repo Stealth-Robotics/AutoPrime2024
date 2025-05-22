@@ -36,6 +36,10 @@ public class ElevatorSubsystem extends StealthSubsystem {
     public static double TOLERANCE = 10.0;
     public static double MAX_HEIGHT = 3150;
 
+    public static double DUNK_AMOUNT = 0.1;
+
+    public static boolean isHomed = true;
+
     @Config
     public static class ElevatorPosition {
         public static double HIGH_BUCKET = 1.0;
@@ -67,10 +71,6 @@ public class ElevatorSubsystem extends StealthSubsystem {
         elevatorPID.setSetPoint(pos * MAX_HEIGHT);
     }
 
-    public void setSetPoint(double pos) {
-        elevatorPID.setSetPoint(pos);
-    }
-
     public void setPower(double power) {
         elevatorMotors.set(power);
     }
@@ -81,6 +81,10 @@ public class ElevatorSubsystem extends StealthSubsystem {
 
     public int getPosition() {
         return -rightMotor.getCurrentPosition();
+    }
+
+    public boolean isHomed() {
+        return isHomed;
     }
 
     public void resetEncoder() {

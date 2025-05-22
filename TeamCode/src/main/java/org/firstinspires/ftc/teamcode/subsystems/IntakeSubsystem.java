@@ -3,9 +3,12 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.stealthrobotics.library.Alliance;
 import org.stealthrobotics.library.StealthSubsystem;
 
 @Config
@@ -17,7 +20,7 @@ public class IntakeSubsystem extends StealthSubsystem {
     public static double WRIST_HOME_POSITION = 0.7;
     public static double WRIST_DOWN_POSITION = 0.83;
 
-    private final ColorSensor colorSensor;
+    private final RevColorSensorV3 colorSensor;
 
     public enum ColorList {
         RED,
@@ -30,7 +33,7 @@ public class IntakeSubsystem extends StealthSubsystem {
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         wristServo = hardwareMap.get(Servo.class, "wristServo");
 
-        colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
+        colorSensor = hardwareMap.get(RevColorSensorV3.class, "colorSensor");
     }
 
     public void wristUp() {
@@ -66,9 +69,9 @@ public class IntakeSubsystem extends StealthSubsystem {
     }
 
     public ColorList readSensorColor() {
-        if ((colorSensor.red() > 75) || (colorSensor.blue() > 75) || getYellowAmount() > 75) {
+        if ((colorSensor.red() > 55) || (colorSensor.blue() > 70)) {
             if (colorSensor.red() > colorSensor.blue()) {
-                if (colorSensor.red() > getYellowAmount()) {
+                if (colorSensor.red() > colorSensor.green()) {
                     return ColorList.RED;
                 }
                 else {
@@ -84,12 +87,8 @@ public class IntakeSubsystem extends StealthSubsystem {
         }
     }
 
-    private int getYellowAmount() {
-        return (colorSensor.red() + colorSensor.green()) / 2;
-    }
-
     @Override
     public void periodic() {
-        telemetry.addData("DetectedColor: ", readSensorColor());
+        telemetry.addData("Detected Color: ", readSensorColor());
     }
 }

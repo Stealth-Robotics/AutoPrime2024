@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.Command;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
@@ -15,6 +16,7 @@ import java.util.function.DoubleSupplier;
 
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
+@Config
 public class MecanumSubsystem extends StealthSubsystem {
     private final DcMotorEx frontLeft;
     private final DcMotorEx frontRight;
@@ -30,8 +32,8 @@ public class MecanumSubsystem extends StealthSubsystem {
         backLeft = hardwareMap.get(DcMotorEx.class, "leftRear");
         backRight = hardwareMap.get(DcMotorEx.class, "rightRear");
 
-        frontLeft.setDirection(DcMotorEx.Direction.REVERSE);
-        backLeft.setDirection(DcMotorEx.Direction.REVERSE);
+        frontRight.setDirection(DcMotorEx.Direction.REVERSE);
+        backRight.setDirection(DcMotorEx.Direction.REVERSE);
 
         frontLeft.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -42,8 +44,8 @@ public class MecanumSubsystem extends StealthSubsystem {
 
         IMU.Parameters imuParameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+                        RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                 )
         );
 
@@ -55,8 +57,7 @@ public class MecanumSubsystem extends StealthSubsystem {
     }
 
     public double getHeading() {
-//        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset;
-        return 0.0;
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS) - headingOffset;
     }
 
     public void resetHeading() {

@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,22 +12,21 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.commands.DeployIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.ExtendoDefaultCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakeSpitCommand;
 import org.firstinspires.ftc.teamcode.commands.RetractIntakeCommand;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem.ClawState;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem.LLPipeline;
 import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
+import org.stealthrobotics.library.Alliance;
 import org.stealthrobotics.library.AutoToTeleStorage;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
-@TeleOp(name = "Teleop")
 public class Teleop extends StealthOpMode {
     MecanumSubsystem mecanum;
     ElevatorSubsystem elevator;
@@ -59,6 +59,23 @@ public class Teleop extends StealthOpMode {
         driverGamepad = new GamepadEx(gamepad1);
         operatorGamepad = new GamepadEx(gamepad2);
 
+        Trigger intakePickup = new Trigger(
+                () -> !extendo.isHomed() && (Alliance.get() == Alliance.BLUE && (intake.readSensorColor() == IntakeSubsystem.ColorList.BLUE || intake.readSensorColor() == IntakeSubsystem.ColorList.YELLOW)) || (Alliance.get() == Alliance.RED && (intake.readSensorColor() == IntakeSubsystem.ColorList.RED || intake.readSensorColor() == IntakeSubsystem.ColorList.YELLOW))
+        );
+
+        Trigger intakeSpit = new Trigger(
+                () -> !extendo.isHomed() && (Alliance.get() == Alliance.BLUE && intake.readSensorColor() == IntakeSubsystem.ColorList.RED) || (Alliance.get() == Alliance.RED && intake.readSensorColor() == IntakeSubsystem.ColorList.BLUE)
+        );
+
+        intakePickup.whenActive(
+                new SequentialCommandGroup(
+                        new WaitCommand(500),
+                        new RetractIntakeCommand(extendo, intake, elevator, pan)
+                )
+        );
+
+        intakeSpit.whenActive(new IntakeSpitCommand(intake, extendo));
+
         //Color coded limelight pipeline switching
 //        operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.YELLOW)));
 //        operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.BLUE)));
@@ -85,6 +102,10 @@ public class Teleop extends StealthOpMode {
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new InstantCommand(() -> elevator.setPosition(ElevatorPosition.HOME))
+        );
+
+        driverGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(
+                new IntakeSpitCommand(intake, extendo)
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
@@ -123,7 +144,8 @@ public class Teleop extends StealthOpMode {
                         //Specimen Scoring
                         new SequentialCommandGroup(
                                 //set elevator a bit lower than current and then toggle claw open
-                                new InstantCommand(() -> elevator.setSetPoint(elevator.getPosition() - 300)),
+                                new InstantCommand(() -> elevator.setPosition(elevator.getPositionPercentage() - ElevatorSubsystem.DUNK_AMOUNT)),
+                                new WaitCommand(100),
                                 new InstantCommand(() -> claw.toggleState())
                         ),
 
@@ -137,5 +159,17 @@ public class Teleop extends StealthOpMode {
                         () -> claw.getState().equals(ClawState.CLOSED)
                 )
         );
+    }
+
+    @SuppressWarnings("unused")
+    @TeleOp(name = "RED | Tele-Op", group = "Red")
+    public static class RedTeleop extends Teleop {
+
+    }
+
+    @SuppressWarnings("unused")
+    @TeleOp(name = "BLUE | Tele-Op", group = "Blue")
+    public static class BlueTeleop extends Teleop {
+
     }
 }

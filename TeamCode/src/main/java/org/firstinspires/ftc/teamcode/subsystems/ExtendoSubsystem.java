@@ -30,8 +30,9 @@ public class ExtendoSubsystem extends StealthSubsystem {
     public static double kD = 0.0;
 
     public static double POSITION_TOLERANCE = 0.0;
-    public static double HOMED_TOLERANCE = 10.0;
     public static double MAX_EXTENSION = 1300;
+
+    public static boolean isHomed = true;
 
     @Config
     public static class ExtendoPosition {
@@ -72,7 +73,11 @@ public class ExtendoSubsystem extends StealthSubsystem {
     }
 
     public boolean isHomed() {
-        return Math.abs(getPosition()) < HOMED_TOLERANCE;
+        return isHomed;
+    }
+
+    public void setIsHomed(boolean newVal) {
+        isHomed = newVal;
     }
 
     public void resetEncoder() {
@@ -89,13 +94,6 @@ public class ExtendoSubsystem extends StealthSubsystem {
         if (mode == ExtendoMode.PID) {
             extensionMotor.setPower(extensionPID.calculate(getPosition()));
         }
-
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        Telemetry dashboardTelemetry = dashboard.getTelemetry();
-
-        dashboardTelemetry.addData("Extendo position", getPosition());
-        dashboardTelemetry.addData("Extendo target", extensionPID.getSetPoint());
-        dashboardTelemetry.update();
 
         telemetry.addData("Extendo Mode: ", mode.name());
         telemetry.addData("Extendo Homed: ", isHomed());
