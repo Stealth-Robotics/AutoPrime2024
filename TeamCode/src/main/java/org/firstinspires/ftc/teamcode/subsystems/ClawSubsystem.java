@@ -13,14 +13,12 @@ public class ClawSubsystem extends StealthSubsystem {
     private final Servo clawServo;
     private ClawState state = ClawState.OPEN;
 
-    public enum ClawState {
-        CLOSED(0.4),
-        OPEN(0.0);
+    public static double CLOSED_POS = 0.32;
+    public static double OPEN_POS = 0.0;
 
-        private final double setpoint;
-        ClawState(double setpoint) {
-            this.setpoint = setpoint;
-        }
+    public enum ClawState {
+        CLOSED,
+        OPEN
     }
 
     public ClawSubsystem(HardwareMap hardwareMap) {
@@ -31,11 +29,22 @@ public class ClawSubsystem extends StealthSubsystem {
         return state;
     }
 
-    public void toggleState() {
-        if (state == ClawState.CLOSED) state = ClawState.OPEN;
-        else state = ClawState.CLOSED;
+    public void setState(ClawState state) {
+        if (state == ClawState.CLOSED)
+           clawServo.setPosition(CLOSED_POS);
+        else
+            clawServo.setPosition(OPEN_POS);
+    }
 
-        clawServo.setPosition(state.setpoint);
+    public void toggleState() {
+        if (state == ClawState.CLOSED) {
+            state = ClawState.OPEN;
+            clawServo.setPosition(OPEN_POS);
+        }
+        else {
+            state = ClawState.CLOSED;
+            clawServo.setPosition(CLOSED_POS);
+        }
     }
 
     @Override

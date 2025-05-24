@@ -20,8 +20,11 @@ public class IntakeSubsystem extends StealthSubsystem {
     public static double WRIST_HOME_POSITION = 0.7;
     public static double WRIST_DOWN_POSITION = 0.84;
 
-    public static double BLUE_ACTIVATION = 78;
-    public static double RED_ACTIVATION = 55;
+    //Color sensor tuning variables
+    public static int BLUE_ACTIVATION = 78;
+    public static int RED_ACTIVATION = 58;
+    public static int RED_VS_BLUE_CONSTANT = 10;
+    public static int RED_VS_GREEN_CONSTANT = 40;
 
     private final RevColorSensorV3 colorSensor;
 
@@ -35,7 +38,6 @@ public class IntakeSubsystem extends StealthSubsystem {
     public IntakeSubsystem(HardwareMap hardwareMap) {
         intakeServo = hardwareMap.get(Servo.class, "intakeServo");
         wristServo = hardwareMap.get(Servo.class, "wristServo");
-
         colorSensor = hardwareMap.get(RevColorSensorV3.class, "colorSensor");
     }
 
@@ -73,8 +75,8 @@ public class IntakeSubsystem extends StealthSubsystem {
 
     public ColorList readSensorColor() {
         if (colorSensor.red() > RED_ACTIVATION || colorSensor.blue() > BLUE_ACTIVATION) {
-            if (colorSensor.red() > colorSensor.blue()) {
-                if (colorSensor.red() > colorSensor.green()) {
+            if (colorSensor.red() > colorSensor.blue() - RED_VS_BLUE_CONSTANT) {
+                if (colorSensor.red() > colorSensor.green() - RED_VS_GREEN_CONSTANT) {
                     return ColorList.RED;
                 }
                 else {
@@ -94,8 +96,8 @@ public class IntakeSubsystem extends StealthSubsystem {
     public void periodic() {
         telemetry.addData("Detected Color: ", readSensorColor());
 
-        telemetry.addData("R: ", colorSensor.red());
-        telemetry.addData("G: ", colorSensor.green());
-        telemetry.addData("B: ", colorSensor.blue());
+//        telemetry.addData("R: ", colorSensor.red());
+//        telemetry.addData("G: ", colorSensor.green());
+//        telemetry.addData("B: ", colorSensor.blue());
     }
 }

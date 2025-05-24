@@ -52,8 +52,10 @@ public class Teleop extends StealthOpMode {
 
         register(elevator, extendo, intake, claw, pan, mecanum, led);
 
-        //Home wrist
-        schedule(new InstantCommand(() -> intake.wristHome()));
+        schedule(
+                new InstantCommand(() -> intake.wristHome()),
+                new InstantCommand(() -> claw.setState(ClawState.OPEN))
+        );
 
         mecanum.setHeading(AutoToTeleStorage.finalAutoHeading);
 
