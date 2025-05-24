@@ -28,7 +28,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
     public static double kI = 0.0;
     public static double kD = 0.0;
 
-    public static double POSITION_TOLERANCE = 1.0;
+    public static double POSITION_TOLERANCE = 10.0;
     public static double MAX_EXTENSION = 1180;
 
     public static boolean isHomed = true;
@@ -65,6 +65,10 @@ public class ExtendoSubsystem extends StealthSubsystem {
 
     public void setIsHomed(boolean newVal) {
         isHomed = newVal;
+    }
+
+    public boolean atPosition() {
+        return extensionPID.atSetPoint();
     }
 
     public void resetEncoder() {
