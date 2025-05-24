@@ -84,8 +84,8 @@ public class ExtendoSubsystem extends StealthSubsystem {
     public void periodic() {
         extensionMotor.setPower(extensionPID.calculate(getPosition()));
 
-        telemetry.addData("Extendo Homed: ", isHomed());
-        telemetry.addData("Extendo Position: ", getPosition());
-        telemetry.addData("Extendo Current: ", extensionMotor.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Extendo Homed", isHomed());
+        telemetry.addData("Extendo Position", getPosition());
+        telemetry.addData("Extendo Current", extensionMotor.getCurrent(CurrentUnit.AMPS));
     }
 }

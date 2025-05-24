@@ -17,6 +17,7 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.MathFunctions;
 import org.stealthrobotics.library.StealthSubsystem;
+import org.stealthrobotics.library.math.filter.Debouncer;
 
 import java.util.function.DoubleSupplier;
 
@@ -37,6 +38,15 @@ public class ElevatorSubsystem extends StealthSubsystem {
     public static double MAX_HEIGHT = 3200;
 
     public static double DUNK_AMOUNT = 0.1;
+
+    public static double RESET_POWER = 0.3;
+    public static double RESET_STALL_TIME_SEC = 0.050;
+
+    public static double STALLED_TOLERANCE = 1.0;
+
+    boolean isResetting = false;
+
+    final Debouncer stalledDebouncer = new Debouncer(RESET_STALL_TIME_SEC, Debouncer.DebounceType.kRising);
 
     @Config
     public static class ElevatorPosition {
@@ -64,9 +74,31 @@ public class ElevatorSubsystem extends StealthSubsystem {
         elevatorPID.setTolerance(TOLERANCE);
     }
 
+    public void downSlowForReset() {
+        isResetting = true;
+        setPower(RESET_POWER);
+        stalledDebouncer.calculate(false);
+    }
+
+    public boolean isStalled() {
+        return stalledDebouncer.calculate(Math.abs(leftMotor.getVelocity()) < STALLED_TOLERANCE);
+    }
+
+    public void completeReset() {
+        setPower(0.0);
+        leftMotor.stopAndResetEncoder();
+        rightMotor.stopAndResetEncoder();
+        setPosition(ElevatorPosition.HOME);
+        isResetting = false;
+    }
+
     public void setPosition(double pos) {
         pos = MathFunctions.clamp(pos, 0.0, 1.0);
         elevatorPID.setSetPoint(pos * MAX_HEIGHT);
+    }
+
+    private void setPower(double pow) {
+        elevatorMotors.set(pow);
     }
 
     public double getPositionPercentage() {
@@ -77,14 +109,12 @@ public class ElevatorSubsystem extends StealthSubsystem {
         return -rightMotor.getCurrentPosition();
     }
 
-    public void resetEncoder() {
-        rightMotor.resetEncoder();
-    }
-
     @Override
     public void periodic() {
-        elevatorMotors.set(-elevatorPID.calculate(getPosition()));
+        if (!isResetting)
+            setPower(-elevatorPID.calculate(getPosition()));
 
+        telemetry.addData("Elevator IsStalled", isStalled());
         telemetry.addData("Elevator Position", getPosition());
     }
 }

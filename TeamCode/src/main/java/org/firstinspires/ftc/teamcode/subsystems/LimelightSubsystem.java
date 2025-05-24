@@ -35,11 +35,11 @@ public class LimelightSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        telemetry.addData("Limelight Pipeline: ", currPipeline.name());
+        telemetry.addData("Limelight Pipeline", currPipeline.name());
 
         res = limelight.getLatestResult();
         if (res != null && res.isValid()) {
-            telemetry.addData("LimeLight TX: ", res.getTx());
+            telemetry.addData("LimeLight TX", res.getTx());
         }
     }
 }

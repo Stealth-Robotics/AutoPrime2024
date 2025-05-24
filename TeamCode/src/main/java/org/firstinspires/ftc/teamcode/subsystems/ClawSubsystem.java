@@ -49,6 +49,6 @@ public class ClawSubsystem extends StealthSubsystem {
 
     @Override
     public void periodic() {
-        telemetry.addData("ClawState: ", state);
+        telemetry.addData("ClawState", state);
     }
 }
