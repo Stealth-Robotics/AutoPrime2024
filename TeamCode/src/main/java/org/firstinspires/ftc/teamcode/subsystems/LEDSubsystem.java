@@ -10,6 +10,7 @@ import org.stealthrobotics.library.StealthSubsystem;
 @Config
 public class LEDSubsystem extends StealthSubsystem {
     private final RevBlinkinLedDriver blinkin;
+    private BlinkinPattern pattern;
 
     @Config
     public static class LEDMode {
@@ -28,6 +29,11 @@ public class LEDSubsystem extends StealthSubsystem {
     }
 
     public void setMode(BlinkinPattern pattern) {
+        this.pattern = pattern;
+    }
+
+    @Override
+    public void periodic() {
         blinkin.setPattern(pattern);
     }
 }

@@ -20,6 +20,9 @@ public class IntakeSubsystem extends StealthSubsystem {
     public static double WRIST_HOME_POSITION = 0.7;
     public static double WRIST_DOWN_POSITION = 0.84;
 
+    public static double BLUE_ACTIVATION = 78;
+    public static double RED_ACTIVATION = 55;
+
     private final RevColorSensorV3 colorSensor;
 
     public enum ColorList {
@@ -69,7 +72,7 @@ public class IntakeSubsystem extends StealthSubsystem {
     }
 
     public ColorList readSensorColor() {
-        if ((colorSensor.red() > 55) || (colorSensor.blue() > 70)) {
+        if (colorSensor.red() > RED_ACTIVATION || colorSensor.blue() > BLUE_ACTIVATION) {
             if (colorSensor.red() > colorSensor.blue()) {
                 if (colorSensor.red() > colorSensor.green()) {
                     return ColorList.RED;
@@ -90,5 +93,9 @@ public class IntakeSubsystem extends StealthSubsystem {
     @Override
     public void periodic() {
         telemetry.addData("Detected Color: ", readSensorColor());
+
+        telemetry.addData("R: ", colorSensor.red());
+        telemetry.addData("G: ", colorSensor.green());
+        telemetry.addData("B: ", colorSensor.blue());
     }
 }
