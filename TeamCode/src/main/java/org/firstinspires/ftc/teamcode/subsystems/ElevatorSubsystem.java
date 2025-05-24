@@ -38,8 +38,6 @@ public class ElevatorSubsystem extends StealthSubsystem {
 
     public static double DUNK_AMOUNT = 0.1;
 
-    public static boolean isHomed = true;
-
     @Config
     public static class ElevatorPosition {
         public static double HIGH_BUCKET = 1.0;
@@ -71,10 +69,6 @@ public class ElevatorSubsystem extends StealthSubsystem {
         elevatorPID.setSetPoint(pos * MAX_HEIGHT);
     }
 
-    public void setPower(double power) {
-        elevatorMotors.set(power);
-    }
-
     public double getPositionPercentage() {
         return getPosition() / MAX_HEIGHT;
     }
@@ -83,21 +77,13 @@ public class ElevatorSubsystem extends StealthSubsystem {
         return -rightMotor.getCurrentPosition();
     }
 
-    public void setIsHomed(boolean newVal) {
-        isHomed = newVal;
-    }
-
-    public boolean isHomed() {
-        return isHomed;
-    }
-
     public void resetEncoder() {
         rightMotor.resetEncoder();
     }
 
     @Override
     public void periodic() {
-        setPower(-elevatorPID.calculate(getPosition()));
+        elevatorMotors.set(-elevatorPID.calculate(getPosition()));
 
         telemetry.addData("Elevator Position", getPosition());
     }

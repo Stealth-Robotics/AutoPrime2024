@@ -1,20 +1,14 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-
-import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
-
-import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem.ExtendoMode;
-
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class ExtendoDefaultCommand extends CommandBase {
     private final ExtendoSubsystem extendo;
     private final DoubleSupplier triggers;
 
-    private boolean holdPosition = false;
+    public static double manualSpeed = 0.2;
 
     public ExtendoDefaultCommand(ExtendoSubsystem extendo, DoubleSupplier triggers) {
         this.extendo = extendo;
@@ -26,16 +20,7 @@ public class ExtendoDefaultCommand extends CommandBase {
     @Override
     public void execute() {
         if (Math.abs(triggers.getAsDouble()) > 0.05 && !extendo.isHomed()) {
-            extendo.setMode(ExtendoMode.MANUAL);
-            extendo.setPower(-triggers.getAsDouble());
-            holdPosition = true;
-        }
-        else {
-            if (holdPosition) {
-                holdPosition = false;
-                extendo.holdPosition();
-            }
-            extendo.setMode(ExtendoMode.PID);
+            extendo.setPosition(extendo.getPositionPercentage() + triggers.getAsDouble() * manualSpeed);
         }
     }
 }

@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.MathFunctions;
 import org.stealthrobotics.library.StealthSubsystem;
 
 import java.util.function.DoubleSupplier;
@@ -22,8 +23,6 @@ import java.util.function.DoubleSupplier;
 public class ExtendoSubsystem extends StealthSubsystem {
     private final DcMotorEx extensionMotor;
     private final PIDController extensionPID;
-
-    private ExtendoMode mode = ExtendoMode.PID;
 
     public static double kP = 0.01;
     public static double kI = 0.0;
@@ -42,11 +41,6 @@ public class ExtendoSubsystem extends StealthSubsystem {
         public static double PAST_HOME = -0.1;
     }
 
-    public enum ExtendoMode {
-        MANUAL,
-        PID
-    }
-
     public ExtendoSubsystem(HardwareMap hardwareMap) {
         extensionMotor = hardwareMap.get(DcMotorEx.class, "extensionMotor");
         resetEncoder();
@@ -56,15 +50,8 @@ public class ExtendoSubsystem extends StealthSubsystem {
         extensionPID.setTolerance(POSITION_TOLERANCE);
     }
 
-    public void setPower(double power) {
-        extensionMotor.setPower(power);
-    }
-
-    public void setMode(ExtendoMode mode) {
-        this.mode = mode;
-    }
-
     public void setPosition(double pos) {
+        pos = MathFunctions.clamp(pos, 0.0, 1.0);
         extensionPID.setSetPoint(pos * MAX_EXTENSION);
     }
 
@@ -85,19 +72,20 @@ public class ExtendoSubsystem extends StealthSubsystem {
         extensionMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+    public double getPositionPercentage() {
+        return getPosition() / MAX_EXTENSION;
+    }
+
     public double getPosition() {
         return extensionMotor.getCurrentPosition();
     }
 
     @Override
     public void periodic() {
-        if (mode == ExtendoMode.PID) {
-            extensionMotor.setPower(extensionPID.calculate(getPosition()));
-        }
+        extensionMotor.setPower(extensionPID.calculate(getPosition()));
 
-        telemetry.addData("Extendo Mode: ", mode.name());
         telemetry.addData("Extendo Homed: ", isHomed());
         telemetry.addData("Extendo Position: ", getPosition());
-        telemetry.addData("Extendo Current:", extensionMotor.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Extendo Current: ", extensionMotor.getCurrent(CurrentUnit.AMPS));
     }
 }
