@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem.ClawState;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
@@ -35,7 +36,7 @@ public class Teleop extends StealthOpMode {
     IntakeSubsystem intake;
     ClawSubsystem claw;
     LEDSubsystem led;
-//    LimelightSubsystem ll;
+    LimelightSubsystem ll;
 
     GamepadEx driverGamepad;
     GamepadEx operatorGamepad;
@@ -49,9 +50,9 @@ public class Teleop extends StealthOpMode {
         pan = new PanSubsystem(hardwareMap);
         mecanum = new MecanumSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
-//        ll = new LimelightSubsystem(hardwareMap);
+        ll = new LimelightSubsystem(hardwareMap);
 
-        register(elevator, extendo, intake, claw, pan, mecanum, led);
+        register(elevator, extendo, intake, claw, pan, mecanum, led, ll);
 
         schedule(
                 new InstantCommand(() -> intake.wristHome()),
@@ -64,9 +65,9 @@ public class Teleop extends StealthOpMode {
         operatorGamepad = new GamepadEx(gamepad2);
 
         //Color coded limelight pipeline switching
-//        operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.YELLOW)));
-//        operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.BLUE)));
-//        operatorGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.RED)));
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.YELLOW)));
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.BLUE)));
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.RED)));
 
         mecanum.setDefaultCommand(
                 mecanum.driveTeleop(

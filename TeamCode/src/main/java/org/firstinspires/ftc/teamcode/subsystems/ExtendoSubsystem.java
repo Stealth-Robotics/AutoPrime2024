@@ -38,7 +38,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
         public static double DEPLOYED = 0.6;
         public static double TRANSFER = 0.15;
         public static double HOME = 0.0;
-        public static double PAST_HOME = -0.1;
+        public static double PAST_HOME = -0.5;
     }
 
     public ExtendoSubsystem(HardwareMap hardwareMap) {

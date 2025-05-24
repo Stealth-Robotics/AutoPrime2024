@@ -18,11 +18,11 @@ public class IntakeSubsystem extends StealthSubsystem {
 
     public static double WRIST_UP_POSITION = 0.2;
     public static double WRIST_HOME_POSITION = 0.7;
-    public static double WRIST_DOWN_POSITION = 0.84;
+    public static double WRIST_DOWN_POSITION = 0.845;
 
     //Color sensor tuning variables
-    public static int BLUE_ACTIVATION = 82;
-    public static int RED_ACTIVATION = 58;
+    public static int BLUE_ACTIVATION = 85;
+    public static int RED_ACTIVATION = 60;
     public static int RED_VS_BLUE_CONSTANT = 10;
     public static int RED_VS_GREEN_CONSTANT = 40;
 
@@ -95,5 +95,8 @@ public class IntakeSubsystem extends StealthSubsystem {
     @Override
     public void periodic() {
         telemetry.addData("Detected Color", getColor());
+        telemetry.addData("r", colorSensor.red());
+        telemetry.addData("g", colorSensor.green());
+        telemetry.addData("b", colorSensor.blue());
     }
 }
