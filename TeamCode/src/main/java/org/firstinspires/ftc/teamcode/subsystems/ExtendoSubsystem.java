@@ -28,8 +28,8 @@ public class ExtendoSubsystem extends StealthSubsystem {
     public static double kI = 0.0;
     public static double kD = 0.0;
 
-    public static double POSITION_TOLERANCE = 0.0;
-    public static double MAX_EXTENSION = 1300;
+    public static double POSITION_TOLERANCE = 1.0;
+    public static double MAX_EXTENSION = 1180;
 
     public static boolean isHomed = true;
 

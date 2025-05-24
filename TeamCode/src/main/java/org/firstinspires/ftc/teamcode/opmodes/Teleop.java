@@ -4,7 +4,6 @@ import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
-import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,18 +11,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.commands.DeployIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.ExtendoDefaultCommand;
-import org.firstinspires.ftc.teamcode.commands.IntakeSpitCommand;
+import org.firstinspires.ftc.teamcode.commands.IntakeDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.RetractIntakeCommand;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorPosition;
 
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem.ClawState;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
-import org.stealthrobotics.library.Alliance;
 import org.stealthrobotics.library.AutoToTeleStorage;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
@@ -34,6 +33,7 @@ public class Teleop extends StealthOpMode {
     ExtendoSubsystem extendo;
     IntakeSubsystem intake;
     ClawSubsystem claw;
+    LEDSubsystem led;
 //    LimelightSubsystem ll;
 
     GamepadEx driverGamepad;
@@ -47,9 +47,10 @@ public class Teleop extends StealthOpMode {
         claw = new ClawSubsystem(hardwareMap);
         pan = new PanSubsystem(hardwareMap);
         mecanum = new MecanumSubsystem(hardwareMap);
+        led = new LEDSubsystem(hardwareMap);
 //        ll = new LimelightSubsystem(hardwareMap);
 
-        register(elevator, extendo, intake, claw, pan, mecanum);
+        register(elevator, extendo, intake, claw, pan, mecanum, led);
 
         //Home wrist
         schedule(new InstantCommand(() -> intake.wristHome()));
@@ -58,23 +59,6 @@ public class Teleop extends StealthOpMode {
 
         driverGamepad = new GamepadEx(gamepad1);
         operatorGamepad = new GamepadEx(gamepad2);
-
-        Trigger intakePickup = new Trigger(
-                () -> !extendo.isHomed() && (Alliance.get() == Alliance.BLUE && (intake.readSensorColor() == IntakeSubsystem.ColorList.BLUE || intake.readSensorColor() == IntakeSubsystem.ColorList.YELLOW)) || (Alliance.get() == Alliance.RED && (intake.readSensorColor() == IntakeSubsystem.ColorList.RED || intake.readSensorColor() == IntakeSubsystem.ColorList.YELLOW))
-        );
-
-        Trigger intakeSpit = new Trigger(
-                () -> !extendo.isHomed() && (Alliance.get() == Alliance.BLUE && intake.readSensorColor() == IntakeSubsystem.ColorList.RED) || (Alliance.get() == Alliance.RED && intake.readSensorColor() == IntakeSubsystem.ColorList.BLUE)
-        );
-
-        intakePickup.whenActive(
-                new SequentialCommandGroup(
-                        new WaitCommand(500),
-                        new RetractIntakeCommand(extendo, intake, elevator, pan)
-                )
-        );
-
-        intakeSpit.whenActive(new IntakeSpitCommand(intake, extendo));
 
         //Color coded limelight pipeline switching
 //        operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> ll.setPipeline(LLPipeline.YELLOW)));
@@ -94,7 +78,12 @@ public class Teleop extends StealthOpMode {
 
         //Manual extendo controls
         extendo.setDefaultCommand(
-                new ExtendoDefaultCommand(extendo, () -> driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER))
+                new ExtendoDefaultCommand(extendo, () -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER))
+        );
+
+        //Manual intake controls
+        intake.setDefaultCommand(
+                new IntakeDefaultCommand(intake, extendo, () -> driverGamepad.getButton(GamepadKeys.Button.X))
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.START).whenPressed(new InstantCommand(() -> mecanum.resetHeading()));
@@ -102,10 +91,6 @@ public class Teleop extends StealthOpMode {
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new InstantCommand(() -> elevator.setPosition(ElevatorPosition.HOME))
-        );
-
-        driverGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(
-                new IntakeSpitCommand(intake, extendo)
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(

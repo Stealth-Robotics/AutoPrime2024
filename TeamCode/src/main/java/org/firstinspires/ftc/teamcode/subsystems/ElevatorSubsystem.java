@@ -33,8 +33,8 @@ public class ElevatorSubsystem extends StealthSubsystem {
     public static double kD = 0.0;
     public static double kF = 0.0;
 
-    public static double TOLERANCE = 10.0;
-    public static double MAX_HEIGHT = 3150;
+    public static double TOLERANCE = 1.0;
+    public static double MAX_HEIGHT = 3200;
 
     public static double DUNK_AMOUNT = 0.1;
 

@@ -18,7 +18,7 @@ public class IntakeSubsystem extends StealthSubsystem {
 
     public static double WRIST_UP_POSITION = 0.2;
     public static double WRIST_HOME_POSITION = 0.7;
-    public static double WRIST_DOWN_POSITION = 0.85;
+    public static double WRIST_DOWN_POSITION = 0.84;
 
     private final RevColorSensorV3 colorSensor;
 
