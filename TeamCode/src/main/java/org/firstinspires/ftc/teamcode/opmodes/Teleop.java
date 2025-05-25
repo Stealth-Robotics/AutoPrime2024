@@ -150,6 +150,8 @@ public class Teleop extends StealthOpMode {
                         () -> claw.getState().equals(ClawState.CLOSED)
                 )
         );
+
+        ll.init();
     }
 
     @SuppressWarnings("unused")

@@ -25,9 +25,10 @@ public class LimelightSubsystem extends SubsystemBase {
 
     public LimelightSubsystem(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(100);
+    }
 
-        limelight.pipelineSwitch(0);
+    public void init() {
+        limelight.setPollRateHz(100);
         limelight.start();
     }
 
@@ -39,20 +40,16 @@ public class LimelightSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         telemetry.addData("Limelight Pipeline", currPipeline.name());
-        telemetry.addData("Limelight Python", Arrays.toString(limelight.getLatestResult().getPythonOutput()));
+
+        limelight.updatePythonInputs(new double[] {0, 0, 0, 0, 0, 0, 0, 0});
 
         LLResult result = limelight.getLatestResult();
-        if (result != null && result.isValid()) {
-            double tx = result.getTx(); // How far left or right the target is (degrees)
-            double ty = result.getTy(); // How far up or down the target is (degrees)
-            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+        double tx = result.getTx(); // How far left or right the target is (degrees)
+        double ty = result.getTy(); // How far up or down the target is (degrees)
+        double ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
-            telemetry.addData("Target X", tx);
-            telemetry.addData("Target Y", ty);
-            telemetry.addData("Target Area", ta);
-
-        } else {
-            telemetry.addData("Limelight", "No Targets");
-        }
+        telemetry.addData("Target X", tx);
+        telemetry.addData("Target Y", ty);
+        telemetry.addData("Target Area", ta);
     }
 }
