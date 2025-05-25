@@ -76,7 +76,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
 
     public void downSlowForReset() {
         isResetting = true;
-        setPower(RESET_POWER);
+        setPower(-RESET_POWER);
         stalledDebouncer.calculate(false);
     }
 
@@ -106,13 +106,13 @@ public class ElevatorSubsystem extends StealthSubsystem {
     }
 
     public int getPosition() {
-        return -rightMotor.getCurrentPosition();
+        return rightMotor.getCurrentPosition();
     }
 
     @Override
     public void periodic() {
         if (!isResetting)
-            setPower(-elevatorPID.calculate(getPosition()));
+            setPower(elevatorPID.calculate(getPosition()));
 
         telemetry.addData("Elevator IsStalled", isStalled());
         telemetry.addData("Elevator Position", getPosition());

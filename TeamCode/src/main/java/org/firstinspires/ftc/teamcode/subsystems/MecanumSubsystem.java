@@ -24,7 +24,7 @@ public class MecanumSubsystem extends StealthSubsystem {
     private final DcMotorEx backRight;
 
     private final IMU imu;
-    private double headingOffset = 0;
+    private double headingOffset = 0.0;
 
     public MecanumSubsystem(HardwareMap hardwareMap) {
         frontLeft = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -62,6 +62,13 @@ public class MecanumSubsystem extends StealthSubsystem {
 
     public void resetHeading() {
         headingOffset = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+    }
+
+    public void stop() {
+        frontLeft.setPower(0.0);
+        frontRight.setPower(0.0);
+        backLeft.setPower(0.0);
+        backRight.setPower(0.0);
     }
 
     public void drive(double x, double y, double rot) {

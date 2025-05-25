@@ -37,19 +37,17 @@ public class LimelightSubsystem extends SubsystemBase {
         limelight.pipelineSwitch(p.index);
     }
 
+    public double getAngleToSample() {
+        return limelight.getLatestResult().getTx();
+    }
+
     @Override
     public void periodic() {
         telemetry.addData("Limelight Pipeline", currPipeline.name());
 
         limelight.updatePythonInputs(new double[] {0, 0, 0, 0, 0, 0, 0, 0});
-
         LLResult result = limelight.getLatestResult();
-        double tx = result.getTx(); // How far left or right the target is (degrees)
-        double ty = result.getTy(); // How far up or down the target is (degrees)
-        double ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
-        telemetry.addData("Target X", tx);
-        telemetry.addData("Target Y", ty);
-        telemetry.addData("Target Area", ta);
+        telemetry.addData("Angle-To-Sample", result.getTx());
     }
 }

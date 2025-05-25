@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.commands.AlignToSampleCommand;
 import org.firstinspires.ftc.teamcode.commands.DeployIntakeCommand;
 import org.firstinspires.ftc.teamcode.commands.ElevatorDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.ExtendoDefaultCommand;
@@ -68,6 +69,10 @@ public class Teleop extends StealthOpMode {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.YELLOW)));
         operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.BLUE)));
         operatorGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.RED)));
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+                new AlignToSampleCommand(mecanum, ll)
+        );
 
         mecanum.setDefaultCommand(
                 mecanum.driveTeleop(
