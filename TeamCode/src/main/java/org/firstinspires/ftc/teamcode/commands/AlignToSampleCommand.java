@@ -46,7 +46,7 @@ public class AlignToSampleCommand extends CommandBase {
         double calc = pid.calculate(Math.toDegrees(drive.getHeading()));
 
         drive.drive(0, 0, calc);
-        telemetry.addData("running", true); //TODO Removeeeeee
+        telemetry.addData("Aligning...", "");
     }
 
     @Override

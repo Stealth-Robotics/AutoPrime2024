@@ -114,7 +114,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
         if (!isResetting)
             setPower(elevatorPID.calculate(getPosition()));
 
-        telemetry.addData("Elevator IsStalled", isStalled());
+//        telemetry.addData("Elevator Is Stalled", isStalled());
         telemetry.addData("Elevator Position", getPosition());
     }
 }

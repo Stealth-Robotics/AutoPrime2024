@@ -18,11 +18,7 @@ import java.util.Arrays;
 @Config
 public class LimelightSubsystem extends SubsystemBase {
     private final Limelight3A limelight;
-    private final MecanumSubsystem drive;
     private LLPipeline currPipeline = LLPipeline.YELLOW;
-
-    FtcDashboard dashboard = FtcDashboard.getInstance();//TODO Removeeeeee
-    Telemetry dashboardTelemetry = dashboard.getTelemetry(); //TODO Removeeeeee
 
     public enum LLPipeline {
         YELLOW(0),
@@ -34,8 +30,7 @@ public class LimelightSubsystem extends SubsystemBase {
         }
     }
 
-    public LimelightSubsystem(HardwareMap hardwareMap, MecanumSubsystem drive) {
-        this.drive = drive;
+    public LimelightSubsystem(HardwareMap hardwareMap) {
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
     }
 
@@ -49,7 +44,6 @@ public class LimelightSubsystem extends SubsystemBase {
         limelight.pipelineSwitch(p.index);
     }
 
-    //Degrees
     public double getAngleToSample() {
         return limelight.getLatestResult().getTx();
     }
@@ -62,10 +56,5 @@ public class LimelightSubsystem extends SubsystemBase {
         LLResult result = limelight.getLatestResult();
 
         telemetry.addData("Angle-To-Sample", result.getTx());
-
-        //TODO Removeeeeee
-        dashboardTelemetry.addData("target", result.getTx() + Math.toDegrees(drive.getHeading()));
-        dashboardTelemetry.addData("position", Math.toDegrees(drive.getHeading()));
-        dashboardTelemetry.update();
     }
 }
