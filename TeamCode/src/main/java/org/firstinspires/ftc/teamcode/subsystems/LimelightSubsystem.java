@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -7,11 +9,20 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.stealthrobotics.library.AnglePIDController;
+
 import java.util.Arrays;
 
+@Config
 public class LimelightSubsystem extends SubsystemBase {
     private final Limelight3A limelight;
+    private final MecanumSubsystem drive;
     private LLPipeline currPipeline = LLPipeline.YELLOW;
+
+    FtcDashboard dashboard = FtcDashboard.getInstance();//TODO Removeeeeee
+    Telemetry dashboardTelemetry = dashboard.getTelemetry(); //TODO Removeeeeee
 
     public enum LLPipeline {
         YELLOW(0),
@@ -23,7 +34,8 @@ public class LimelightSubsystem extends SubsystemBase {
         }
     }
 
-    public LimelightSubsystem(HardwareMap hardwareMap) {
+    public LimelightSubsystem(HardwareMap hardwareMap, MecanumSubsystem drive) {
+        this.drive = drive;
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
     }
 
@@ -37,6 +49,7 @@ public class LimelightSubsystem extends SubsystemBase {
         limelight.pipelineSwitch(p.index);
     }
 
+    //Degrees
     public double getAngleToSample() {
         return limelight.getLatestResult().getTx();
     }
@@ -49,5 +62,10 @@ public class LimelightSubsystem extends SubsystemBase {
         LLResult result = limelight.getLatestResult();
 
         telemetry.addData("Angle-To-Sample", result.getTx());
+
+        //TODO Removeeeeee
+        dashboardTelemetry.addData("target", result.getTx() + Math.toDegrees(drive.getHeading()));
+        dashboardTelemetry.addData("position", Math.toDegrees(drive.getHeading()));
+        dashboardTelemetry.update();
     }
 }

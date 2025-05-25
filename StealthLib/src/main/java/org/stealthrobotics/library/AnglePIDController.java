@@ -1,7 +1,5 @@
 package org.stealthrobotics.library;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 public class AnglePIDController {
     private final double kP;
     private final double kI;
@@ -34,19 +32,25 @@ public class AnglePIDController {
     }
 
     public boolean atSetPoint() {
-        return AngleUnit.RADIANS.normalize(reference - measuredValue) <= tolerance;
+        return Math.abs(reference - measuredValue) <= tolerance;
     }
 
     public double calculate(double measuredValue) {
         this.measuredValue = measuredValue;
 
         double time = (double) System.nanoTime() / 1E9;
-        double error = AngleUnit.RADIANS.normalize(reference - measuredValue);
+        double error = wrapAngle(reference - measuredValue);
         double derivative = (error - lastError) / time;
 
         integralSum += error * time;
         lastError = error;
 
         return (kP * error) + (kI * integralSum) + (kD * derivative);
+    }
+
+    private double wrapAngle(double angle) {
+        while (angle > 180) angle -= 360;
+        while (angle <= -180) angle += 360;
+        return angle;
     }
 }

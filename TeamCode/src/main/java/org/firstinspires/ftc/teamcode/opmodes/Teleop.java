@@ -51,7 +51,7 @@ public class Teleop extends StealthOpMode {
         pan = new PanSubsystem(hardwareMap);
         mecanum = new MecanumSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
-        ll = new LimelightSubsystem(hardwareMap);
+        ll = new LimelightSubsystem(hardwareMap, mecanum);
 
         register(elevator, extendo, intake, claw, pan, mecanum, led, ll);
 
