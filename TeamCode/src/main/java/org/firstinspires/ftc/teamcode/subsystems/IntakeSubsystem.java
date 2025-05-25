@@ -95,8 +95,5 @@ public class IntakeSubsystem extends StealthSubsystem {
     @Override
     public void periodic() {
         telemetry.addData("Detected Color", getColor());
-        telemetry.addData("r", colorSensor.red());
-        telemetry.addData("g", colorSensor.green());
-        telemetry.addData("b", colorSensor.blue());
     }
 }
