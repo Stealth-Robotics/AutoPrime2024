@@ -72,10 +72,11 @@ public class MecanumSubsystem extends StealthSubsystem {
     }
 
     public void drive(double x, double y, double rot) {
-        double rotX = x * Math.cos(-getHeading()) - y * Math.sin(-getHeading());
-        double rotY = x * Math.sin(-getHeading()) + y * Math.cos(-getHeading());
+        double heading = getHeading();
+        double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
+        double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
 
-        rotX = rotX * 1.1;
+        rotX *= 1.1; // Counteract imperfect strafing
 
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rot), 1);
         double frontLeftPower = (rotY + rotX + rot) / denominator;

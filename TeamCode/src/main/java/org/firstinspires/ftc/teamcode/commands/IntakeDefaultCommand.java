@@ -29,10 +29,11 @@ public class IntakeDefaultCommand extends CommandBase {
     public void execute() {
         if (outtakeTrigger.getAsBoolean())
             intake.outtake();
-        else if (extendo.isHomed())
-            intake.stop();
-        else
+        else if (!extendo.isHomed())
             intake.intake();
+        else
+            intake.stop();
+
 
         IntakeSubsystem.Color color = intake.getColor();
 

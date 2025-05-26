@@ -19,7 +19,7 @@ public class IntakeSubsystem extends StealthSubsystem {
 
     public static double WRIST_UP_POSITION = 0.2;
     public static double WRIST_HOME_POSITION = 0.7;
-    public static double WRIST_DOWN_POSITION = 0.845;
+    public static double WRIST_DOWN_POSITION = 0.86;
 
     //Color sensor tuning variables
     public static int BLUE_ACTIVATION = 85;
