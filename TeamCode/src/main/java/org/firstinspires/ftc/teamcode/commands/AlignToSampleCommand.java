@@ -21,10 +21,11 @@ public class AlignToSampleCommand extends CommandBase {
 
     private final AnglePIDController pid;
     public static double kP = 0.03;
-    public static double kI = 0.0000001;
-    public static double kD = 0;
+    public static double kI = 0;
+    public static double kD = 0.001;
 
-    public static double ANGLE_TOLERANCE = 1.5;
+    public static double ANGLE_TOLERANCE = 5;
+    public static double VELO_TOLERANCE = 0.1;
 
     public AlignToSampleCommand(MecanumSubsystem drive, LimelightSubsystem ll) {
         this.drive = drive;
@@ -32,6 +33,7 @@ public class AlignToSampleCommand extends CommandBase {
 
         pid = new AnglePIDController(kP, kI, kD);
         pid.setTolerance(ANGLE_TOLERANCE);
+        pid.setVelocityTolerance(VELO_TOLERANCE);
 
         addRequirements(drive, ll);
     }
@@ -46,7 +48,9 @@ public class AlignToSampleCommand extends CommandBase {
         double calc = pid.calculate(Math.toDegrees(drive.getHeading()));
 
         drive.drive(0, 0, calc);
-        telemetry.addData("Aligning...", "");
+        telemetry.addLine("-- Auto Align --");
+        telemetry.addData("velocity error", pid.getVelocityError());
+        telemetry.addData("position error", pid.getPositionError());
     }
 
     @Override
@@ -56,6 +60,6 @@ public class AlignToSampleCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return pid.atSetPoint() && drive.isStopped();
+        return pid.atSetPoint();
     }
 }

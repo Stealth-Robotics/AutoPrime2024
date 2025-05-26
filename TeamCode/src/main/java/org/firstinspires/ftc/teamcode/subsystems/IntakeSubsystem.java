@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 
 @Config
 public class IntakeSubsystem extends StealthSubsystem {
-    private final Servo intakeServo;
+    private final CRServo intakeServo;
     private final Servo wristServo;
 
     public static double WRIST_UP_POSITION = 0.2;
@@ -36,7 +37,7 @@ public class IntakeSubsystem extends StealthSubsystem {
     }
 
     public IntakeSubsystem(HardwareMap hardwareMap) {
-        intakeServo = hardwareMap.get(Servo.class, "intakeServo");
+        intakeServo = hardwareMap.get(CRServo.class, "intakeServo");
         wristServo = hardwareMap.get(Servo.class, "wristServo");
         colorSensor = hardwareMap.get(RevColorSensorV3.class, "colorSensor");
     }
@@ -70,7 +71,7 @@ public class IntakeSubsystem extends StealthSubsystem {
     }
 
     public void setIntakeSpeed(double speed) {
-        intakeServo.setPosition((speed + 1) / 2);
+        intakeServo.setPower(speed);
     }
 
     public Color getColor() {

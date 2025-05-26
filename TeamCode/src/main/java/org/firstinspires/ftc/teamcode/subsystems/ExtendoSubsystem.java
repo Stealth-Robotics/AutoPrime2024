@@ -16,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.MathFunctions;
 import org.stealthrobotics.library.StealthSubsystem;
+import org.stealthrobotics.library.math.filter.Debouncer;
 
 import java.util.function.DoubleSupplier;
 
@@ -28,14 +29,21 @@ public class ExtendoSubsystem extends StealthSubsystem {
     public static double kI = 0.0;
     public static double kD = 0.0;
 
-    public static double POSITION_TOLERANCE = 10.0;
+    public static double POSITION_TOLERANCE = 5.0;
     public static double MAX_EXTENSION = 1180;
 
+    public static double RESET_POWER = 0.6;
+    public static double RESET_STALL_TIME_SEC = 0.1;
+    public static double STALLED_TOLERANCE = 0.01;
+
     public static boolean isHomed = true;
+    private boolean isResetting = false;
+
+    final Debouncer stalledDebouncer = new Debouncer(RESET_STALL_TIME_SEC, Debouncer.DebounceType.kRising);
 
     @Config
     public static class ExtendoPosition {
-        public static double DEPLOYED = 0.6;
+        public static double DEPLOYED = 0.4;
         public static double TRANSFER = 0.15;
         public static double HOME = 0.0;
         public static double PAST_HOME = -0.5;
@@ -50,13 +58,26 @@ public class ExtendoSubsystem extends StealthSubsystem {
         extensionPID.setTolerance(POSITION_TOLERANCE);
     }
 
+    public void downSlowForReset() {
+        isResetting = true;
+        extensionMotor.setPower(-RESET_POWER);
+        stalledDebouncer.calculate(false);
+    }
+
+    public boolean isStalled() {
+        return stalledDebouncer.calculate(Math.abs(extensionMotor.getVelocity()) < STALLED_TOLERANCE);
+    }
+
+    public void completeReset() {
+        extensionMotor.setPower(0.0);
+        setPosition(ExtendoPosition.HOME);
+        resetEncoder();
+        isResetting = false;
+    }
+
     public void setPosition(double pos) {
         pos = MathFunctions.clamp(pos, 0.0, 1.0);
         extensionPID.setSetPoint(pos * MAX_EXTENSION);
-    }
-
-    public void holdPosition() {
-        extensionPID.setSetPoint(getPosition());
     }
 
     public boolean isHomed() {
@@ -86,10 +107,10 @@ public class ExtendoSubsystem extends StealthSubsystem {
 
     @Override
     public void periodic() {
-        extensionMotor.setPower(extensionPID.calculate(getPosition()));
+        if (!isResetting)
+            extensionMotor.setPower(extensionPID.calculate(getPosition()));
 
-//        telemetry.addData("Extendo Homed", isHomed());
         telemetry.addData("Extendo Position", getPosition());
-//        telemetry.addData("Extendo Current", extensionMotor.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("Extendo Current", extensionMotor.getCurrent(CurrentUnit.AMPS));
     }
 }

@@ -86,9 +86,9 @@ public class ElevatorSubsystem extends StealthSubsystem {
 
     public void completeReset() {
         setPower(0.0);
+        setPosition(ElevatorPosition.HOME);
         leftMotor.stopAndResetEncoder();
         rightMotor.stopAndResetEncoder();
-        setPosition(ElevatorPosition.HOME);
         isResetting = false;
     }
 
@@ -99,6 +99,10 @@ public class ElevatorSubsystem extends StealthSubsystem {
 
     private void setPower(double pow) {
         elevatorMotors.set(pow);
+    }
+
+    public boolean isHomed() {
+        return getPosition() <= 100; // ! Arbitrary value
     }
 
     public double getPositionPercentage() {
@@ -114,7 +118,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
         if (!isResetting)
             setPower(elevatorPID.calculate(getPosition()));
 
-//        telemetry.addData("Elevator Is Stalled", isStalled());
+        telemetry.addData("Elevator Home", isHomed());
         telemetry.addData("Elevator Position", getPosition());
     }
 }

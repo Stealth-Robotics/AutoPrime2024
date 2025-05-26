@@ -93,10 +93,6 @@ public class MecanumSubsystem extends StealthSubsystem {
         return this.run(() -> drive(x.getAsDouble(), y.getAsDouble(), -rot.getAsDouble()));
     }
 
-    public boolean isStopped() {
-        return frontLeft.getPower() < 0.1 && frontRight.getPower() < 0.1 && backRight.getPower() < 0.1 && backRight.getPower() < 0.1;
-    }
-
     @Override
     public void periodic() {
         telemetry.addData("Heading", AngleUnit.RADIANS.toDegrees(getHeading()));
