@@ -19,6 +19,7 @@ public class IntakeSubsystem extends StealthSubsystem {
 
     public static double WRIST_UP_POSITION = 0.2;
     public static double WRIST_HOME_POSITION = 0.7;
+    public static double WRIST_TRAVEL_POSITION = 0.84;
     public static double WRIST_DOWN_POSITION = 0.86;
 
     //Color sensor tuning variables
@@ -54,6 +55,10 @@ public class IntakeSubsystem extends StealthSubsystem {
         setWristPosition(WRIST_DOWN_POSITION);
     }
 
+    public void wristTravel() {
+        setWristPosition(WRIST_TRAVEL_POSITION);
+    }
+
     public void intake() {
         setIntakeSpeed(-1);
     }
@@ -66,7 +71,7 @@ public class IntakeSubsystem extends StealthSubsystem {
         setIntakeSpeed(0);
     }
 
-    public void setWristPosition(double pos) {
+    private void setWristPosition(double pos) {
         wristServo.setPosition(pos);
     }
 
