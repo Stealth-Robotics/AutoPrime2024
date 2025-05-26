@@ -18,15 +18,18 @@ public class RetractIntakeCommand extends SequentialCommandGroup {
                 new ConditionalCommand(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> extendo.setIsHomed(true)),
-                                new InstantCommand(intake::wristUp),
-                                new InstantCommand(() -> extendo.setPosition(ExtendoPosition.TRANSFER)),
                                 new InstantCommand(intake::stop),
                                 new InstantCommand(pan::home),
+                                new InstantCommand(intake::wristHome),
+                                new InstantCommand(() -> extendo.setPosition(ExtendoPosition.TRANSFER)),
                                 new WaitUntilCommand(extendo::atPosition), //Wait until extendo is fully in position
+                                new InstantCommand(intake::wristUp),
+                                new WaitCommand(500),
                                 new InstantCommand(intake::outtake),
                                 new WaitUntilCommand(() -> intake.getColor().equals(IntakeSubsystem.Color.BLACK)), //Color sensor no longer detects sample
-                                new InstantCommand(intake::stop),
+                                new WaitCommand(500), //Extra pause to insure consistency
                                 new InstantCommand(intake::wristHome),
+                                new InstantCommand(intake::stop),
                                 new ResetExtendoCommand(extendo)
                         ),
                         new SequentialCommandGroup(

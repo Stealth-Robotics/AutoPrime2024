@@ -25,11 +25,11 @@ public class ExtendoSubsystem extends StealthSubsystem {
     private final DcMotorEx extensionMotor;
     private final PIDController extensionPID;
 
-    public static double kP = 0.01;
-    public static double kI = 0.0;
+    public static double kP = 0.005;
+    public static double kI = 0.15;
     public static double kD = 0.0;
 
-    public static double POSITION_TOLERANCE = 5.0;
+    public static double POSITION_TOLERANCE = 10.0;
     public static double MAX_EXTENSION = 1180;
 
     public static double RESET_POWER = 0.6;
