@@ -8,6 +8,7 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.stealthrobotics.library.StealthSubsystem;
 
 import java.util.ArrayList;
@@ -23,8 +24,8 @@ public class IntakeSubsystem extends StealthSubsystem {
     public static double WRIST_DOWN_POSITION = 0.86;
 
     //Color sensor tuning variables
-    public static int BLUE_ACTIVATION = 85;
-    public static int RED_ACTIVATION = 60;
+    public static double DISTANCE_ACTIVATION_CONSTANT = 3.0;
+
     public static int RED_VS_BLUE_CONSTANT = 10;
     public static int RED_VS_GREEN_CONSTANT = 40;
 
@@ -80,7 +81,7 @@ public class IntakeSubsystem extends StealthSubsystem {
     }
 
     public Color getColor() {
-        if (colorSensor.red() > RED_ACTIVATION || colorSensor.blue() > BLUE_ACTIVATION) {
+        if (colorSensor.getDistance(DistanceUnit.INCH) < DISTANCE_ACTIVATION_CONSTANT) {
             if (colorSensor.red() > colorSensor.blue() - RED_VS_BLUE_CONSTANT) {
                 if (colorSensor.red() > colorSensor.green() - RED_VS_GREEN_CONSTANT) {
                     return Color.RED;
@@ -101,5 +102,6 @@ public class IntakeSubsystem extends StealthSubsystem {
     @Override
     public void periodic() {
         telemetry.addData("Detected Color", getColor());
+        telemetry.addData("Detected Distance In Inches", colorSensor.getDistance(DistanceUnit.INCH));
     }
 }
