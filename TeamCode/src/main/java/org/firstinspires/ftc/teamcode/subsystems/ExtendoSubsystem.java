@@ -29,7 +29,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
     public static double kI = 0.15;
     public static double kD = 0.0;
 
-    public static double POSITION_TOLERANCE = 20.0;
+    public static double POSITION_TOLERANCE = 25.0;
     public static double MAX_EXTENSION = 1180;
 
     public static double RESET_POWER = 0.7;
@@ -44,7 +44,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
     @Config
     public static class ExtendoPosition {
         public static double DEPLOYED = 0.4;
-        public static double TRANSFER = 0.18;
+        public static double TRANSFER = 0.1;
         public static double HOME = 0.0;
    }
 
@@ -72,6 +72,10 @@ public class ExtendoSubsystem extends StealthSubsystem {
         setPosition(ExtendoPosition.HOME);
         resetEncoder();
         isResetting = false;
+    }
+
+    public boolean isResetting() {
+        return isResetting;
     }
 
     public void setPosition(double pos) {
