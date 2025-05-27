@@ -19,7 +19,7 @@ public class LEDSubsystem extends StealthSubsystem {
         public static BlinkinPattern YELLOW_SAMPLE = BlinkinPattern.YELLOW;
         public static BlinkinPattern NO_SAMPLE = BlinkinPattern.BLACK;
 
-        public static BlinkinPattern AUTOMATIC_INTAKE_STATE = BlinkinPattern.SINELON_LAVA_PALETTE;
+        public static BlinkinPattern AUTOMATIC_INTAKE_MODE = BlinkinPattern.HOT_PINK;
 
         public static BlinkinPattern CLIMB_SEQUENCE = BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
         public static BlinkinPattern AUTONOMOUS = BlinkinPattern.STROBE_GOLD;

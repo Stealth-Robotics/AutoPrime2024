@@ -26,7 +26,7 @@ public class IntakeSubsystem extends StealthSubsystem {
     //Color sensor tuning variables
     public static double DISTANCE_ACTIVATION_CONSTANT = 3.0;
 
-    public static int RED_VS_BLUE_CONSTANT = 10;
+    public static int RED_VS_BLUE_CONSTANT = 14;
     public static int RED_VS_GREEN_CONSTANT = 40;
 
     private final RevColorSensorV3 colorSensor;
@@ -38,10 +38,28 @@ public class IntakeSubsystem extends StealthSubsystem {
         BLACK
     }
 
+    private IntakeControl control = IntakeControl.MANUAL;
+
+    public enum IntakeControl {
+        MANUAL,
+        AUTOMATIC
+    }
+
     public IntakeSubsystem(HardwareMap hardwareMap) {
         intakeServo = hardwareMap.get(CRServo.class, "intakeServo");
         wristServo = hardwareMap.get(Servo.class, "wristServo");
         colorSensor = hardwareMap.get(RevColorSensorV3.class, "colorSensor");
+    }
+
+    public void toggleControl() {
+        if (control.equals(IntakeControl.MANUAL))
+            control = IntakeControl.AUTOMATIC;
+        else
+            control = IntakeControl.MANUAL;
+    }
+
+    public IntakeControl getControlType() {
+        return control;
     }
 
     public void wristUp() {
@@ -102,6 +120,9 @@ public class IntakeSubsystem extends StealthSubsystem {
     @Override
     public void periodic() {
         telemetry.addData("Detected Color", getColor());
-        telemetry.addData("Detected Distance In Inches", colorSensor.getDistance(DistanceUnit.INCH));
+        telemetry.addData("r", colorSensor.red());
+        telemetry.addData("g", colorSensor.green());
+        telemetry.addData("b", colorSensor.blue());
+        telemetry.addData("Intake Control", control);
     }
 }

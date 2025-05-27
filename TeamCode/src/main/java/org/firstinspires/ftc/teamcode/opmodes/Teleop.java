@@ -4,6 +4,8 @@ import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.WaitUntilCommand;
+import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -14,6 +16,7 @@ import org.firstinspires.ftc.teamcode.commands.ElevatorDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.ExtendoDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.IntakeDefaultCommand;
 import org.firstinspires.ftc.teamcode.commands.ResetElevatorCommand;
+import org.firstinspires.ftc.teamcode.commands.ResetExtendoCommand;
 import org.firstinspires.ftc.teamcode.commands.RetractIntakeCommand;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem.ElevatorPosition;
 
@@ -26,6 +29,7 @@ import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
+import org.stealthrobotics.library.Alliance;
 import org.stealthrobotics.library.AutoToTeleStorage;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
@@ -65,6 +69,27 @@ public class Teleop extends StealthOpMode {
         driverGamepad = new GamepadEx(gamepad1);
         operatorGamepad = new GamepadEx(gamepad2);
 
+        //Automated intake triggers
+        Trigger retractIntakeTrigger = new Trigger(() -> (intake.getControlType().equals(IntakeSubsystem.IntakeControl.AUTOMATIC)) &&
+                (Alliance.get() == Alliance.BLUE && (intake.getColor() == IntakeSubsystem.Color.BLUE || intake.getColor() == IntakeSubsystem.Color.YELLOW)) ||
+                (Alliance.get() == Alliance.RED && (intake.getColor() == IntakeSubsystem.Color.RED || intake.getColor() == IntakeSubsystem.Color.YELLOW))
+        );
+
+        Trigger intakeSpitTrigger = new Trigger(() -> intake.getControlType().equals(IntakeSubsystem.IntakeControl.AUTOMATIC) &&
+                ((Alliance.get() == Alliance.BLUE && intake.getColor() == IntakeSubsystem.Color.RED) ||
+                (Alliance.get() == Alliance.RED && intake.getColor() == IntakeSubsystem.Color.BLUE))
+        );
+
+        retractIntakeTrigger.whenActive(new RetractIntakeCommand(extendo, intake, elevator, pan));
+        intakeSpitTrigger.whenActive(
+                new SequentialCommandGroup(
+                        new InstantCommand(intake::outtake),
+                        new WaitUntilCommand(() -> intake.getColor() == IntakeSubsystem.Color.BLACK),
+                        new WaitCommand(200),
+                        new InstantCommand(intake::intake)
+                )
+        );
+
         //Color coded limelight pipeline switching
         operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.YELLOW)));
         operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.BLUE)));
@@ -92,14 +117,20 @@ public class Teleop extends StealthOpMode {
 
         //Manual intake controls (operator)
         intake.setDefaultCommand(
-                new IntakeDefaultCommand(intake, extendo, led, elevator, pan, () -> operatorGamepad.getButton(GamepadKeys.Button.A), () -> operatorGamepad.getButton(GamepadKeys.Button.START), () -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER))
+                new IntakeDefaultCommand(intake, extendo, led, () -> operatorGamepad.getButton(GamepadKeys.Button.A), () -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER))
         );
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.START).whenPressed(new InstantCommand(() -> intake.toggleControl()));
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.START).whenPressed(new InstantCommand(() -> mecanum.resetHeading()));
         driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> claw.toggleState()));
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new ResetElevatorCommand(elevator)
+        );
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.BACK).whenPressed(
+                new ResetExtendoCommand(extendo)
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
