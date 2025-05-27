@@ -22,7 +22,7 @@ public class ExtendoDefaultCommand extends CommandBase {
         this.intake = intake;
         this.triggers = triggers;
 
-        addRequirements(extendo, intake);
+        addRequirements(extendo);
     }
 
     @Override

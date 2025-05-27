@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.commands;
 
+import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 
@@ -37,13 +39,15 @@ public class IntakeDefaultCommand extends CommandBase {
 
         IntakeSubsystem.Color color = intake.getColor();
 
-        if (color.equals(IntakeSubsystem.Color.YELLOW))
+        if (color == IntakeSubsystem.Color.YELLOW)
             led.setMode(LEDSubsystem.LEDMode.YELLOW_SAMPLE);
-        else if (color.equals(IntakeSubsystem.Color.BLUE))
+        else if (color == IntakeSubsystem.Color.BLUE)
             led.setMode(LEDSubsystem.LEDMode.BLUE_SAMPLE);
-        else if (color.equals(IntakeSubsystem.Color.RED))
+        else if (color == IntakeSubsystem.Color.RED)
             led.setMode(LEDSubsystem.LEDMode.RED_SAMPLE);
         else
             led.setMode(LEDSubsystem.LEDMode.NO_SAMPLE);
+
+        telemetry.addData("Reached Default Command Color Setting", color);
     }
 }
