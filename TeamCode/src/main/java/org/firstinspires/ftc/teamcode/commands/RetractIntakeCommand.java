@@ -20,12 +20,12 @@ public class RetractIntakeCommand extends SequentialCommandGroup {
                                 new InstantCommand(() -> extendo.setIsHomed(true)),
                                 new InstantCommand(pan::home),
                                 new InstantCommand(intake::wristHome),
+                                new InstantCommand(intake::stop),
                                 new InstantCommand(() -> extendo.setPosition(ExtendoPosition.TRANSFER)),
                                 new WaitUntilCommand(extendo::atPosition), //Wait until extendo is fully in position
-                                new InstantCommand(intake::stop),
                                 new InstantCommand(intake::wristUp),
                                 new WaitCommand(500),
-                                new InstantCommand(intake::outtake),
+                                new InstantCommand(() -> intake.setIntakeSpeed(0.25)),
                                 new WaitUntilCommand(() -> intake.getColor().equals(IntakeSubsystem.Color.BLACK)), //Color sensor no longer detects sample
                                 new WaitCommand(500), //Extra pause to insure consistency
                                 new InstantCommand(intake::wristHome),
@@ -35,10 +35,9 @@ public class RetractIntakeCommand extends SequentialCommandGroup {
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> extendo.setIsHomed(true)),
                                 new InstantCommand(intake::wristHome),
-                                new ResetExtendoCommand(extendo),
-                                new WaitCommand(500), //Pause to ensure wrist going up doesn't fling sample away
-                                new InstantCommand(intake::stop)
-                                ),
+                                new InstantCommand(intake::stop),
+                                new ResetExtendoCommand(extendo)
+                        ),
                         elevator::isHomed
                 )
         );
