@@ -87,12 +87,12 @@ public class Teleop extends StealthOpMode {
 
         //Manual extendo controls
         extendo.setDefaultCommand(
-                new ExtendoDefaultCommand(extendo, intake, () -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER))
+                new ExtendoDefaultCommand(extendo, () -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER))
         );
 
         //Manual intake controls (operator)
         intake.setDefaultCommand(
-                new IntakeDefaultCommand(intake, extendo, led, () -> operatorGamepad.getButton(GamepadKeys.Button.A))
+                new IntakeDefaultCommand(intake, extendo, led, () -> operatorGamepad.getButton(GamepadKeys.Button.A), () -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER))
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.START).whenPressed(new InstantCommand(() -> mecanum.resetHeading()));
