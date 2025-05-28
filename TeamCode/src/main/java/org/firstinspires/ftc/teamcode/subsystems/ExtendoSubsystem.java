@@ -2,23 +2,16 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.pedropathing.pathgen.MathFunctions;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.MathFunctions;
 import org.stealthrobotics.library.StealthSubsystem;
 import org.stealthrobotics.library.math.filter.Debouncer;
-
-import java.util.function.DoubleSupplier;
 
 @Config
 public class ExtendoSubsystem extends StealthSubsystem {

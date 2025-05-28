@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.pedropathing.pathgen.MathFunctions;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 

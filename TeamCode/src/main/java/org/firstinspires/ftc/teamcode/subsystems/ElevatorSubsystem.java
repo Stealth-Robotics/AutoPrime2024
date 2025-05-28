@@ -9,13 +9,13 @@ import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
+import com.pedropathing.pathgen.MathFunctions;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 import com.arcrobotics.ftclib.controller.PIDFController;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.MathFunctions;
 import org.stealthrobotics.library.StealthSubsystem;
 import org.stealthrobotics.library.math.filter.Debouncer;
 

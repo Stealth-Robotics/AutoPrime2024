@@ -5,7 +5,6 @@ import static org.stealthrobotics.library.opmodes.StealthOpMode.telemetry;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.MathFunctions;
 import org.firstinspires.ftc.teamcode.subsystems.ElevatorSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
