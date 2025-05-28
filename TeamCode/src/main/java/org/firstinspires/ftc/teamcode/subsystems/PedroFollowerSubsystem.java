@@ -18,12 +18,12 @@ public class PedroFollowerSubsystem extends StealthSubsystem {
     }
 
     public Command followPath(Path path, boolean holdPoint){
-        return this.runOnce(()-> follower.followPath(path,holdPoint))
-                .andThen(new WaitUntilCommand(()-> !follower.isBusy()));
+        return this.runOnce(()-> follower.followPath(path, holdPoint))
+                .andThen(new WaitUntilCommand(() -> !follower.isBusy()));
     }
 
     public Command followPath(PathChain path, boolean holdPoint){
-        return this.runOnce(()-> follower.followPath(path,holdPoint))
-                .andThen(new WaitUntilCommand(()-> !follower.isBusy()));
+        return this.runOnce(()-> follower.followPath(path, holdPoint))
+                .andThen(new WaitUntilCommand(() -> !follower.isBusy()));
     }
 }

@@ -52,7 +52,7 @@ public class SpecimenAuto extends StealthOpMode {
     public void buildPaths() {
         scoreSpecimenInital = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(startPose), new Point(scoringPose)))
-                .setPathEndTimeoutConstraint(0) // ??
+//                .setPathEndTimeoutConstraint(0)
                 .build();
     }
 
