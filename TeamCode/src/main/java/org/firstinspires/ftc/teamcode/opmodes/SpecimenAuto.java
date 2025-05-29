@@ -33,25 +33,25 @@ public class SpecimenAuto extends StealthOpMode {
     private ClawSubsystem claw;
     private LEDSubsystem led;
 
-    private final Pose startPose = new Pose(8.25, 65);
-    private final Pose scoringPose = new Pose(36, 65);
-    private final Pose moveOverPose = new Pose(36, 75);
-    private final Pose pickupPose = new Pose(12, 36.5, Math.toRadians(180));
-    private final Pose pickupPoseControl = new Pose(34.24, 35.88);
-    private final Pose pickupPoseForward = new Pose(8.9, 36.5, Math.toRadians(180));
+    public static final Pose startPose = new Pose(8.25, 65);
+    public static final Pose scoringPose = new Pose(36, 65);
+    public static final Pose moveOverPose = new Pose(36, 75);
+    public static final Pose pickupPose = new Pose(12, 36.5, Math.toRadians(180));
+    public static final Pose pickupPoseControl = new Pose(34.24, 35.88);
+    public static final Pose pickupPoseForward = new Pose(8.9, 36.5, Math.toRadians(180));
 
-    private final Pose firstSamplePose = new Pose(65, 24);
-    private final Pose firstSampleControlPoint1 = new Pose(25.32, 17.82);
-    private final Pose firstSampleControlPoint2 = new Pose(63.32, 42.21);
-    private final Pose firstSamplePosePushed = new Pose(18, 24);
+    public static final Pose firstSamplePose = new Pose(65, 24);
+    public static final Pose firstSampleControlPoint1 = new Pose(25.32, 17.82);
+    public static final Pose firstSampleControlPoint2 = new Pose(63.32, 42.21);
+    public static final Pose firstSamplePosePushed = new Pose(18, 24);
 
-    private final Pose secondSamplePose = new Pose(65, 16);
-    private final Pose secondSampleControlPoint = new Pose(68, 29);
-    private final Pose secondSamplePosePushed = new Pose(18, 16);
+    public static final Pose secondSamplePose = new Pose(65, 16);
+    public static final Pose secondSampleControlPoint = new Pose(68, 29);
+    public static final Pose secondSamplePosePushed = new Pose(18, 16);
 
-    private final Pose thirdSamplePose = new Pose(65, 10);
-    private final Pose thirdSampleControlPoint = new Pose(68.48, 14.07);
-    private final Pose thirdSamplePosePushed = new Pose(18, 10);
+    public static final Pose thirdSamplePose = new Pose(65, 10);
+    public static final Pose thirdSampleControlPoint = new Pose(68.48, 14.07);
+    public static final Pose thirdSamplePosePushed = new Pose(18, 10);
 
     private PathChain scoreInitial, score, pickupInital, pickup, pickupForward, moveOver, moveFirstSample, moveSecondSample, moveThirdSample;
 
