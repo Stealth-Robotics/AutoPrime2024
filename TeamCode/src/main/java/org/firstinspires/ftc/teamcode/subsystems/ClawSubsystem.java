@@ -30,6 +30,7 @@ public class ClawSubsystem extends StealthSubsystem {
     }
 
     public void setState(ClawState state) {
+        this.state = state;
         if (state == ClawState.CLOSED)
            clawServo.setPosition(CLOSED_POS);
         else

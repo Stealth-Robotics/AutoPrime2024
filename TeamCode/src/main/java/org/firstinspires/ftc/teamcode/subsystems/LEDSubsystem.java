@@ -22,12 +22,11 @@ public class LEDSubsystem extends StealthSubsystem {
         public static BlinkinPattern AUTOMATIC_INTAKE_MODE = BlinkinPattern.HOT_PINK;
 
         public static BlinkinPattern CLIMB_SEQUENCE = BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
-        public static BlinkinPattern AUTONOMOUS = BlinkinPattern.STROBE_GOLD;
+        public static BlinkinPattern AUTONOMOUS = BlinkinPattern.AQUA;
     }
 
     public LEDSubsystem(HardwareMap hardwareMap) {
         blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
-        setMode(LEDMode.AUTONOMOUS);
     }
 
     public void setMode(BlinkinPattern pattern) {
