@@ -27,6 +27,7 @@ public class LEDSubsystem extends StealthSubsystem {
 
     public LEDSubsystem(HardwareMap hardwareMap) {
         blinkin = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
+        setMode(BlinkinPattern.BLACK);
     }
 
     public void setMode(BlinkinPattern pattern) {
