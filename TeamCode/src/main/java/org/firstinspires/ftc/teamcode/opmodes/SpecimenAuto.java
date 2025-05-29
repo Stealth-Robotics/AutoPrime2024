@@ -5,9 +5,12 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.bylazar.ftcontrol.panels.plugins.html.primitives.P;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.BezierPoint;
+import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -20,33 +23,37 @@ import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
+import org.opencv.core.Mat;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
 @Autonomous(name = "SpecimenAuto")
 public class SpecimenAuto extends StealthOpMode {
     private FollowerSubsystem follower;
     private ElevatorSubsystem elevator;
-    private IntakeSubsystem intake;
     private ClawSubsystem claw;
-    private ExtendoSubsystem extendo;
     private LEDSubsystem led;
 
     private final Pose startPose = new Pose(8.25, 65);
     private final Pose scoringPose = new Pose(36, 65);
     private final Pose moveOverPose = new Pose(36, 75);
-    private final Pose pickupPose = new Pose(13.25, 36, Math.toRadians(180));
+    private final Pose pickupPose = new Pose(12, 36.5, Math.toRadians(180));
+    private final Pose pickupPoseControl = new Pose(34.24, 35.88);
+    private final Pose pickupPoseForward = new Pose(8.9, 36.5, Math.toRadians(180));
 
-    //Moving preset samples poses
-    private final Pose firstSamplePose = new Pose(28.8, 35.2, Math.toRadians(-204));
-    private final Pose firstSamplePoseRotated = new Pose(28.8, 35.2, Math.toRadians(47));
+    private final Pose firstSamplePose = new Pose(65, 24);
+    private final Pose firstSampleControlPoint1 = new Pose(25.32, 17.82);
+    private final Pose firstSampleControlPoint2 = new Pose(63.32, 42.21);
+    private final Pose firstSamplePosePushed = new Pose(18, 24);
 
-//    private final Pose secondSamplePose = new Pose(30, 21, Math.toRadians(-24));
-//    private final Pose secondSamplePoseRotated = new Pose();
-//
-//    private final Pose thirdSamplePose = new Pose();
-//    private final Pose thirdSamplePoseRotated = new Pose();
+    private final Pose secondSamplePose = new Pose(65, 16);
+    private final Pose secondSampleControlPoint = new Pose(68, 29);
+    private final Pose secondSamplePosePushed = new Pose(18, 16);
 
-    private PathChain scoreInitial, score, pickupSpecimen, moveOver, moveFirstSample, moveSecondSample, moveThirdSample;
+    private final Pose thirdSamplePose = new Pose(65, 10);
+    private final Pose thirdSampleControlPoint = new Pose(68.48, 14.07);
+    private final Pose thirdSamplePosePushed = new Pose(18, 10);
+
+    private PathChain scoreInitial, score, pickupInital, pickup, pickupForward, moveOver, moveFirstSample, moveSecondSample, moveThirdSample;
 
     @Override
     public void initialize() {
@@ -55,12 +62,9 @@ public class SpecimenAuto extends StealthOpMode {
 
         elevator = new ElevatorSubsystem(hardwareMap);
         claw = new ClawSubsystem(hardwareMap);
-        extendo = new ExtendoSubsystem(hardwareMap);
-        intake = new IntakeSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
 
         schedule(
-                new InstantCommand(() -> intake.wristHome()),
                 new InstantCommand(() -> led.setMode(LEDSubsystem.LEDMode.AUTONOMOUS))
         );
 
@@ -78,32 +82,78 @@ public class SpecimenAuto extends StealthOpMode {
                 .setConstantHeadingInterpolation(scoringPose.getHeading())
                 .build();
 
-        //Go to position, deploy extendo, rotate sample into zone, move back rotation, move on to next sample
-        //At end retract extendo, go to pickup position
         moveFirstSample = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(moveOverPose), new Point(firstSamplePose)))
-                .setLinearHeadingInterpolation(moveOverPose.getHeading(), firstSamplePose.getHeading())
+                .addPath(new BezierCurve(new Point(moveOverPose), new Point(firstSampleControlPoint1), new Point(firstSampleControlPoint2), new Point(firstSamplePose)))
+                .setConstantHeadingInterpolation(0)
 
-                .addParametricCallback(0.6, () -> intake.wristTravel())
-                .addParametricCallback(0.3, () -> extendo.setPosition(0.52))
+                .addPath(new BezierLine(new Point(firstSamplePose), new Point(firstSamplePosePushed)))
+                .setConstantHeadingInterpolation(0)
+                .build();
 
-                .addPath(new BezierPoint(new Point(firstSamplePoseRotated)))
-                .setLinearHeadingInterpolation(firstSamplePose.getHeading(), firstSamplePoseRotated.getHeading())
+        moveSecondSample = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(firstSamplePosePushed), new Point(secondSampleControlPoint), new Point(secondSamplePose)))
+                .setConstantHeadingInterpolation(0)
+
+                .addPath(new BezierLine(new Point(secondSamplePose), new Point(secondSamplePosePushed)))
+                .setConstantHeadingInterpolation(0)
+                .build();
+
+        moveThirdSample = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(secondSamplePosePushed), new Point(thirdSampleControlPoint), new Point(thirdSamplePose)))
+                .setConstantHeadingInterpolation(0)
+
+                .addPath(new BezierLine(new Point(thirdSamplePose), new Point(thirdSamplePosePushed)))
+                .setConstantHeadingInterpolation(0)
+                .build();
+
+        pickupInital = follower.pathBuilder()
+                .addPath(new BezierCurve(new Point(thirdSamplePosePushed), new Point(pickupPoseControl), new Point(pickupPose)))
+                .setLinearHeadingInterpolation(thirdSamplePosePushed.getHeading(), pickupPose.getHeading())
+                .build();
+
+        score = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(pickupPose), new Point(scoringPose)))
+                .setLinearHeadingInterpolation(pickupPose.getHeading(), scoringPose.getHeading())
+                .build();
+
+        pickup = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(scoringPose), new Point(pickupPose)))
+                .setLinearHeadingInterpolation(scoringPose.getHeading(), pickupPose.getHeading())
+                .build();
+
+        pickupForward = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(pickupPose), new Point(pickupPoseForward)))
+                .setConstantHeadingInterpolation(pickupPose.getHeading())
                 .build();
     }
-
-//    public void retractSweeper() {
-//        new ParallelCommandGroup(
-//                new InstantCommand(() -> intake.wristHome()),
-//                new ResetExtendoCommand(extendo)
-//        );
-//    }
 
     public Command scoreSpecimen() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> elevator.setPosition(elevator.getPositionPercentage() - 0.065)),
+                new WaitCommand(200),
                 follower.followPath(moveOver, false),
                 new InstantCommand(() -> claw.toggleState())
+        );
+    }
+
+    public Command pickupSpecimen() {
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> claw.setState(ClawSubsystem.ClawState.CLOSED)),
+                new WaitCommand(300),
+                new InstantCommand(() -> elevator.setPosition(ElevatorSubsystem.ElevatorPosition.HIGH_CHAMBER))
+        );
+    }
+
+    public Command pickupPath() {
+        return new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                        follower.followPath(pickup, true),
+                        new SequentialCommandGroup(
+                                new WaitCommand(500),
+                                new ResetElevatorCommand(elevator)
+                        )
+                ),
+                follower.followPath(pickupForward, true)
         );
     }
 
@@ -115,8 +165,30 @@ public class SpecimenAuto extends StealthOpMode {
                 scoreSpecimen(),
                 new ParallelCommandGroup(
                         follower.followPath(moveFirstSample, true),
-                        new ResetElevatorCommand(elevator)
-                )
+                        new SequentialCommandGroup(
+                                new WaitCommand(500),
+                                new ResetElevatorCommand(elevator)
+                        )
+                ),
+                follower.followPath(moveSecondSample, true),
+                follower.followPath(moveThirdSample, true),
+                follower.followPath(pickupInital, true),
+                follower.followPath(pickupForward, true),
+                pickupSpecimen(),
+                follower.followPath(score, true),
+                scoreSpecimen(),
+                pickupPath(),
+                pickupSpecimen(),
+                follower.followPath(score, true),
+                scoreSpecimen(),
+                pickupPath(),
+                pickupSpecimen(),
+                follower.followPath(score, true),
+                scoreSpecimen(),
+                pickupPath(),
+                pickupSpecimen(),
+                follower.followPath(score, true),
+                scoreSpecimen()
         );
     }
 }
