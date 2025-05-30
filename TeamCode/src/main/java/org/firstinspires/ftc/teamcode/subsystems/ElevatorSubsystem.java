@@ -39,7 +39,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
 
     public static double DUNK_AMOUNT = 0.1;
 
-    public static double RESET_POWER = 0.6;
+    public static double RESET_POWER = 0.8;
     public static double RESET_STALL_TIME_SEC = 0.050;
 
     public static double STALLED_TOLERANCE = 1.0;

@@ -90,7 +90,7 @@ public class IntakeSubsystem extends StealthSubsystem {
         setIntakeSpeed(0);
     }
 
-    private void setWristPosition(double pos) {
+    public void setWristPosition(double pos) {
         wristServo.setPosition(pos);
     }
 

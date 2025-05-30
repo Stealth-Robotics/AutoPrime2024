@@ -80,7 +80,7 @@ public class Teleop extends StealthOpMode {
                 (Alliance.get() == Alliance.RED && intake.getColor() == IntakeSubsystem.Color.BLUE))
         );
 
-        retractIntakeTrigger.whenActive(new RetractIntakeCommand(extendo, intake, elevator, pan));
+        retractIntakeTrigger.whenActive(new RetractIntakeCommand(extendo, intake, elevator, pan, false));
         intakeSpitTrigger.whenActive(
                 new SequentialCommandGroup(
                         new InstantCommand(intake::outtake),
@@ -138,7 +138,7 @@ public class Teleop extends StealthOpMode {
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
-                new RetractIntakeCommand(extendo, intake, elevator, pan)
+                new RetractIntakeCommand(extendo, intake, elevator, pan, false)
         );
 
         driverGamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(

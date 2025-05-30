@@ -37,6 +37,10 @@ public class FollowerSubsystem extends StealthSubsystem {
         );
     }
 
+    public void setMaxPower(double power) {
+        follower.setMaxPower(power);
+    }
+
     public void setStartPose(Pose startPose) {
         follower.setStartingPose(startPose);
     }
