@@ -32,7 +32,7 @@ public class BucketAuto extends StealthOpMode {
     PanSubsystem pan;
 
     private final Pose startPose = new Pose(9.38,112.57, Math.toRadians(180));
-    private final Pose scorePose = new Pose(12.6,131.3, Math.toRadians(135));
+    private final Pose scorePose = new Pose(14.5,131.3, Math.toRadians(135));
     private final Pose scorePoseControl = new Pose(33.53, 118.671);
 
     private final Pose grabBlock1Pose = new Pose(25,120, Math.toRadians(180));
