@@ -71,6 +71,7 @@ public class BucketCycleAuto extends StealthOpMode {
                 .addPath(new BezierCurve(new Point(startPose), new Point(scorePoseControl), new Point(scorePose)))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
                 .addParametricCallback(0.7, () -> follower.setMaxPower(0.6))
+                .setZeroPowerAccelerationMultiplier(7)
                 .build();
         bucketToBlock1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(scorePose), new Point(grabBlock1Pose)))
@@ -104,6 +105,7 @@ public class BucketCycleAuto extends StealthOpMode {
                 .build();
         bucketToClimb = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(scorePose), new Point(climbPose)))
+                .addParametricCallback(0, () -> follower.setMaxPower(1.0))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), climbPose.getHeading())
                 .build();
     }
