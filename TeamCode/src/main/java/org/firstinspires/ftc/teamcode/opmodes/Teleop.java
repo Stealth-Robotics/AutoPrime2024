@@ -117,7 +117,7 @@ public class Teleop extends StealthOpMode {
 
         //Manual intake controls (operator)
         intake.setDefaultCommand(
-                new IntakeDefaultCommand(intake, extendo, led, () -> operatorGamepad.getButton(GamepadKeys.Button.A), () -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER))
+                new IntakeDefaultCommand(intake, extendo, led, () -> operatorGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.05, () -> driverGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - driverGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER))
         );
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.START).whenPressed(new InstantCommand(() -> intake.toggleControl()));
@@ -125,7 +125,7 @@ public class Teleop extends StealthOpMode {
         driverGamepad.getGamepadButton(GamepadKeys.Button.START).whenPressed(new InstantCommand(() -> mecanum.resetHeading()));
         driverGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> claw.toggleState()));
 
-        driverGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.A).whenPressed(
                 new ResetElevatorCommand(elevator)
         );
 
@@ -133,15 +133,15 @@ public class Teleop extends StealthOpMode {
                 new ResetExtendoCommand(extendo)
         );
 
-        driverGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(
                 new DeployIntakeCommand(extendo, intake)
         );
 
-        driverGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(
                 new RetractIntakeCommand(extendo, intake, elevator, pan, false)
         );
 
-        driverGamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(
                 () -> {
                     if (claw.getState().equals(ClawState.CLOSED)) {
                         elevator.setPosition(ElevatorPosition.HIGH_CHAMBER);
@@ -152,7 +152,7 @@ public class Teleop extends StealthOpMode {
                 }
         );
 
-        driverGamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(
                 () -> {
                     if (claw.getState().equals(ClawState.CLOSED)) {
                         elevator.setPosition(ElevatorPosition.LOW_CHAMBER);
@@ -161,6 +161,14 @@ public class Teleop extends StealthOpMode {
                         elevator.setPosition(ElevatorPosition.LOW_BUCKET);
                     }
                 }
+        );
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(
+                () -> elevator.setPosition(ElevatorPosition.HIGH_RUNG)
+        );
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(
+                () -> elevator.setPosition(ElevatorPosition.LOW_RUNG)
         );
 
         //Scoring presets

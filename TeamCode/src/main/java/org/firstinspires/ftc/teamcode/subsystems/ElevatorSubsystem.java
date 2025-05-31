@@ -54,6 +54,8 @@ public class ElevatorSubsystem extends StealthSubsystem {
         public static double LOW_BUCKET = 0.55;
         public static double HIGH_CHAMBER = 0.4;
         public static double LOW_CHAMBER = 0.1;
+        public static double LOW_RUNG = 0.16;
+        public static double HIGH_RUNG = 0.58;
         public static double HOME = 0.0;
     }
 
@@ -81,7 +83,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
     }
 
     public boolean isStalled() {
-        return stalledDebouncer.calculate(Math.abs(leftMotor.getVelocity()) < STALLED_TOLERANCE);
+        return stalledDebouncer.calculate(Math.abs(rightMotor.getVelocity()) < STALLED_TOLERANCE);
     }
 
     public void completeReset() {

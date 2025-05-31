@@ -31,15 +31,16 @@ public class BucketAuto extends StealthOpMode {
     IntakeSubsystem intake;
     PanSubsystem pan;
 
-    private final Pose startPose = new Pose(9.38,112.57, Math.toRadians(180));
-    private final Pose scorePose = new Pose(14.07,130.16, Math.toRadians(135));
+    private final Pose startPose = new Pose(8.6775,112.57, Math.toRadians(180));
+    private final Pose scorePose = new Pose(16,128, Math.toRadians(135));
     private final Pose scorePoseControl = new Pose(26.73, 117.732);
 
-    private final Pose grabBlock1Pose = new Pose(25,120, Math.toRadians(180));
-    private final Pose grabBlock2Pose = new Pose(24,129, Math.toRadians(180));
-    private final Pose grabBlock3Pose = new Pose(25,133.2, Math.toRadians(-164));
+    private final Pose grabBlock1Pose = new Pose(19.7,127.114, Math.toRadians(160));
+    private final Pose grabBlock2Pose = new Pose(19.7,127.114, Math.toRadians(-170));
+    private final Pose grabBlock3Pose = new Pose(19.7,127.114, Math.toRadians(-155));
 
-    private final Pose climbPose = new Pose(70,100, Math.toRadians(90));
+    private final Pose climbPose = new Pose(62.14,107.64, Math.toRadians(-90));
+    private final Pose climbPoseControl = new Pose(53.472,130.397);
 
     private PathChain startToBucket, bucketToBlock1, block1ToBucket, bucketToBlock2, block2ToBucket, bucketToBlock3, block3ToBucket, bucketToClimb;
 
@@ -61,7 +62,6 @@ public class BucketAuto extends StealthOpMode {
         startToBucket = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(startPose), new Point(scorePoseControl), new Point(scorePose)))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
-                .addParametricCallback(0.8, () -> follower.setMaxPower(0.5))
                 .build();
         bucketToBlock1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(scorePose), new Point(grabBlock1Pose)))
@@ -69,7 +69,6 @@ public class BucketAuto extends StealthOpMode {
                 .build();
         block1ToBucket = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(grabBlock1Pose), new Point(scorePose)))
-                .addParametricCallback(0.8, () -> follower.setMaxPower(0.5))
                 .setLinearHeadingInterpolation(grabBlock1Pose.getHeading(),scorePose.getHeading())
                 .build();
         bucketToBlock2 = follower.pathBuilder()
@@ -78,7 +77,6 @@ public class BucketAuto extends StealthOpMode {
                 .build();
         block2ToBucket = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(grabBlock2Pose), new Point(scorePose)))
-                .addParametricCallback(0.8, () -> follower.setMaxPower(0.5))
                 .setLinearHeadingInterpolation(grabBlock2Pose.getHeading(),scorePose.getHeading())
                 .build();
         bucketToBlock3 = follower.pathBuilder()
@@ -87,32 +85,24 @@ public class BucketAuto extends StealthOpMode {
                 .build();
         block3ToBucket = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(grabBlock3Pose), new Point(scorePose)))
-                .addParametricCallback(0.8, () -> follower.setMaxPower(0.5))
                 .setLinearHeadingInterpolation(grabBlock3Pose.getHeading(),scorePose.getHeading())
                 .build();
         bucketToClimb = follower.pathBuilder()
-                .addPath(new BezierCurve(new Point(scorePose), new Point(climbPose)))
+                .addPath(new BezierCurve(new Point(scorePose), new Point(climbPoseControl), new Point(climbPose)))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), climbPose.getHeading())
+                .addParametricCallback(0.5, () -> elevator.setPosition(ElevatorSubsystem.ElevatorPosition.LOW_RUNG))
+                .addParametricCallback(0.98, () -> elevator.setPosition(elevator.getPositionPercentage() - 0.1))
                 .build();
     }
 
     private Command scorePiece() {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> pan.score()),
-                new WaitCommand(700),
-                new InstantCommand(() -> pan.home())
-        );
-    }
-
-    private Command wobble() {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> pan.score()),
-                new WaitCommand(75),
+                new WaitCommand(100),
                 new InstantCommand(() -> pan.home()),
-                new WaitCommand(75),
+                new WaitCommand(100),
                 new InstantCommand(() -> pan.score()),
-                new WaitCommand(75),
-                new InstantCommand(() -> pan.home())
+                new WaitCommand(700)
         );
     }
 
@@ -120,14 +110,22 @@ public class BucketAuto extends StealthOpMode {
         return new ParallelCommandGroup(
                 new ResetElevatorCommand(elevator),
                 new SequentialCommandGroup(
-                        new DeployIntakeCommand(extendo, intake),
                         new InstantCommand(() -> intake.wristDown()),
                         new InstantCommand(() -> extendo.setPosition(1.0)),
                         new WaitUntilCommand(() -> intake.getColor() != IntakeSubsystem.Color.BLACK),
                         new RetractIntakeCommand(extendo, intake, elevator, pan, true),
-                        new InstantCommand(() -> elevator.setPosition(ElevatorSubsystem.ElevatorPosition.HIGH_BUCKET)),
-                        new WaitCommand(400)
+                        new InstantCommand(() -> elevator.setPosition(ElevatorSubsystem.ElevatorPosition.HIGH_BUCKET))
                 )
+        );
+    }
+
+    private Command extend() {
+        return new SequentialCommandGroup(
+                new InstantCommand(() -> extendo.setIsHomed(false)),
+                new InstantCommand(intake::intake),
+                new InstantCommand(() -> extendo.setPosition(ExtendoSubsystem.ExtendoPosition.DEPLOYED)),
+                new WaitCommand(500),
+                new InstantCommand(intake::wristTravel)
         );
     }
 
@@ -136,38 +134,47 @@ public class BucketAuto extends StealthOpMode {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
                         new InstantCommand(() -> elevator.setPosition(ElevatorSubsystem.ElevatorPosition.HIGH_BUCKET)),
-                        wobble(),
                         new SequentialCommandGroup(
                                 new WaitCommand(400),
-                                follower.followPath(startToBucket,true)
-                        )
+                                follower.followPath(startToBucket,false)
+                        ),
+                        extend()
                 ),
                 scorePiece(),
-                follower.followPath(bucketToBlock1,true),
+                follower.followPath(bucketToBlock1,false),
                 grabPiece(),
                 new WaitCommand(100),
                 new ParallelCommandGroup(
-                        follower.followPath(block1ToBucket,true),
-                        wobble()
+                        follower.followPath(block1ToBucket,false),
+                        extend()
                 ),
                 scorePiece(),
-                follower.followPath(bucketToBlock2,true),
+                follower.followPath(bucketToBlock2,false),
                 grabPiece(),
                 new WaitCommand(500),
                 new ParallelCommandGroup(
-                        follower.followPath(block2ToBucket,true),
-                        wobble()
+                        follower.followPath(block2ToBucket,false),
+                        extend()
                 ),
                 scorePiece(),
-                follower.followPath(bucketToBlock3, true),
+                follower.followPath(bucketToBlock3, false),
                 grabPiece(),
                 new WaitCommand(500),
                 new ParallelCommandGroup(
-                        follower.followPath(block3ToBucket, true),
-                        wobble()
+                        follower.followPath(block3ToBucket, false),
+                        extend()
                 ),
                 scorePiece(),
-                follower.followPath(bucketToClimb,true)
+                follower.followPath(bucketToClimb,false)
+                //Raw paths for testing
+//                follower.followPath(startToBucket,true),
+//                follower.followPath(bucketToBlock1,true),
+//                follower.followPath(block1ToBucket,true),
+//                follower.followPath(bucketToBlock2,true),
+//                follower.followPath(block2ToBucket,true),
+//                follower.followPath(bucketToBlock3, true),
+//                follower.followPath(block3ToBucket, true),
+//                follower.followPath(bucketToClimb,true)
         );
     }
 }
