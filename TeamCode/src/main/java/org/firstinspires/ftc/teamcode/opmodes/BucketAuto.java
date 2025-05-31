@@ -33,13 +33,13 @@ public class BucketAuto extends StealthOpMode {
     PanSubsystem pan;
 
     private final Pose startPose = new Pose(8.6775,112.57, Math.toRadians(180));
-    private final Pose scorePose = new Pose(15.6,128, Math.toRadians(135));
+    private final Pose scorePose = new Pose(15.2,128, Math.toRadians(135));
     private final Pose scorePoseForward = new Pose(14.8,128, Math.toRadians(135));
     private final Pose scorePoseControl = new Pose(26.73, 117.732);
 
     private final Pose grabBlock1Pose = new Pose(19.7,127.114, Math.toRadians(160));
-    private final Pose grabBlock2Pose = new Pose(19.7,127.114, Math.toRadians(-160));
-    private final Pose grabBlock3Pose = new Pose(19.7,127.114, Math.toRadians(-150));
+    private final Pose grabBlock2Pose = new Pose(19.7,127.114, Math.toRadians(-170));
+    private final Pose grabBlock3Pose = new Pose(19.7,127.114, Math.toRadians(-155));
 
     private final Pose climbPose = new Pose(62.14,98, Math.toRadians(-90));
     private final Pose climbPoseControl = new Pose(53.472,130.397);
@@ -63,11 +63,12 @@ public class BucketAuto extends StealthOpMode {
 
         startToBucket = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(startPose), new Point(scorePoseControl), new Point(scorePose)))
-                .addParametricCallback(0.8, () -> follower.setMaxPower(0.5))
+                .addParametricCallback(0.6, () -> follower.setMaxPower(0.5))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
                 .build();
         bucketToBlock1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(scorePose), new Point(grabBlock1Pose)))
+                .addParametricCallback(0.8, () -> follower.setMaxPower(0.7))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), grabBlock1Pose.getHeading())
                 .build();
         block1ToBucket = follower.pathBuilder()
@@ -76,6 +77,7 @@ public class BucketAuto extends StealthOpMode {
                 .build();
         bucketToBlock2 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(scorePoseForward), new Point(grabBlock2Pose)))
+                .addParametricCallback(0.8, () -> follower.setMaxPower(0.7))
                 .setLinearHeadingInterpolation(scorePoseForward.getHeading(),grabBlock2Pose.getHeading())
                 .build();
         block2ToBucket = follower.pathBuilder()
@@ -84,6 +86,7 @@ public class BucketAuto extends StealthOpMode {
                 .build();
         bucketToBlock3 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(scorePoseForward), new Point(grabBlock3Pose)))
+                .addParametricCallback(0.8, () -> follower.setMaxPower(0.7))
                 .setLinearHeadingInterpolation(scorePoseForward.getHeading(),grabBlock3Pose.getHeading())
                 .build();
         block3ToBucket = follower.pathBuilder()
