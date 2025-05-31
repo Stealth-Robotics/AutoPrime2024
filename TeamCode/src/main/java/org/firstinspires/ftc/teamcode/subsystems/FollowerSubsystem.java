@@ -23,14 +23,6 @@ public class FollowerSubsystem extends StealthSubsystem {
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
     }
 
-    public Command followPath(Path path, boolean holdPoint) {
-        return new SequentialCommandGroup(
-                new InstantCommand(() -> follower.followPath(path, holdPoint)),
-                new WaitUntilCommand(() -> !follower.isBusy()),
-                new InstantCommand(() -> setMaxPower(1.0))
-        );
-    }
-
     public Command followPath(PathChain path, boolean holdPoint) {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> follower.followPath(path, holdPoint)),

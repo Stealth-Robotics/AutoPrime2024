@@ -28,6 +28,9 @@ public class FConstants {
         FollowerConstants.forwardZeroPowerAcceleration = -35.498;
         FollowerConstants.lateralZeroPowerAcceleration = -80.433;
 
+        FollowerConstants.nominalVoltage = 12.6;
+        FollowerConstants.useVoltageCompensationInAuto = true;
+
         FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.1,0,0,0);
         FollowerConstants.useSecondaryTranslationalPID = false;
 //        FollowerConstants.secondaryTranslationalPIDFCoefficients.setCoefficients(0.185,0,0.016,0);
