@@ -25,10 +25,10 @@ import org.firstinspires.ftc.teamcode.subsystems.FollowerSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.LEDSubsystem;
 import org.opencv.core.Mat;
+import org.stealthrobotics.library.commands.SaveAutoHeadingCommand;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
 @Autonomous(name = "SpecimenAuto")
-@Config
 public class SpecimenAuto extends StealthOpMode {
     private FollowerSubsystem follower;
     private ElevatorSubsystem elevator;
@@ -136,6 +136,6 @@ public class SpecimenAuto extends StealthOpMode {
                                 new ResetElevatorCommand(elevator)
                         )
                 )
-        );
+        ).andThen(new SaveAutoHeadingCommand(() -> follower.getHeading()));
     }
 }

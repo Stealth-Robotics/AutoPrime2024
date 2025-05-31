@@ -51,6 +51,10 @@ public class FollowerSubsystem extends StealthSubsystem {
         return follower.pathBuilder();
     }
 
+    public double getHeading() {
+        return follower.getHeadingOffset();
+    }
+
     @Override
     public void periodic() {
         follower.update();

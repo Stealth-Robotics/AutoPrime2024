@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.ExtendoSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.PanSubsystem;
+import org.stealthrobotics.library.commands.SaveAutoHeadingCommand;
 import org.stealthrobotics.library.opmodes.StealthOpMode;
 
 @Autonomous(name = "BucketAuto")
@@ -166,15 +167,6 @@ public class BucketAuto extends StealthOpMode {
                 ),
                 scorePiece(),
                 follower.followPath(bucketToClimb,false)
-                //Raw paths for testing
-//                follower.followPath(startToBucket,true),
-//                follower.followPath(bucketToBlock1,true),
-//                follower.followPath(block1ToBucket,true),
-//                follower.followPath(bucketToBlock2,true),
-//                follower.followPath(block2ToBucket,true),
-//                follower.followPath(bucketToBlock3, true),
-//                follower.followPath(block3ToBucket, true),
-//                follower.followPath(bucketToClimb,true)
-        );
+        ).andThen(new SaveAutoHeadingCommand(() -> follower.getHeading()));
     }
 }
