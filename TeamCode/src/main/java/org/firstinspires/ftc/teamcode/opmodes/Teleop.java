@@ -41,7 +41,6 @@ public class Teleop extends StealthOpMode {
     IntakeSubsystem intake;
     ClawSubsystem claw;
     LEDSubsystem led;
-    LimelightSubsystem ll;
 
     GamepadEx driverGamepad;
     GamepadEx operatorGamepad;
@@ -55,9 +54,8 @@ public class Teleop extends StealthOpMode {
         pan = new PanSubsystem(hardwareMap);
         mecanum = new MecanumSubsystem(hardwareMap);
         led = new LEDSubsystem(hardwareMap);
-        ll = new LimelightSubsystem(hardwareMap);
 
-        register(elevator, extendo, intake, claw, pan, mecanum, led, ll);
+        register(elevator, extendo, intake, claw, pan, mecanum, led);
 
         schedule(
                 new InstantCommand(() -> intake.wristHome()),
@@ -88,15 +86,6 @@ public class Teleop extends StealthOpMode {
                         new WaitCommand(200),
                         new InstantCommand(intake::intake)
                 )
-        );
-
-        //Color coded limelight pipeline switching
-        operatorGamepad.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.YELLOW)));
-        operatorGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.BLUE)));
-        operatorGamepad.getGamepadButton(GamepadKeys.Button.B).whenPressed(new InstantCommand(() -> ll.setPipeline(LimelightSubsystem.LLPipeline.RED)));
-
-        driverGamepad.getGamepadButton(GamepadKeys.Button.X).whenPressed(
-                new AlignToSampleCommand(mecanum, ll)
         );
 
         mecanum.setDefaultCommand(
@@ -192,8 +181,6 @@ public class Teleop extends StealthOpMode {
                         () -> claw.getState().equals(ClawState.CLOSED)
                 )
         );
-
-        ll.init();
     }
 
     @SuppressWarnings("unused")

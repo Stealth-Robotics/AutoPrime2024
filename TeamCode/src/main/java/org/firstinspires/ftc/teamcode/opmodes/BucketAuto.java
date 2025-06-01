@@ -37,7 +37,7 @@ public class BucketAuto extends StealthOpMode {
     private final Pose scorePoseForward = new Pose(14.8,128, Math.toRadians(135));
     private final Pose scorePoseControl = new Pose(26.73, 117.732);
 
-    private final Pose grabBlock1Pose = new Pose(19.7,127.114, Math.toRadians(160));
+    private final Pose grabBlock1Pose = new Pose(19.7,127.114, Math.toRadians(164));
     private final Pose grabBlock2Pose = new Pose(19.7,127.114, Math.toRadians(-170));
     private final Pose grabBlock3Pose = new Pose(19.7,127.114, Math.toRadians(-155));
 
