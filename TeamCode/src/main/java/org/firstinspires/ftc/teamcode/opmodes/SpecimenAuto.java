@@ -38,8 +38,8 @@ public class SpecimenAuto extends StealthOpMode {
     private final Pose startPose = new Pose(8.67, 64.72, 0);
 
     private final Pose scoringPose1 = new Pose(35, 80, 0);
-    private final Pose scoringPose2 = new Pose(42, 75, 0);
-    private final Pose scoringPose3 = new Pose(42, 65, Math.toRadians(-8));
+    private final Pose scoringPose2 = new Pose(40, 75, 0);
+    private final Pose scoringPose3 = new Pose(40, 65, Math.toRadians(-8));
 
     private final Pose pickupPose1 = new Pose(12, 40, Math.toRadians(180));
     private final Pose pickupPose1Forward = new Pose(9.5, 40, Math.toRadians(180));
@@ -96,14 +96,12 @@ public class SpecimenAuto extends StealthOpMode {
                 .addPath(new BezierCurve(new Point(startPose), new Point(scoringPose1)))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scoringPose1.getHeading())
                 .addParametricCallback(0.8, () -> follower.setMaxPower(0.5))
-                .setPathEndTimeoutConstraint(5000)
                 .build();
 
         score2 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(pickupPose1Forward), new Point(scoringPose2)))
                 .setLinearHeadingInterpolation(pickupPose1Forward.getHeading(), scoringPose2.getHeading())
                 .addParametricCallback(0.8, () -> follower.setMaxPower(0.5))
-                .setPathEndTimeoutConstraint(5000)
                 .build();
 
         score3 = follower.pathBuilder()
