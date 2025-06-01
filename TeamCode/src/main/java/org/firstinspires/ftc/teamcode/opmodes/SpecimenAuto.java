@@ -39,7 +39,7 @@ public class SpecimenAuto extends StealthOpMode {
 
     private final Pose scoringPose1 = new Pose(35, 80, 0);
     private final Pose scoringPose2 = new Pose(40, 75, 0);
-    private final Pose scoringPose3 = new Pose(42, 65, -10);
+    private final Pose scoringPose3 = new Pose(42, 65, 0);
 
     private final Pose pickupPose1 = new Pose(12, 40, Math.toRadians(180));
     private final Pose pickupPose1Forward = new Pose(10, 40, Math.toRadians(180));
