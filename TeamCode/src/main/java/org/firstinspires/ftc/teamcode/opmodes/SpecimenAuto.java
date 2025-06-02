@@ -37,14 +37,14 @@ public class SpecimenAuto extends StealthOpMode {
 
     private final Pose startPose = new Pose(8.67, 64.72, 0);
 
-    private final Pose scoringPose1 = new Pose(35, 80, 0);
-    private final Pose scoringPose2 = new Pose(40, 75, 0);
-    private final Pose scoringPose3 = new Pose(40, 65, Math.toRadians(-8));
+    private final Pose scoringPose1 = new Pose(36, 80, 0);
+    private final Pose scoringPose2 = new Pose(38, 75, 0);
+    private final Pose scoringPose3 = new Pose(38, 65, Math.toRadians(-8));
 
-    private final Pose pickupPose1 = new Pose(12, 40, Math.toRadians(180));
-    private final Pose pickupPose1Forward = new Pose(9.5, 40, Math.toRadians(180));
-    private final Pose pickupPose2 = new Pose(12, 40, Math.toRadians(175));
-    private final Pose pickupPose2Forward = new Pose(8, 40, Math.toRadians(175));
+    private final Pose pickupPose1 = new Pose(12, 35, Math.toRadians(180));
+    private final Pose pickupPose1Forward = new Pose(9.5, 35, Math.toRadians(180));
+    private final Pose pickupPose2 = new Pose(12, 35, Math.toRadians(175));
+    private final Pose pickupPose2Forward = new Pose(8, 35, Math.toRadians(175));
 
     private final Pose firstSampleSweepPose = new Pose(28, 40, Math.toRadians(137));
     private final Pose firstSampleSweptPose = new Pose(28, 43, Math.toRadians(40));
@@ -95,7 +95,7 @@ public class SpecimenAuto extends StealthOpMode {
         score1 = follower.pathBuilder()
                 .addPath(new BezierCurve(new Point(startPose), new Point(scoringPose1)))
                 .setLinearHeadingInterpolation(startPose.getHeading(), scoringPose1.getHeading())
-                .addParametricCallback(0.8, () -> follower.setMaxPower(0.5))
+                .addParametricCallback(0.6, () -> follower.setMaxPower(0.3))
                 .build();
 
         score2 = follower.pathBuilder()
@@ -162,16 +162,16 @@ public class SpecimenAuto extends StealthOpMode {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> claw.setState(ClawSubsystem.ClawState.CLOSED)),
                 new WaitCommand(350),
-                new InstantCommand(() -> elevator.setPosition(ElevatorSubsystem.ElevatorPosition.HIGH_CHAMBER))
+                new InstantCommand(() -> elevator.setPosition(ElevatorSubsystem.ElevatorPosition.HIGH_CHAMBER_AUTO))
         );
     }
 
     public Command second() {
         return new SequentialCommandGroup(
-                follower.followPath(pickup1, true),
+                follower.followPath(pickup1, false),
                 new WaitCommand(100),
                 grabSpecimen(),
-                follower.followPath(score2, true),
+                follower.followPath(score2, false),
                 scoreSpecimen()
         );
     }
@@ -179,12 +179,12 @@ public class SpecimenAuto extends StealthOpMode {
     public Command third() {
         return new SequentialCommandGroup(
                 new ParallelCommandGroup(
-                        follower.followPath(pickup2, true),
+                        follower.followPath(pickup2, false),
                         new ResetElevatorCommand(elevator)
                 ),
                 new WaitCommand(100),
                 grabSpecimen(),
-                follower.followPath(score3, true),
+                follower.followPath(score3, false),
                 scoreSpecimen()
         );
     }
@@ -195,7 +195,7 @@ public class SpecimenAuto extends StealthOpMode {
                 new InstantCommand(() -> claw.setState(ClawSubsystem.ClawState.CLOSED)),
                 new ParallelCommandGroup(
                         follower.followPath(score1, false),
-                        new InstantCommand(() ->  elevator.setPosition(ElevatorSubsystem.ElevatorPosition.HIGH_CHAMBER))
+                        new InstantCommand(() ->  elevator.setPosition(ElevatorSubsystem.ElevatorPosition.HIGH_CHAMBER_AUTO))
                 ),
                 scoreSpecimen(),
                 new ParallelCommandGroup(

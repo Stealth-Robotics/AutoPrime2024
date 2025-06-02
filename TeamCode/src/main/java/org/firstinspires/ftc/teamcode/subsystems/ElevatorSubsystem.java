@@ -35,7 +35,7 @@ public class ElevatorSubsystem extends StealthSubsystem {
     public static double kF = 0.0;
 
     public static double TOLERANCE = 1.0;
-    public static double MAX_HEIGHT = 3200;
+    public static double MAX_HEIGHT = 3300;
 
     public static double DUNK_AMOUNT = 0.1;
 
@@ -52,7 +52,8 @@ public class ElevatorSubsystem extends StealthSubsystem {
     public static class ElevatorPosition {
         public static double HIGH_BUCKET = 1.0;
         public static double LOW_BUCKET = 0.55;
-        public static double HIGH_CHAMBER = 0.44;
+        public static double HIGH_CHAMBER = 0.42;
+        public static double HIGH_CHAMBER_AUTO = 0.39;
         public static double LOW_CHAMBER = 0.1;
         public static double LOW_RUNG = 0.16;
         public static double HIGH_RUNG = 0.58;

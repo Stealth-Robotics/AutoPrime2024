@@ -25,7 +25,7 @@ public class ExtendoSubsystem extends StealthSubsystem {
     public static double POSITION_TOLERANCE = 25.0;
     public static double MAX_EXTENSION = 1180;
 
-    public static double RESET_POWER = 0.8;
+    public static double RESET_POWER = 0.5;
     public static double RESET_STALL_TIME_SEC = 0.1;
     public static double STALLED_TOLERANCE = 0.01;
 
